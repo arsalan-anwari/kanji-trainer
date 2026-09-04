@@ -1,0 +1,16 @@
+[package]
+name = "kanji-trainer"
+version = "0.0.0"
+edition = "2021"
+description = "Cross-platform trainer for learning kanji by level and category"
+authors = ["Arsalan Anwari <arsalan@anwari.nl>"]
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/arsalan-anwari/kanji-trainer"
+homepage = "https://github.com/arsalan-anwari/kanji-trainer"
+keywords = ["japanese", "kanji", "quiz", "jlpt", "trainer"]
+categories = ["gui"]
+
+[lib]
+name = "kanji_trainer"
+path = "src/lib.rs"
