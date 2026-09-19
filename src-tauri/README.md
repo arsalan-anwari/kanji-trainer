@@ -14,3 +14,5 @@ npm run preview               # serve the production build
 npm run check                 # svelte-check
 npm test                      # vitest
 ```
+
+Needs Node 22+, Rust 1.77+, and GTK/WebKit development headers.

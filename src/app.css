@@ -1,0 +1,4 @@
+@import "tailwindcss";
+@import "kaizen-ui/theme.css";
+
+@source "../vendor/kaizen-ui/src";

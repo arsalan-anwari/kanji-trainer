@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta name="color-scheme" content="light dark" />
+    <title>Kanji Trainer</title>
+
+    <link rel="stylesheet" href="/vendor/kaizen-ui/src/splash.css" />
+    <style>
+      :root {
+        --splash-mark-font: "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", "Noto Sans JP",
+          "Yu Gothic", Meiryo, ui-sans-serif, system-ui, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="splash" role="status" aria-live="polite">
+      <div class="mark" aria-hidden="true">字</div>
+      <div class="name">Kanji Trainer</div>
+      <div class="hint">Loading…</div>
+      <div class="bar" aria-hidden="true"><span></span></div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

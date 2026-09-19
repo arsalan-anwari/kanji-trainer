@@ -1,0 +1,52 @@
+[package]
+name = "kanji-trainer"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.77.2"
+description = "Cross-platform trainer for learning kanji by level and category"
+authors = ["Arsalan Anwari <arsalan@anwari.nl>"]
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/arsalan-anwari/kanji-trainer"
+homepage = "https://github.com/arsalan-anwari/kanji-trainer"
+keywords = ["japanese", "kanji", "quiz", "jlpt", "trainer"]
+categories = ["gui"]
+include = [
+  "src/**/*",
+  "dist/**/*",
+  "icons/**/*",
+  "capabilities/**/*",
+  "build.rs",
+  "tauri.conf.json",
+  "Cargo.toml",
+  "README.md",
+  "LICENSE",
+]
+
+[lib]
+name = "kanji_trainer_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "kanji-trainer"
+path = "src/main.rs"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+
+[build-dependencies]
+tauri-build = { version = "2.6.3", features = [] }
+
+[dependencies]
+tauri = { version = "2.11.5", features = [] }
+tauri-plugin-wayland-nvidia-quirk = "0.1.0"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
