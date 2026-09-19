@@ -3,19 +3,21 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderAttribution, renderLicence } from "./attribution.ts";
 import { CACHE_DIR } from "./fetch.ts";
-import { indexByWrittenForm, isMatch, lookupWord, parseJmdict } from "./jmdict.ts";
+import { acceptedReadings, indexByWrittenForm, isMatch, lookupWord, parseJmdict } from "./jmdict.ts";
+import { parseKanjidic, readingClassOf } from "./kanjidic.ts";
 import { componentFrequency, decompose, parseKradfile } from "./kradfile.ts";
 import { loadManifest } from "./sources.ts";
 import {
+  countBySet,
   kanjiIn,
   loadComponentList,
   loadKanjiList,
   loadWordList,
-  setSizes,
   SET_IDS,
   wordId
 } from "./validate.ts";
 import type { Lookup } from "./jmdict.ts";
+import type { Kanjidic } from "./kanjidic.ts";
 import type { Kradfile } from "./kradfile.ts";
 import type { ComponentRow, KanjiRow, WordRow } from "./validate.ts";
 import type { Content, Kanji, Source, Word } from "../../src/lib/content/types.ts";
@@ -36,10 +38,13 @@ export function readCached(name: string): unknown {
   }
 }
 
+const NO_READINGS = { on: [], kun: [] };
+
 export function buildWords(
   rows: readonly WordRow[],
   index: Lookup,
-  levelKanji: ReadonlySet<string>
+  levelKanji: ReadonlySet<string>,
+  kanjidic: Kanjidic = new Map()
 ): Word[] {
   const problems: string[] = [];
   const words: Word[] = [];
@@ -51,12 +56,27 @@ export function buildWords(
       problems.push(`${where}: ${row.written} (${row.reading}) — ${result.detail}`);
       return;
     }
+    const characters = [...row.written];
+    // Only a one-character word has a single reading class: a compound is read
+    // as a whole, and 大学 is neither an on word nor a kun word.
+    const readingClass =
+      characters.length === 1
+        ? readingClassOf(kanjidic.get(row.written) ?? NO_READINGS, row.reading)
+        : null;
+    const kanji = kanjiIn(row.written).filter((character) => levelKanji.has(character));
+    const kanjiCount = (kanji.length >= 2 ? 2 : 1) as 1 | 2;
+    const hasOkurigana = row.written.length > kanji.length;
+
     words.push({
       id: wordId(row.written, row.reading),
       written: row.written,
       reading: row.reading,
+      readings: acceptedReadings(result.entry, row.written, row.reading),
+      ...(readingClass === null ? {} : { readingClass }),
       gloss: result.gloss,
-      kanji: kanjiIn(row.written).filter((character) => levelKanji.has(character)),
+      kanji,
+      kanjiCount,
+      hasOkurigana,
       set: row.set,
       level: row.level
     });
@@ -70,7 +90,11 @@ export function buildWords(
   return words;
 }
 
-export function buildKanji(rows: readonly KanjiRow[], kradfile: Kradfile): Kanji[] {
+export function buildKanji(
+  rows: readonly KanjiRow[],
+  kradfile: Kradfile,
+  kanjidic: Kanjidic = new Map()
+): Kanji[] {
   const problems: string[] = [];
   const kanji: Kanji[] = [];
 
@@ -80,7 +104,18 @@ export function buildKanji(rows: readonly KanjiRow[], kradfile: Kradfile): Kanji
       problems.push(`KRADFILE decomposes "${row.character}" into nothing`);
       continue;
     }
-    kanji.push({ character: row.character, level: row.level, components });
+    const readings = kanjidic.get(row.character);
+    if (readings === undefined) {
+      problems.push(`KANJIDIC2 has no entry for "${row.character}"`);
+      continue;
+    }
+    kanji.push({
+      character: row.character,
+      level: row.level,
+      components,
+      on: readings.on,
+      kun: readings.kun
+    });
   }
 
   if (problems.length > 0) {
@@ -155,13 +190,14 @@ function main(): void {
   const wordRows = loadWordList(LEVEL, levelKanji);
   const index = indexByWrittenForm(parseJmdict(readCached("jmdict-eng-common.json")));
   const kradfile = parseKradfile(readCached("kradfile.json"));
+  const kanjidic = parseKanjidic(readCached("kanjidic2.json"));
 
   const characters = kanjiRows.map((row) => row.character);
   const content = buildContent(
     LEVEL.toUpperCase(),
     manifest.sources,
-    buildKanji(kanjiRows, kradfile),
-    buildWords(wordRows, index, levelKanji),
+    buildKanji(kanjiRows, kradfile, kanjidic),
+    buildWords(wordRows, index, levelKanji, kanjidic),
     buildTaughtComponents(loadComponentList(), kradfile, characters),
     today()
   );
@@ -171,7 +207,7 @@ function main(): void {
   writeFileSync(join(OUTPUT_DIR, "ATTRIBUTION.md"), renderAttribution(content.sources));
   writeFileSync(join(OUTPUT_DIR, "LICENSE"), renderLicence(content.sources));
 
-  const sizes = setSizes(wordRows);
+  const sizes = countBySet(wordRows);
   process.stdout.write(
     `${content.kanji.length} kanji, ${content.words.length} words, ${content.taughtComponents.length} taught components\n`
   );
@@ -244,6 +280,51 @@ if (import.meta.vitest) {
       expect(() => buildWords([row("葉書", "はがき")], index, levelKanji)).toThrow(/usually kana/);
     });
 
+    test("keeps every reading JMdict accepts, the curated one first", () => {
+      const [built] = buildWords([row("日本", "にほん")], index, levelKanji);
+      expect(built.readings).toEqual(["にほん"]);
+    });
+
+    test("tags a one-character word with the class its reading belongs to", () => {
+      const single = indexByWrittenForm(
+        parseJmdict({
+          version: "t",
+          words: [
+            {
+              id: "4",
+              kanji: [{ text: "本", tags: [] }],
+              kana: [{ text: "ほん", tags: [], appliesToKanji: ["*"] }],
+              sense: [{ misc: [], appliesToKanji: ["*"], gloss: [{ lang: "eng", text: "book" }] }]
+            }
+          ]
+        })
+      );
+      const readings = parseKanjidic({
+        characters: [
+          {
+            literal: "本",
+            readingMeaning: {
+              groups: [
+                {
+                  readings: [
+                    { type: "ja_on", value: "ホン" },
+                    { type: "ja_kun", value: "もと" }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      });
+      expect(buildWords([row("本", "ほん")], single, levelKanji, readings)[0].readingClass).toBe(
+        "on"
+      );
+    });
+
+    test("leaves a compound with no reading class, since it is read as a whole", () => {
+      expect(buildWords([row("日本", "にほん")], index, levelKanji)[0].readingClass).toBeUndefined();
+    });
+
     test("reports every unresolved row, not only the first", () => {
       expect(() =>
         buildWords([row("日本", "にっぽん"), row("葉書", "はがき")], index, levelKanji)
@@ -256,25 +337,62 @@ if (import.meta.vitest) {
     kanji: { 明: ["日", "月"], 時: ["日", "土", "寸"], 本: ["木", "一"], 林: ["木", "木"] }
   });
 
+  const kanjidic = parseKanjidic({
+    characters: [
+      {
+        literal: "本",
+        readingMeaning: {
+          groups: [
+            {
+              readings: [
+                { type: "ja_on", value: "ホン" },
+                { type: "ja_kun", value: "もと" }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        literal: "明",
+        readingMeaning: {
+          groups: [{ readings: [{ type: "ja_on", value: "メイ" }] }]
+        }
+      }
+    ]
+  });
+
   describe("buildKanji", () => {
+    test("carries the on and kun readings of every kanji", () => {
+      const [built] = buildKanji([{ character: "本", level: "N5" }], kradfile, kanjidic);
+      expect(built.on).toEqual(["ホン"]);
+      expect(built.kun).toEqual(["もと"]);
+    });
+
+    test("fails on a kanji KANJIDIC2 does not hold", () => {
+      expect(() => buildKanji([{ character: "林", level: "N5" }], kradfile, kanjidic)).toThrow(
+        /KANJIDIC2 has no entry for "林"/
+      );
+    });
+
     test("sorts the level's kanji so a rebuild does not churn the diff", () => {
       const built = buildKanji(
         [
           { character: "本", level: "N5" },
           { character: "明", level: "N5" }
         ],
-        kradfile
+        kradfile,
+        kanjidic
       );
       expect(built.map((entry) => entry.character)).toEqual(["明", "本"]);
     });
 
     test("gives every kanji at least one component", () => {
-      const built = buildKanji([{ character: "明", level: "N5" }], kradfile);
+      const built = buildKanji([{ character: "明", level: "N5" }], kradfile, kanjidic);
       expect(built[0].components).toEqual(["日", "月"]);
     });
 
     test("fails on a kanji KRADFILE does not decompose", () => {
-      expect(() => buildKanji([{ character: "々", level: "N5" }], kradfile)).toThrow(
+      expect(() => buildKanji([{ character: "々", level: "N5" }], kradfile, kanjidic)).toThrow(
         /no decomposition for "々"/
       );
     });

@@ -2,7 +2,10 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseTsv } from "./tsv.ts";
-import type { Kanji, SetId, Word } from "../../src/lib/content/types.ts";
+import type { Kanji, Word } from "../../src/lib/content/types.ts";
+import { countBySet, isSetId, SET_IDS } from "../../src/lib/content/sets.ts";
+
+export { countBySet, isSetId, SET_IDS };
 
 export const CONTENT_DIR = fileURLToPath(new URL("../../content/", import.meta.url));
 
@@ -95,31 +98,48 @@ export function loadComponentList(): ComponentRow[] {
   return parseComponentList(readFileSync(join(CONTENT_DIR, "components.tsv"), "utf8"), where);
 }
 
+export const BOUND_COLUMNS = ["written", "reading", "why"] as const;
+
+export type BoundRow = {
+  written: string;
+  reading: string;
+  why: string;
+};
+
+export function parseBoundReadings(text: string, where: string): BoundRow[] {
+  const rows = parseTsv(text, BOUND_COLUMNS, where);
+  const problems: string[] = [];
+  const bound: BoundRow[] = [];
+
+  rows.forEach(([written, reading, why], index) => {
+    const line = index + 2;
+    if (written === "" || reading === "") {
+      problems.push(`${where} line ${line}: needs both a written form and a reading`);
+      return;
+    }
+    if (why === "") {
+      problems.push(`${where} line ${line}: "${written}" has no reason, so nobody can review it`);
+      return;
+    }
+    bound.push({ written, reading, why });
+  });
+
+  if (problems.length > 0) {
+    throw new Error(problems.join("\n"));
+  }
+  return bound;
+}
+
+export function loadBoundReadings(): BoundRow[] {
+  const where = "content/bound-readings.tsv";
+  return parseBoundReadings(readFileSync(join(CONTENT_DIR, "bound-readings.tsv"), "utf8"), where);
+}
+
 export const WORD_COLUMNS = ["written", "reading", "set", "level", "note"] as const;
 
 export type WordRow = Pick<Word, "written" | "reading" | "set" | "level"> & {
   note: string;
 };
-
-const SET_ORDER = {
-  numbers: 0,
-  calendar: 1,
-  time: 2,
-  people: 3,
-  position: 4,
-  body: 5,
-  verbs: 6,
-  places: 7,
-  nature: 8,
-  describing: 9,
-  irregulars: 10
-} satisfies Record<SetId, number>;
-
-export function isSetId(value: string): value is SetId {
-  return Object.hasOwn(SET_ORDER, value);
-}
-
-export const SET_IDS: readonly SetId[] = Object.keys(SET_ORDER).filter(isSetId);
 
 const KANA = /^[\p{Script=Hiragana}\p{Script=Katakana}ー]+$/u;
 
@@ -138,7 +158,8 @@ export function wordId(written: string, reading: string): string {
 export function parseWordList(
   text: string,
   where: string,
-  levelKanji: ReadonlySet<string>
+  levelKanji: ReadonlySet<string>,
+  bound: readonly BoundRow[] = []
 ): WordRow[] {
   const rows = parseTsv(text, WORD_COLUMNS, where);
   const problems: string[] = [];
@@ -171,6 +192,11 @@ export function parseWordList(
       say(`"${written}" has no level`);
       return;
     }
+    const blocked = bound.find((entry) => entry.written === written && entry.reading === reading);
+    if (blocked !== undefined) {
+      say(`"${written}" (${reading}) is a bound reading, not a word — ${blocked.why}`);
+      return;
+    }
     const id = wordId(written, reading);
     const first = seen.get(id);
     if (first !== undefined) {
@@ -187,20 +213,14 @@ export function parseWordList(
   return words;
 }
 
-export function setSizes(words: readonly WordRow[]): Record<SetId, number> {
-  const sizes = { ...SET_ORDER };
-  for (const id of SET_IDS) {
-    sizes[id] = 0;
-  }
-  for (const word of words) {
-    sizes[word.set] += 1;
-  }
-  return sizes;
-}
-
 export function loadWordList(level: string, levelKanji: ReadonlySet<string>): WordRow[] {
   const where = `content/${level}-words.tsv`;
-  return parseWordList(readFileSync(join(CONTENT_DIR, `${level}-words.tsv`), "utf8"), where, levelKanji);
+  return parseWordList(
+    readFileSync(join(CONTENT_DIR, `${level}-words.tsv`), "utf8"),
+    where,
+    levelKanji,
+    loadBoundReadings()
+  );
 }
 
 if (import.meta.vitest) {
@@ -360,6 +380,28 @@ if (import.meta.vitest) {
         parseWordList(list("日本\tにほん\tplaces\tN5\t\n日本\tにっぽん\tplaces\tN5\t\n"), "t", levelKanji)
       ).toHaveLength(2);
     });
+
+    test("rejects a reading the curator marked bound, naming the reason", () => {
+      const bound = [{ written: "本", reading: "ほん", why: "a counter, not a word" }];
+      expect(() =>
+        parseWordList(list("本\tほん\tplaces\tN5\t\n"), "t", levelKanji, bound)
+      ).toThrow(/"本" \(ほん\) is a bound reading, not a word — a counter, not a word/);
+    });
+
+    test("leaves the same written form under another reading alone", () => {
+      const bound = [{ written: "本", reading: "ほん", why: "a counter, not a word" }];
+      expect(
+        parseWordList(list("本\tもと\tplaces\tN5\t\n"), "t", levelKanji, bound)
+      ).toHaveLength(1);
+    });
+  });
+
+  describe("the committed bound reading list", () => {
+    test("keeps 万 (まん) out of the word list, where it is not a word", () => {
+      const bound = loadBoundReadings();
+      expect(bound.some((row) => row.written === "万" && row.reading === "まん")).toBe(true);
+      expect(bound.every((row) => row.why !== "")).toBe(true);
+    });
   });
 
   describe("parseComponentList", () => {
@@ -403,7 +445,7 @@ if (import.meta.vitest) {
   describe("the committed N5 word list", () => {
     const levelKanji = new Set(loadKanjiList("n5").map((row) => row.character));
     const words = loadWordList("n5", levelKanji);
-    const sizes = setSizes(words);
+    const sizes = countBySet(words);
 
     test("parses every row against the committed kanji list", () => {
       expect(words.length).toBe(185);
@@ -411,17 +453,17 @@ if (import.meta.vitest) {
 
     test("holds the set sizes the curator last agreed to", () => {
       expect(sizes).toEqual({
-        numbers: 26,
+        numbers: 23,
         calendar: 34,
         time: 10,
         people: 14,
         position: 14,
         body: 0,
-        verbs: 16,
-        places: 34,
-        nature: 6,
-        describing: 15,
-        irregulars: 16
+        actions: 16,
+        places: 21,
+        nature: 8,
+        describing: 24,
+        irregulars: 21
       });
     });
 

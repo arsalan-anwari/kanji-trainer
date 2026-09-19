@@ -14,6 +14,8 @@ export type RunSettings = {
   choiceCount: number;
   /** 0 asks every eligible word exactly once. */
   questionCount: number;
+  /** Word shape filters. Empty array means allow all. */
+  wordShapes: ("1-kanji" | "2-kanji" | "okurigana")[];
 };
 
 export const FORMATS: readonly Format[] = ["kanji-reading", "kana-kanji"];
@@ -45,7 +47,8 @@ export const DEFAULT_SETTINGS: RunSettings = {
   format: "kanji-reading",
   answerStyle: "choice",
   choiceCount: 4,
-  questionCount: 20
+  questionCount: 20,
+  wordShapes: []
 };
 
 export function typingAllowed(format: Format): boolean {
@@ -119,6 +122,17 @@ function pick<T extends string>(value: unknown, allowed: readonly T[], fallback:
   return allowed.find((option) => option === value) ?? fallback;
 }
 
+function pickWordShapes(value: unknown): ("1-kanji" | "2-kanji" | "okurigana")[] {
+  if (!Array.isArray(value)) return [];
+  const out: ("1-kanji" | "2-kanji" | "okurigana")[] = [];
+  for (const entry of value) {
+    if (entry === "1-kanji" || entry === "2-kanji" || entry === "okurigana") {
+      if (!out.includes(entry)) out.push(entry);
+    }
+  }
+  return out;
+}
+
 export function parseSettings(stored: unknown): RunSettings {
   if (!isRecord(stored)) return { ...DEFAULT_SETTINGS };
   const count = stored.questionCount;
@@ -133,7 +147,8 @@ export function parseSettings(stored: unknown): RunSettings {
     format: pick(stored.format, FORMATS, DEFAULT_SETTINGS.format),
     answerStyle: pick(stored.answerStyle, ANSWER_STYLES, DEFAULT_SETTINGS.answerStyle),
     choiceCount: typeof choices === "number" ? choices : DEFAULT_SETTINGS.choiceCount,
-    questionCount: typeof count === "number" ? count : DEFAULT_SETTINGS.questionCount
+    questionCount: typeof count === "number" ? count : DEFAULT_SETTINGS.questionCount,
+    wordShapes: pickWordShapes(stored.wordShapes)
   }).settings;
 }
 
@@ -182,12 +197,13 @@ if (import.meta.vitest) {
   test("reads back settings that were stored by this app", () => {
     const wanted: RunSettings = {
       level: "N5",
-      sets: ["numbers", "verbs"],
+      sets: ["numbers", "actions"],
       kanji: ["一", "二"],
       format: "kana-kanji",
       answerStyle: "choice",
       choiceCount: 4,
-      questionCount: 50
+      questionCount: 50,
+      wordShapes: ["1-kanji"]
     };
     expect(parseSettings(wanted)).toEqual(wanted);
   });

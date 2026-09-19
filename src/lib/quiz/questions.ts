@@ -45,9 +45,16 @@ export function atLevel(words: readonly Word[], level: string): Word[] {
 export function eligibleWords(settings: RunSettings, words: readonly Word[]): Word[] {
   const sets = new Set(settings.sets);
   const kanji = new Set(settings.kanji);
+  const shapes = new Set(settings.wordShapes);
   return atLevel(words, settings.level).filter((word) => {
     if (!sets.has(word.set)) return false;
     if (kanji.size > 0 && !word.kanji.every((character) => kanji.has(character))) return false;
+    if (shapes.size > 0) {
+      const matches1Kanji = word.kanjiCount === 1 && shapes.has("1-kanji");
+      const matches2Kanji = word.kanjiCount === 2 && shapes.has("2-kanji");
+      const matchesOkurigana = word.hasOkurigana && shapes.has("okurigana");
+      if (!matches1Kanji && !matches2Kanji && !matchesOkurigana) return false;
+    }
     return true;
   });
 }
@@ -159,6 +166,8 @@ if (import.meta.vitest) {
       readings: [`${id}reading`],
       gloss: id,
       kanji: [id],
+      kanjiCount: 1,
+      hasOkurigana: false,
       set,
       level: "N5",
       ...extra
@@ -166,12 +175,12 @@ if (import.meta.vitest) {
   }
 
   const numbers = ["一", "二", "三", "四", "五", "六"].map((id) => word(id, "numbers"));
-  const verbs = ["行", "見", "聞"].map((id) => word(id, "verbs"));
-  const all = [...numbers, ...verbs];
+  const actions = ["行", "見", "聞"].map((id) => word(id, "actions"));
+  const all = [...numbers, ...actions];
 
   describe("choosing the words a run may draw from", () => {
     test("keeps only the selected sets", () => {
-      const settings = { ...DEFAULT_SETTINGS, sets: ["verbs" as const] };
+      const settings = { ...DEFAULT_SETTINGS, sets: ["actions" as const] };
       expect(eligibleWords(settings, all)).toHaveLength(3);
     });
 

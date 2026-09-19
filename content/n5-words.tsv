@@ -2,9 +2,9 @@ written	reading	set	level	note
 もう一度	もういちど	numbers	N5	
 一	いち	numbers	N5	
 一つ	ひとつ	numbers	N5	
+一万	いちまん	numbers	N5	万 is never a word alone
 七	なな	numbers	N5	OpenJLPT gives しち / なな; one reading per row
 七つ	ななつ	numbers	N5	
-万	まん	numbers	N5	
 三	さん	numbers	N5	
 三つ	みっつ	numbers	N5	
 九	きゅう	numbers	N5	OpenJLPT gives きゅう / く; one reading per row
@@ -13,15 +13,15 @@ written	reading	set	level	note
 二つ	ふたつ	numbers	N5	
 五	ご	numbers	N5	
 五つ	いつつ	numbers	N5	
-何	なん	numbers	N5	interrogative counter root: 何人, 何日, 何時
+何	なに	irregulars	N5	何 alone is なに; なん is the bound form before counters
 八	はち	numbers	N5	
 八つ	やっつ	numbers	N5	
 六	ろく	numbers	N5	
 六つ	むっつ	numbers	N5	
 十	じゅう	numbers	N5	OpenJLPT gives じゅう とお; one reading per row
 千	せん	numbers	N5	
-半	はん	numbers	N5	
-半分	はんぶん	numbers	N5	
+半	はん	describing	N5	
+半分	はんぶん	describing	N5	
 四	よん	numbers	N5	OpenJLPT gives し / よん; one reading per row
 四つ	よっつ	numbers	N5	
 百	ひゃく	numbers	N5	
@@ -97,26 +97,26 @@ written	reading	set	level	note
 後ろ	うしろ	position	N5	
 東	ひがし	position	N5	
 西	にし	position	N5	
-上げる	あげる	verbs	N5	
-休む	やすむ	verbs	N5	
-入る	はいる	verbs	N5	
-入れる	いれる	verbs	N5	
-出かける	でかける	verbs	N5	
-出す	だす	verbs	N5	
-出る	でる	verbs	N5	
-書く	かく	verbs	N5	
-来る	くる	verbs	N5	
-生まれる	うまれる	verbs	N5	
-聞く	きく	verbs	N5	
-行く	いく	verbs	N5	
-見せる	みせる	verbs	N5	
-話す	はなす	verbs	N5	
-読む	よむ	verbs	N5	
-食べる	たべる	verbs	N5	
-お菓子	おかし	places	N5	
+上げる	あげる	actions	N5	
+休む	やすむ	actions	N5	
+入る	はいる	actions	N5	
+入れる	いれる	actions	N5	
+出かける	でかける	actions	N5	
+出す	だす	actions	N5	
+出る	でる	actions	N5	
+書く	かく	actions	N5	
+来る	くる	actions	N5	
+生まれる	うまれる	actions	N5	
+聞く	きく	actions	N5	
+行く	いく	actions	N5	
+見せる	みせる	actions	N5	
+話す	はなす	actions	N5	
+読む	よむ	actions	N5	
+食べる	たべる	actions	N5	
+お菓子	おかし	nature	N5	
 お金	おかね	places	N5	
-万年筆	まんねんひつ	places	N5	
-上着	うわぎ	places	N5	
+万年筆	まんねんひつ	describing	N5	
+上着	うわぎ	describing	N5	
 入口	いりぐち	places	N5	
 出口	でぐち	places	N5	
 名前	なまえ	places	N5	
@@ -127,25 +127,25 @@ written	reading	set	level	note
 大使館	たいしかん	places	N5	
 大学	だいがく	places	N5	
 学校	がっこう	places	N5	
-帽子	ぼうし	places	N5	
+帽子	ぼうし	describing	N5	
 廊下	ろうか	places	N5	
-新聞	しんぶん	places	N5	
+新聞	しんぶん	describing	N5	
 旅行	りょこう	places	N5	
-本	ほん	places	N5	
-本棚	ほんだな	places	N5	
+本	ほん	irregulars	N5	
+本棚	ほんだな	irregulars	N5	
 自動車	じどうしゃ	places	N5	
 自転車	じてんしゃ	places	N5	
-英語	えいご	places	N5	
-話	はなし	places	N5	
+英語	えいご	describing	N5	
+話	はなし	irregulars	N5	
 車	くるま	places	N5	
-辞書	じしょ	places	N5	
+辞書	じしょ	irregulars	N5	
 銀行	ぎんこう	places	N5	
 電気	でんき	places	N5	
-電話	でんわ	places	N5	
+電話	でんわ	describing	N5	
 電車	でんしゃ	places	N5	
-靴下	くつした	places	N5	
+靴下	くつした	describing	N5	
 飛行機	ひこうき	places	N5	
-食べ物	たべもの	places	N5	
+食べ物	たべもの	nature	N5	
 食堂	しょくどう	places	N5	
 天気	てんき	nature	N5	
 山	やま	nature	N5	

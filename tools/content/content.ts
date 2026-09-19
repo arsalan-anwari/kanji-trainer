@@ -1,4 +1,4 @@
-import type { Content, Kanji, Source, Word } from "../../src/lib/content/types.ts";
+import type { Content, Kanji, ReadingClass, Source, Word } from "../../src/lib/content/types.ts";
 import { isSetId, isSingleKanji, isKana, wordId } from "./validate.ts";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -30,6 +30,23 @@ function characters(record: Record<string, unknown>, key: string, where: string)
   });
 }
 
+function readings(record: Record<string, unknown>, where: string): string[] {
+  return list(record, "readings", where).map((item, index) => {
+    if (typeof item !== "string" || !isKana(item)) {
+      throw new Error(`${where}: readings[${index}] is not kana`);
+    }
+    return item;
+  });
+}
+
+function parseReadingClass(value: unknown, where: string): ReadingClass | null {
+  if (value === undefined) return null;
+  if (value !== "on" && value !== "kun") {
+    throw new Error(`${where}: readingClass "${String(value)}" is neither on nor kun`);
+  }
+  return value;
+}
+
 function parseWord(value: unknown, where: string): Word {
   if (!isRecord(value)) {
     throw new Error(`${where}: must be an object`);
@@ -47,12 +64,27 @@ function parseWord(value: unknown, where: string): Word {
   if (id !== wordId(written, reading)) {
     throw new Error(`${where}: id "${id}" does not match "${wordId(written, reading)}"`);
   }
+  const accepted = readings(value, where);
+  if (!accepted.includes(reading)) {
+    throw new Error(`${where}: readings do not include the pinned reading "${reading}"`);
+  }
+  const readingClass = parseReadingClass(value.readingClass, where);
+  if (readingClass !== null && [...written].length !== 1) {
+    throw new Error(`${where}: "${written}" is a compound, so it has no reading class`);
+  }
+  const kanji = characters(value, "kanji", where);
+  const kanjiCount = (kanji.length >= 2 ? 2 : 1) as 1 | 2;
+  const hasOkurigana = written.length > kanji.length;
   return {
     id,
     written,
     reading,
+    readings: accepted,
+    ...(readingClass === null ? {} : { readingClass }),
     gloss: text(value, "gloss", where),
-    kanji: characters(value, "kanji", where),
+    kanji,
+    kanjiCount,
+    hasOkurigana,
     set,
     level: text(value, "level", where)
   };
@@ -70,7 +102,23 @@ function parseKanji(value: unknown, where: string): Kanji {
   if (components.length === 0) {
     throw new Error(`${where}: "${character}" decomposes into nothing`);
   }
-  return { character, level: text(value, "level", where), components };
+  return {
+    character,
+    level: text(value, "level", where),
+    components,
+    on: list(value, "on", where).map((item, index) => {
+      if (typeof item !== "string" || item === "") {
+        throw new Error(`${where}: on[${index}] must be a non-empty string`);
+      }
+      return item;
+    }),
+    kun: list(value, "kun", where).map((item, index) => {
+      if (typeof item !== "string" || item === "") {
+        throw new Error(`${where}: kun[${index}] must be a non-empty string`);
+      }
+      return item;
+    })
+  };
 }
 
 function parseSource(value: unknown, where: string): Source {
