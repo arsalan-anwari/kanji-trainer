@@ -1,0 +1,72 @@
+{
+  "sources": [
+    {
+      "id": "openjlpt",
+      "title": "OpenJLPT",
+      "url": "https://github.com/evanclan/OpenJLPT",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "version": "c42fd9fa3777bfc1775446f7c418d549dfd6e4cf",
+      "files": [
+        {
+          "url": "https://raw.githubusercontent.com/evanclan/OpenJLPT/c42fd9fa3777bfc1775446f7c418d549dfd6e4cf/data/csv/kanji-n5.csv",
+          "sha256": "c5572c1350bf241edd8c9de33a50dc04b67cc52c173e3b65bc0d2e3ffb3a54eb",
+          "as": "openjlpt-kanji-n5.csv"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/evanclan/OpenJLPT/c42fd9fa3777bfc1775446f7c418d549dfd6e4cf/data/csv/vocab-n5.csv",
+          "sha256": "9c39394228f3cf3c91d33321d7203dfa70092a1a6086fcc6c663f1bf6e9c882c",
+          "as": "openjlpt-vocab-n5.csv"
+        }
+      ]
+    },
+    {
+      "id": "tanos",
+      "title": "Jonathan Waller's JLPT Resources (tanos.co.uk)",
+      "url": "https://www.tanos.co.uk/jlpt/",
+      "licence": "CC BY",
+      "licenceUrl": "https://www.tanos.co.uk/jlpt/sharing/",
+      "version": "reconstruction, ingested via OpenJLPT c42fd9f",
+      "files": []
+    },
+    {
+      "id": "jmdict",
+      "title": "JMdict, via jmdict-simplified",
+      "url": "https://github.com/scriptin/jmdict-simplified",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://www.edrdg.org/edrdg/licence.html",
+      "version": "3.6.2+20260914172325",
+      "files": [
+        {
+          "url": "https://github.com/scriptin/jmdict-simplified/releases/download/3.6.2%2B20260914172325/jmdict-eng-common-3.6.2%2B20260914172325.json.tgz",
+          "sha256": "9263a8ba1160f4063c444f157d22909c00569ba04156b8cedb84220705cfb099",
+          "as": "jmdict-eng-common.json"
+        }
+      ]
+    },
+    {
+      "id": "kradfile",
+      "title": "KRADFILE, via jmdict-simplified",
+      "url": "https://github.com/scriptin/jmdict-simplified",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://www.edrdg.org/edrdg/licence.html",
+      "version": "3.6.2+20260914172325",
+      "files": [
+        {
+          "url": "https://github.com/scriptin/jmdict-simplified/releases/download/3.6.2%2B20260914172325/kradfile-3.6.2%2B20260914172325.json.tgz",
+          "sha256": "f089ad0b80785a4c250c371322955d54081d01c1e6dfdf0a08a239f72319a7fe",
+          "as": "kradfile.json"
+        }
+      ]
+    },
+    {
+      "id": "curation",
+      "title": "Kanji Trainer hand curation",
+      "url": "https://github.com/arsalan-anwari/kanji-trainer",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "version": "0.1.0",
+      "files": []
+    }
+  ]
+}

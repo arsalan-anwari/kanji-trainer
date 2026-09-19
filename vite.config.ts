@@ -23,6 +23,7 @@ export default defineConfig({
   define: { "import.meta.vitest": "undefined" },
   test: {
     environment: "node",
-    includeSource: ["src/**/*.ts"]
+    includeSource: ["src/**/*.ts", "tools/**/*.ts"],
+    exclude: ["**/node_modules/**", "**/dist/**", "vendor/**", "tests/e2e/**"]
   }
 });

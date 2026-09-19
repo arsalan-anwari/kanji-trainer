@@ -3,6 +3,8 @@
 .serena/
 
 # Build artifacts
+.cache
+data
 node_modules
 dist
 src-tauri/dist
