@@ -13,9 +13,27 @@ instruction if you forget.
 | `sources.json` | (none) | hand, when an upstream version is bumped |
 | `n5-kanji.tsv` | `character`, `level` | hand |
 | `n5-words.tsv` | `written`, `reading`, `set`, `level`, `note` | hand |
+| `bound-readings.tsv` | `written`, `reading`, `why` | hand |
 | `components.tsv` | `character`, `name` | hand |
 
 Tab-separated, one header row, UTF-8, no quoting. A cell cannot contain a tab.
+
+The `set` column in `n5-words.tsv` is one of `numbers`, `calendar`, `time`,
+`people`, `position`, `body`, `actions`, `places`, `nature`, `describing`,
+`irregulars`. Put a word where its **meaning** belongs, not where the upstream
+level list grouped its kanji: `numbers` is quantity only, dates go to `calendar`
+and clock times to `time`. The same kanji may appear in several sets when the
+words differ, but each word has exactly one set. `GUIDELINES.md` §7 is the rule;
+an in-source test in `tools/content/validate.ts` pins the size of every set, so
+moving words between sets means updating those numbers in the same commit.
+
+Nothing in this file records word shape. Whether a word is one kanji, two or more,
+or kanji with a kana tail is derived from `written` at build time.
+
+`bound-readings.tsv` holds readings that must never be curated as words like
+characters that only occur bound to something else, like 万 (まん), which is
+10,000 only as 一万. The build rejects a word row that matches one, so an import
+from a kanji deck cannot quietly reintroduce it.
 
 ## Commands
 
@@ -37,7 +55,7 @@ JMdict and KRADFILE data. This is it. Run it when preparing a release.
 1. Open the latest [jmdict-simplified release](https://github.com/scriptin/jmdict-simplified/releases)
    and note its tag, e.g. `3.6.2+20260914172325`.
 2. In `sources.json`, replace the old tag in `version` and every `files[].url`
-   for the `jmdict` and `kradfile` entries. URLs encode `+` as `%2B`.
+   for the `jmdict`, `kradfile` and `kanjidic` entries. URLs encode `+` as `%2B`.
 3. Record each archive's SHA-256 in `files[].sha256`:
 
    ```sh
