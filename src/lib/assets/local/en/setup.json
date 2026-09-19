@@ -1,0 +1,91 @@
+{
+  "title": "Set up a run",
+  "level": {
+    "title": "Level",
+    "description": "Which list the run draws from.",
+    "unavailable": "{level} is not in this build yet."
+  },
+  "sets": {
+    "title": "Word sets",
+    "description": "Pick which words the run draws from.",
+    "selectAll": "Select all",
+    "clear": "Clear",
+    "count": "{count} words"
+  },
+  "kanji": {
+    "title": "Kanji in play",
+    "description": "Tick a set to take all of it, or pick single kanji.",
+    "selectAll": "Every kanji",
+    "clear": "None",
+    "chosen": "{count} of {total} kanji",
+    "wordCount": "{count} words",
+    "empty": "Pick a set to see its kanji.",
+    "wholeWord": "A word is asked only when every kanji in it is picked."
+  },
+  "format": {
+    "title": "Question format",
+    "description": "What is shown and what you answer.",
+    "kanji-reading": "See the word, answer its reading",
+    "kana-kanji": "See the reading, pick the written word"
+  },
+  "answerStyle": {
+    "title": "Answer style",
+    "description": "Tap an answer or type it.",
+    "choice": "Pick one of the answers",
+    "typing": "Type the reading",
+    "typingUnavailable": "Writing kanji needs an IME, so this format is multiple choice only."
+  },
+  "choices": {
+    "title": "Answers per question",
+    "description": "Two is the gentler start.",
+    "2": "Two answers to choose from",
+    "4": "Four answers, as the exam does"
+  },
+  "wordShapes": {
+    "title": "Word shapes",
+    "description": "Filter by word structure. Leave blank for all.",
+    "1-kanji": "Single kanji",
+    "2-kanji": "Two or more kanji",
+    "okurigana": "With hiragana suffix",
+    "hint": "Words can have different structures: single kanji (一), compounds (学校), or with hiragana suffixes (上げる)."
+  },
+  "run": {
+    "title": "Run options",
+    "description": "How long the run is.",
+    "count": "Number of questions",
+    "onePass": "One pass",
+    "pool": "{count} words in play"
+  },
+  "presets": {
+    "label": "Saved runs",
+    "none": "Nothing saved yet",
+    "some": "Pick a saved run",
+    "create": "Save this run",
+    "update": "Update",
+    "restore": "Load",
+    "delete": "Delete",
+    "name": "Name this run",
+    "saved": "Saved.",
+    "firstSteps": "First steps",
+    "firstStepsDone": "Set up for a first run: ten questions, two answers, numbers.",
+    "confirmTitle": "Delete this saved run?",
+    "confirmBody": "\"{name}\" will be removed from this device."
+  },
+  "notes": {
+    "kanjiNeedsChoice": "Writing kanji needs an IME, so that format stays multiple choice."
+  },
+  "start": {
+    "button": "Start",
+    "study": "Study these first",
+    "inPlay": "Words in play",
+    "questions": "Questions"
+  },
+  "startHint": "Pick at least one set to start.",
+  "study": {
+    "title": "Study pass",
+    "description": "Read them through, then drill them. Nothing is asked here.",
+    "back": "Back to setup",
+    "start": "Start the run",
+    "empty": "Pick a set to study."
+  }
+}

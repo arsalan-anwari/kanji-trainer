@@ -1,0 +1,81 @@
+{
+  "appName": "Kanji Trainer",
+  "tagline": "Read and write the words of the JLPT levels",
+  "level": "Level",
+  "apply": "Apply",
+  "cancel": "Cancel",
+  "close": "Close",
+  "custom": "Custom",
+  "delete": "Delete",
+  "keep": "Keep",
+  "save": "Save",
+  "settings": "Settings",
+  "closeSettings": "Close settings",
+  "navLabel": "Screens",
+  "nav": {
+    "setup": "Practice",
+    "reports": "Report"
+  },
+  "content": {
+    "loading": "Loading the word list…",
+    "failed": "The word list could not be read.",
+    "retry": "Try again",
+    "summary": "{words} words, {kanji} kanji"
+  },
+  "set": {
+    "numbers": "Numbers",
+    "calendar": "Calendar",
+    "time": "Time",
+    "people": "People",
+    "position": "Position",
+    "body": "Body",
+    "actions": "Actions",
+    "places": "Places",
+    "nature": "Nature",
+    "describing": "Describing",
+    "irregulars": "Irregulars"
+  },
+  "wordShapes": {
+    "1-kanji": "1 kanji",
+    "2-kanji": "2+ kanji",
+    "okurigana": "With kana"
+  },
+  "format": {
+    "kanji-reading": "Kanji to reading",
+    "kana-kanji": "Kana to kanji"
+  },
+  "answerStyle": {
+    "choice": "Multiple choice",
+    "typing": "Typing"
+  },
+  "choices": {
+    "2": "2 answers",
+    "4": "4 answers"
+  },
+  "words": "{count} words",
+  "show": "Show {label}",
+  "hide": "Hide {label}",
+  "prefs": {
+    "title": "Settings",
+    "close": "Close settings",
+    "theme": "Appearance",
+    "themeSystem": "System",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "contrast": "High contrast",
+    "contrastHint": "Strong colours and heavier outlines.",
+    "zoom": "Text size",
+    "scale": "Scale",
+    "scaleHint": "Everything grows with the text.",
+    "zoomIn": "Bigger",
+    "zoomOut": "Smaller",
+    "sound": "Sound",
+    "effects": "Sound effects",
+    "effectsHint": "Short sounds on an answer and at the end of a run.",
+    "language": "Language",
+    "persist": "These stay set on this device."
+  },
+  "shortcuts": {
+    "mode": "Keyboard mode"
+  }
+}
