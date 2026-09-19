@@ -1,0 +1,33 @@
+{
+  "progress": "Question {index} of {total}",
+  "runProgress": "Run progress",
+  "announce": "Question {index} of {total}. {prompt}",
+  "prompt": {
+    "kanji-reading": "How is this word read?",
+    "kana-kanji": "Which word is this?"
+  },
+  "choices": "Answers",
+  "typed": {
+    "label": "Reading",
+    "placeholder": "Type the reading",
+    "submit": "Check"
+  },
+  "correct": "Correct",
+  "wrong": "Wrong",
+  "answerWas": "The answer was {answer}",
+  "alsoReads": "also read {list}",
+  "reveal": {
+    "reading": "Reading",
+    "written": "Written",
+    "gloss": "Meaning"
+  },
+  "next": "Next",
+  "continue": "Continue",
+  "finish": "See the score",
+  "quit": "Quit",
+  "quitTitle": "Quit this run?",
+  "quitBody": "The questions answered so far will not be kept.",
+  "quitConfirm": "Quit",
+  "quitCancel": "Keep going",
+  "score": "{score} of {answered} right"
+}

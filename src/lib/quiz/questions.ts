@@ -1,7 +1,7 @@
 import type { Word } from "../content/types";
 import { normalizeReading } from "./romaji";
 import { DEFAULT_SETTINGS } from "./settings";
-import type { Format, RunSettings } from "./settings";
+import type { Format, RunSettings, WordShape } from "./settings";
 
 export type Question = {
   index: number;
@@ -38,6 +38,15 @@ export function atLevel(words: readonly Word[], level: string): Word[] {
 }
 
 /**
+ * The one shape a word has. A word with kana after its kanji is okurigana even
+ * when it carries two kanji, so the three shapes never overlap.
+ */
+export function wordShape(word: Word): WordShape {
+  if (word.hasOkurigana) return "okurigana";
+  return word.kanjiCount === 1 ? "1-kanji" : "2-kanji";
+}
+
+/**
  * A word is in play when its set is chosen, every kanji in it is chosen, and
  * its reading belongs to the class being asked for. Requiring every kanji is
  * what keeps 学校 out of a run built from 学 alone.
@@ -49,12 +58,7 @@ export function eligibleWords(settings: RunSettings, words: readonly Word[]): Wo
   return atLevel(words, settings.level).filter((word) => {
     if (!sets.has(word.set)) return false;
     if (kanji.size > 0 && !word.kanji.every((character) => kanji.has(character))) return false;
-    if (shapes.size > 0) {
-      const matches1Kanji = word.kanjiCount === 1 && shapes.has("1-kanji");
-      const matches2Kanji = word.kanjiCount === 2 && shapes.has("2-kanji");
-      const matchesOkurigana = word.hasOkurigana && shapes.has("okurigana");
-      if (!matches1Kanji && !matches2Kanji && !matchesOkurigana) return false;
-    }
+    if (shapes.size > 0 && !shapes.has(wordShape(word))) return false;
     return true;
   });
 }
@@ -199,6 +203,22 @@ if (import.meta.vitest) {
       };
       expect(eligibleWords(settings, [compound])).toHaveLength(0);
       expect(eligibleWords({ ...settings, kanji: ["学", "校"] }, [compound])).toHaveLength(1);
+    });
+
+    test("keeps the three shapes apart, so okurigana is not a single kanji", () => {
+      const pool = [
+        word("上", "position"),
+        word("学校", "places", { kanji: ["学", "校"], kanjiCount: 2 }),
+        word("上げる", "actions", { kanji: ["上"], hasOkurigana: true })
+      ];
+      const sets = ["position", "places", "actions"] as const;
+      const settings = { ...DEFAULT_SETTINGS, sets: [...sets] };
+      const writtenOf = (shape: WordShape) =>
+        eligibleWords({ ...settings, wordShapes: [shape] }, pool).map((found) => found.written);
+      expect(writtenOf("1-kanji")).toEqual(["上"]);
+      expect(writtenOf("2-kanji")).toEqual(["学校"]);
+      expect(writtenOf("okurigana")).toEqual(["上げる"]);
+      expect(eligibleWords(settings, pool)).toHaveLength(3);
     });
 
     test("draws on every kanji of the chosen sets when none was picked", () => {

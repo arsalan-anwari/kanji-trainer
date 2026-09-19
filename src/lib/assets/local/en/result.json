@@ -1,0 +1,13 @@
+{
+  "title": "Run finished",
+  "score": "Score",
+  "accuracy": "Accuracy",
+  "asked": "Questions",
+  "missed": {
+    "title": "Words to look at again",
+    "none": "Every word was right.",
+    "count": "{count} words"
+  },
+  "again": "Set up another run",
+  "report": "See past runs"
+}

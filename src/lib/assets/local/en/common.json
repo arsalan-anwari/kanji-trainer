@@ -36,9 +36,9 @@
     "irregulars": "Irregulars"
   },
   "wordShapes": {
-    "1-kanji": "1 kanji",
-    "2-kanji": "2+ kanji",
-    "okurigana": "With kana"
+    "1-kanji": "Tanji",
+    "2-kanji": "Jukugo",
+    "okurigana": "Okurigana"
   },
   "format": {
     "kanji-reading": "Kanji to reading",
@@ -47,10 +47,6 @@
   "answerStyle": {
     "choice": "Multiple choice",
     "typing": "Typing"
-  },
-  "choices": {
-    "2": "2 answers",
-    "4": "4 answers"
   },
   "words": "{count} words",
   "show": "Show {label}",

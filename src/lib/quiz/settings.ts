@@ -3,6 +3,7 @@ import type { SetId } from "../content/sets";
 
 export type Format = "kanji-reading" | "kana-kanji";
 export type AnswerStyle = "choice" | "typing";
+export type WordShape = "1-kanji" | "2-kanji" | "okurigana";
 
 export type RunSettings = {
   level: string;
@@ -15,7 +16,7 @@ export type RunSettings = {
   /** 0 asks every eligible word exactly once. */
   questionCount: number;
   /** Word shape filters. Empty array means allow all. */
-  wordShapes: ("1-kanji" | "2-kanji" | "okurigana")[];
+  wordShapes: WordShape[];
 };
 
 export const FORMATS: readonly Format[] = ["kanji-reading", "kana-kanji"];
@@ -122,13 +123,13 @@ function pick<T extends string>(value: unknown, allowed: readonly T[], fallback:
   return allowed.find((option) => option === value) ?? fallback;
 }
 
-function pickWordShapes(value: unknown): ("1-kanji" | "2-kanji" | "okurigana")[] {
+export const WORD_SHAPES: readonly WordShape[] = ["1-kanji", "2-kanji", "okurigana"];
+
+function pickWordShapes(value: unknown): WordShape[] {
   if (!Array.isArray(value)) return [];
-  const out: ("1-kanji" | "2-kanji" | "okurigana")[] = [];
+  const out: WordShape[] = [];
   for (const entry of value) {
-    if (entry === "1-kanji" || entry === "2-kanji" || entry === "okurigana") {
-      if (!out.includes(entry)) out.push(entry);
-    }
+    if (WORD_SHAPES.includes(entry) && !out.includes(entry)) out.push(entry);
   }
   return out;
 }

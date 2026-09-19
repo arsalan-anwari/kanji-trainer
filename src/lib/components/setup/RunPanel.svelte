@@ -2,16 +2,31 @@
   import { Card, Chip, Icon, OptionCard } from "kaizen-ui";
   import { app } from "../../state.svelte";
   import QuestionCountPicker from "./QuestionCountPicker.svelte";
-  import {
-    ANSWER_STYLES,
-    CHOICE_COUNTS,
-    FORMATS,
-    typingAllowed
-  } from "../../quiz/settings";
+  import { ANSWER_STYLES, FORMATS, WORD_SHAPES, typingAllowed } from "../../quiz/settings";
   import { n, t } from "../../i18n.svelte";
 
-  const typing = $derived(app.settings.answerStyle === "typing");
+  // Every JLPT level, so the ones this build has no content for are visible and
+  // plainly switched off rather than missing.
+  const LEVELS = ["N5", "N4", "N3", "N2", "N1"];
 </script>
+
+<Card title={t("setup.level.title")} description={t("setup.level.description")}>
+  {#snippet icon()}<Icon name="trophy" class="size-5" />{/snippet}
+  <div role="group" aria-label={t("setup.level.title")} class="flex flex-wrap gap-2">
+    {#each LEVELS as level (level)}
+      {@const known = app.levels.includes(level)}
+      <Chip
+        size="sm"
+        disabled={!known}
+        active={app.settings.level === level}
+        title={known ? level : t("setup.level.unavailable", { level })}
+        onclick={() => app.updateSettings({ level })}
+      >
+        {level}
+      </Chip>
+    {/each}
+  </div>
+</Card>
 
 <Card title={t("setup.format.title")} description={t("setup.format.description")}>
   {#snippet icon()}<Icon name="target" class="size-5" />{/snippet}
@@ -29,40 +44,18 @@
 
 <Card title={t("setup.answerStyle.title")} description={t("setup.answerStyle.description")}>
   {#snippet icon()}<Icon name="keyboard" class="size-5" />{/snippet}
-  <div class="flex flex-col gap-4">
-    <div role="group" aria-label={t("setup.answerStyle.title")} class="grid gap-3 sm:grid-cols-2">
-      {#each ANSWER_STYLES as style (style)}
-        <OptionCard
-          active={app.settings.answerStyle === style}
-          disabled={style === "typing" && !typingAllowed(app.settings.format)}
-          label={t(`common.answerStyle.${style}`)}
-          hint={style === "typing" && !typingAllowed(app.settings.format)
-            ? t("setup.answerStyle.typingUnavailable")
-            : t(`setup.answerStyle.${style}`)}
-          onclick={() => app.updateSettings({ answerStyle: style })}
-        />
-      {/each}
-    </div>
-
-    {#if !typing}
-      <div class="flex flex-col gap-1.5">
-        <span class="text-[0.625rem] font-bold tracking-wide text-muted-foreground uppercase">
-          {t("setup.choices.title")}
-        </span>
-        <div role="group" aria-label={t("setup.choices.title")} class="flex flex-wrap gap-2">
-          {#each CHOICE_COUNTS as count (count)}
-            <Chip
-              size="sm"
-              active={app.settings.choiceCount === count}
-              title={t(`setup.choices.${count}`)}
-              onclick={() => app.updateSettings({ choiceCount: count })}
-            >
-              {t(`common.choices.${count}`)}
-            </Chip>
-          {/each}
-        </div>
-      </div>
-    {/if}
+  <div role="group" aria-label={t("setup.answerStyle.title")} class="grid gap-3 sm:grid-cols-2">
+    {#each ANSWER_STYLES as style (style)}
+      <OptionCard
+        active={app.settings.answerStyle === style}
+        disabled={style === "typing" && !typingAllowed(app.settings.format)}
+        label={t(`common.answerStyle.${style}`)}
+        hint={style === "typing" && !typingAllowed(app.settings.format)
+          ? t("setup.answerStyle.typingUnavailable")
+          : t(`setup.answerStyle.${style}`)}
+        onclick={() => app.updateSettings({ answerStyle: style })}
+      />
+    {/each}
   </div>
 </Card>
 
@@ -70,18 +63,17 @@
   {#snippet icon()}<Icon name="filter" class="size-5" />{/snippet}
   <div class="flex flex-col gap-3">
     <div role="group" aria-label={t("setup.wordShapes.title")} class="flex flex-wrap gap-2">
-      {#each ["1-kanji", "2-kanji", "okurigana"] as shape (shape)}
+      {#each WORD_SHAPES as shape (shape)}
         <Chip
           size="sm"
-          active={app.settings.wordShapes.includes(shape as "1-kanji" | "2-kanji" | "okurigana")}
+          active={app.settings.wordShapes.includes(shape)}
           title={t(`setup.wordShapes.${shape}`)}
           onclick={() => {
             const current = new Set(app.settings.wordShapes);
-            const shapeTyped = shape as "1-kanji" | "2-kanji" | "okurigana";
-            if (current.has(shapeTyped)) {
-              current.delete(shapeTyped);
+            if (current.has(shape)) {
+              current.delete(shape);
             } else {
-              current.add(shapeTyped);
+              current.add(shape);
             }
             app.updateSettings({ wordShapes: [...current] });
           }}

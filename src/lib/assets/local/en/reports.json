@@ -1,0 +1,38 @@
+{
+  "title": "Past runs",
+  "description": "Every run kept on this device.",
+  "none": "No run has been finished yet.",
+  "entry": "{score} of {total} right",
+  "runs": "{count} runs",
+  "window": {
+    "all": "All",
+    "today": "Today",
+    "week": "Last 7 days"
+  },
+  "filters": {
+    "title": "Filters",
+    "format": "Format",
+    "answering": "Answering",
+    "level": "Level",
+    "clear": "Clear filters"
+  },
+  "list": {
+    "selectAll": "Select every run shown",
+    "clearSelection": "Clear the selection",
+    "remove": "Delete"
+  },
+  "selected": "{count} selected",
+  "deleted": "Deleted.",
+  "confirmTitle": "Delete these runs?",
+  "confirmBody": "{count} runs will be removed from this device.",
+  "stat": {
+    "runs": "Runs",
+    "answers": "Answers",
+    "accuracy": "Accuracy"
+  },
+  "soon": {
+    "title": "Diagnosis",
+    "description": "What went wrong, per kanji, per set and per format.",
+    "empty": "Lands in a later phase."
+  }
+}

@@ -14,7 +14,7 @@
   },
   "kanji": {
     "title": "Kanji in play",
-    "description": "Tick a set to take all of it, or pick single kanji.",
+    "description": "Which kanji the run covers.",
     "selectAll": "Every kanji",
     "clear": "None",
     "chosen": "{count} of {total} kanji",
@@ -35,19 +35,13 @@
     "typing": "Type the reading",
     "typingUnavailable": "Writing kanji needs an IME, so this format is multiple choice only."
   },
-  "choices": {
-    "title": "Answers per question",
-    "description": "Two is the gentler start.",
-    "2": "Two answers to choose from",
-    "4": "Four answers, as the exam does"
-  },
   "wordShapes": {
     "title": "Word shapes",
-    "description": "Filter by word structure. Leave blank for all.",
-    "1-kanji": "Single kanji",
-    "2-kanji": "Two or more kanji",
-    "okurigana": "With hiragana suffix",
-    "hint": "Words can have different structures: single kanji (一), compounds (学校), or with hiragana suffixes (上げる)."
+    "description": "Filter by word structure.",
+    "1-kanji": "Single kanji (一)",
+    "2-kanji": "Compound (学校)",
+    "okurigana": "Kanji with okurigana (上げる)",
+    "hint": "Leave blank for all."
   },
   "run": {
     "title": "Run options",
@@ -67,7 +61,7 @@
     "name": "Name this run",
     "saved": "Saved.",
     "firstSteps": "First steps",
-    "firstStepsDone": "Set up for a first run: ten questions, two answers, numbers.",
+    "firstStepsDone": "Set up for a first run: ten questions, numbers.",
     "confirmTitle": "Delete this saved run?",
     "confirmBody": "\"{name}\" will be removed from this device."
   },
@@ -83,7 +77,7 @@
   "startHint": "Pick at least one set to start.",
   "study": {
     "title": "Study pass",
-    "description": "Read them through, then drill them. Nothing is asked here.",
+    "description": "Read through before drilling.",
     "back": "Back to setup",
     "start": "Start the run",
     "empty": "Pick a set to study."
