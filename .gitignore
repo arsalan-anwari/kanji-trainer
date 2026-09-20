@@ -1,6 +1,7 @@
 # Cache files
 .metadata_cache/
 .serena/
+.firecrawl/
 
 # Build artifacts
 .cache

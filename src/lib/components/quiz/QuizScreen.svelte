@@ -3,6 +3,7 @@
   import { app } from "../../state.svelte";
   import ChoiceGrid from "./ChoiceGrid.svelte";
   import FeedbackPanel from "./FeedbackPanel.svelte";
+  import HintBulb from "./HintBulb.svelte";
   import QuestionPrompt from "./QuestionPrompt.svelte";
   import QuitConfirm from "./QuitConfirm.svelte";
   import QuizStatusBar from "./QuizStatusBar.svelte";
@@ -39,7 +40,7 @@
   );
 
   function keydown(event: KeyboardEvent): void {
-    if (question === null || app.confirmQuit) return;
+    if (question === null || app.confirmQuit || app.hintOpen) return;
 
     if (event.key === "Escape") {
       app.askQuit();
@@ -97,6 +98,10 @@
         </div>
       </div>
     {/key}
+
+    {#if app.phase === "answering"}
+      <HintBulb />
+    {/if}
 
     {#if app.phase === "feedback" && word !== null}
       <FeedbackPanel {word} {last} />

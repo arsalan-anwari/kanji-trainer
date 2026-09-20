@@ -23,6 +23,8 @@ import {
   ONE_PASS,
   type RunSettings
 } from "./quiz/settings";
+import { fallbackHint, hintFor, lookIndex, type Hint } from "./quiz/hints";
+import { componentIndex } from "./quiz/similarity";
 import { newReportId, summarize, type Report, type Summary } from "./quiz/report";
 import {
   deletePreset,
@@ -66,6 +68,7 @@ class AppState {
   picked = $state<string | null>(null);
   lastCorrect = $state(false);
   confirmQuit = $state(false);
+  hintOpen = $state(false);
   questionStartedAt = 0;
   runStartedAt = 0;
 
@@ -73,6 +76,8 @@ class AppState {
   lastReport = $state<Report | null>(null);
 
   words = $derived<Word[]>(this.content?.words ?? []);
+  components = $derived(componentIndex(this.content?.kanji ?? []));
+  looks = $derived(lookIndex(this.content?.kanji ?? []));
   levels = $derived<string[]>([...new Set(this.words.map((word) => word.level))]);
   availableSets = $derived<SetId[]>(setsWithWords(this.words));
   kanjiInSet = $derived(kanjiBySet(this.words));
@@ -107,6 +112,16 @@ class AppState {
     this.current === null
       ? null
       : (this.words.find((word) => word.id === this.current?.wordId) ?? null)
+  );
+  hint = $derived<Hint | null>(
+    this.currentWord === null
+      ? null
+      : hintFor(this.currentWord, this.settings.format, this.settings.difficulty, this.looks)
+  );
+  hintFallback = $derived<Hint | null>(
+    this.currentWord === null
+      ? null
+      : fallbackHint(this.currentWord, this.settings.format, this.looks)
   );
   progress = $derived(
     this.questions.length === 0 ? 0 : (this.index + (this.phase === "answering" ? 0 : 1)) / this.questions.length
@@ -245,7 +260,7 @@ class AppState {
   }
 
   start(): void {
-    const questions = buildQuestions(this.settings, this.words);
+    const questions = buildQuestions(this.settings, this.words, Math.random, this.components);
     if (questions.length === 0) return;
     this.questions = questions;
     this.answers = [];
@@ -255,6 +270,7 @@ class AppState {
     this.picked = null;
     this.lastCorrect = false;
     this.confirmQuit = false;
+    this.hintOpen = false;
     this.runStartedAt = Date.now();
     this.questionStartedAt = this.runStartedAt;
     this.route = "quiz";
@@ -299,6 +315,7 @@ class AppState {
     this.phase = "answering";
     this.typed = "";
     this.picked = null;
+    this.hintOpen = false;
     this.questionStartedAt = Date.now();
   }
 
@@ -320,10 +337,19 @@ class AppState {
     this.confirmQuit = true;
   }
 
+  showHint(): void {
+    if (this.hint !== null) this.hintOpen = true;
+  }
+
+  hideHint(): void {
+    this.hintOpen = false;
+  }
+
   quit(): void {
     this.questions = [];
     this.answers = [];
     this.confirmQuit = false;
+    this.hintOpen = false;
     this.route = "setup";
   }
 

@@ -39,6 +39,11 @@
     "2-kanji": "Jukugo",
     "okurigana": "Okurigana"
   },
+  "difficulty": {
+    "beginner": "Beginner",
+    "advanced": "Advanced",
+    "expert": "Expert"
+  },
   "format": {
     "kanji-reading": "Kanji to reading",
     "kana-kanji": "Kana to kanji",

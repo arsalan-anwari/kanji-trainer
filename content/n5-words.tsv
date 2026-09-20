@@ -1,186 +1,186 @@
-written	reading	set	level	meaning	note
-もう一度	もういちど	numbers	N5		
-一	いち	numbers	N5	one	
-一つ	ひとつ	numbers	N5	one thing	
-一万	いちまん	numbers	N5		万 is never a word alone
-七	なな	numbers	N5	seven	OpenJLPT gives しち / なな; one reading per row
-七つ	ななつ	numbers	N5	seven things	
-三	さん	numbers	N5	three	
-三つ	みっつ	numbers	N5	three things	
-九	きゅう	numbers	N5	nine	OpenJLPT gives きゅう / く; one reading per row
-九つ	ここのつ	numbers	N5	nine things	
-二	に	numbers	N5	two	
-二つ	ふたつ	numbers	N5	two things	
-五	ご	numbers	N5	five	
-五つ	いつつ	numbers	N5	five things	
-何	なに	irregulars	N5		何 alone is なに; なん is the bound form before counters
-八	はち	numbers	N5	eight	
-八つ	やっつ	numbers	N5	eight things	
-六	ろく	numbers	N5	six	
-六つ	むっつ	numbers	N5	six things	
-十	じゅう	numbers	N5		OpenJLPT gives じゅう とお; one reading per row
-千	せん	numbers	N5		
-半	はん	describing	N5	half past	
-半分	はんぶん	describing	N5	a half	
-四	よん	numbers	N5	four	OpenJLPT gives し / よん; one reading per row
-四つ	よっつ	numbers	N5	four things	
-百	ひゃく	numbers	N5		
-一日	いちにち	calendar	N5		いちにち, one day; ついたち, 1st of the month, is a separate word
-一月	ひとつき	calendar	N5		ひとつき, one month; いちがつ, January, is a separate word
-七日	なのか	calendar	N5		
-三日	みっか	calendar	N5		
-九日	ここのか	calendar	N5		
-二日	ふつか	calendar	N5		
-五日	いつか	calendar	N5		
-今月	こんげつ	calendar	N5		
-今週	こんしゅう	calendar	N5		
-先月	せんげつ	calendar	N5		
-先週	せんしゅう	calendar	N5		
-八日	ようか	calendar	N5		
-六日	むいか	calendar	N5		
-再来年	さらいねん	calendar	N5		OpenJLPT writes さ来年, which JMdict marks rK
-十日	とおか	calendar	N5		
-去年	きょねん	calendar	N5		
-四日	よっか	calendar	N5		
-土曜日	どようび	calendar	N5		
-夏休み	なつやすみ	calendar	N5		
-年	とし	calendar	N5		
-日曜日	にちようび	calendar	N5		
-月曜日	げつようび	calendar	N5		
-木曜日	もくようび	calendar	N5		
-来年	らいねん	calendar	N5		
-来月	らいげつ	calendar	N5		
-来週	らいしゅう	calendar	N5		
-毎年	まいとし	calendar	N5		OpenJLPT gives まいねん/まいとし; one reading per row
-毎日	まいにち	calendar	N5		
-毎月	まいつき	calendar	N5		OpenJLPT gives まいげつ/まいつき; one reading per row
-毎週	まいしゅう	calendar	N5		
-水曜日	すいようび	calendar	N5		
-火曜日	かようび	calendar	N5		
-誕生日	たんじょうび	calendar	N5		
-金曜日	きんようび	calendar	N5		
-今	いま	time	N5		
-今晩	こんばん	time	N5		
-休み	やすみ	time	N5		
-午前	ごぜん	time	N5		
-午後	ごご	time	N5		
-時々	ときどき	time	N5		
-時計	とけい	time	N5		
-時間	じかん	time	N5		
-毎晩	まいばん	time	N5		
-毎朝	まいあさ	time	N5		
-お母さん	おかあさん	people	N5		
-お父さん	おとうさん	people	N5		
-人	ひと	people	N5		
-先生	せんせい	people	N5		
-外国人	がいこくじん	people	N5		
-大勢	おおぜい	people	N5		
-女	おんな	people	N5		
-女の子	おんなのこ	people	N5		
-子供	こども	people	N5		
-学生	がくせい	people	N5		
-生徒	せいと	people	N5		
-男	おとこ	people	N5		
-男の子	おとこのこ	people	N5		
-留学生	りゅうがくせい	people	N5		
-上	うえ	position	N5		
-下	した	position	N5		
-中	なか	position	N5		
-先	さき	position	N5		
-前	まえ	position	N5		
-北	きた	position	N5		
-南	みなみ	position	N5		
-右	みぎ	position	N5		
-外	そと	position	N5		
-左	ひだり	position	N5		
-後	あと	position	N5		
-後ろ	うしろ	position	N5		
-東	ひがし	position	N5		
-西	にし	position	N5		
-上げる	あげる	actions	N5		
-休む	やすむ	actions	N5		
-入る	はいる	actions	N5		
-入れる	いれる	actions	N5		
-出かける	でかける	actions	N5		
-出す	だす	actions	N5		
-出る	でる	actions	N5		
-書く	かく	actions	N5		
-来る	くる	actions	N5		
-生まれる	うまれる	actions	N5		
-聞く	きく	actions	N5		
-行く	いく	actions	N5		
-見せる	みせる	actions	N5		
-話す	はなす	actions	N5		
-読む	よむ	actions	N5		
-食べる	たべる	actions	N5		
-お菓子	おかし	nature	N5		
-お金	おかね	places	N5		
-万年筆	まんねんひつ	describing	N5		
-上着	うわぎ	describing	N5		
-入口	いりぐち	places	N5		
-出口	でぐち	places	N5		
-名前	なまえ	places	N5		
-図書館	としょかん	places	N5		
-国	くに	places	N5		
-地下鉄	ちかてつ	places	N5		
-外国	がいこく	places	N5		
-大使館	たいしかん	places	N5		
-大学	だいがく	places	N5		
-学校	がっこう	places	N5		
-帽子	ぼうし	describing	N5		
-廊下	ろうか	places	N5		
-新聞	しんぶん	describing	N5		
-旅行	りょこう	places	N5		
-本	ほん	irregulars	N5		
-本棚	ほんだな	irregulars	N5		
-自動車	じどうしゃ	places	N5	automobile	
-自転車	じてんしゃ	places	N5		
-英語	えいご	describing	N5		
-話	はなし	irregulars	N5		
-車	くるま	places	N5	car	
-辞書	じしょ	irregulars	N5		
-銀行	ぎんこう	places	N5		
-電気	でんき	places	N5		
-電話	でんわ	describing	N5		
-電車	でんしゃ	places	N5		
-靴下	くつした	describing	N5		
-飛行機	ひこうき	places	N5		
-食べ物	たべもの	nature	N5		
-食堂	しょくどう	places	N5		
-天気	てんき	nature	N5		
-山	やま	nature	N5		
-川	かわ	nature	N5		OpenJLPT writes 川/河
-木	き	nature	N5		
-水	みず	nature	N5		
-雨	あめ	nature	N5		
-一緒	いっしょ	describing	N5		
-元気	げんき	describing	N5		
-大きい	おおきい	describing	N5	big	
-大きな	おおきな	describing	N5	big, before a noun	
-大丈夫	だいじょうぶ	describing	N5		
-大切	たいせつ	describing	N5		
-大好き	だいすき	describing	N5		
-小さい	ちいさい	describing	N5	small	
-小さな	ちいさな	describing	N5	small, before a noun	
-有名	ゆうめい	describing	N5		
-病気	びょうき	describing	N5		
-白	しろ	describing	N5	white	
-白い	しろい	describing	N5	white, describing	
-長い	ながい	describing	N5		
-高い	たかい	describing	N5		
-一人	ひとり	irregulars	N5		
-一昨年	おととし	irregulars	N5		
-一昨日	おととい	irregulars	N5		
-上手	じょうず	irregulars	N5		
-下手	へた	irregulars	N5		
-二人	ふたり	irregulars	N5		
-二十日	はつか	irregulars	N5		
-二十歳	はたち	irregulars	N5		
-今年	ことし	irregulars	N5		
-今日	きょう	irregulars	N5		
-今朝	けさ	irregulars	N5		
-八百屋	やおや	irregulars	N5		
-友達	ともだち	irregulars	N5		
-大人	おとな	irregulars	N5		
-明日	あした	irregulars	N5		
-昨日	きのう	irregulars	N5		
+written	reading	set	level	meaning	clue	note
+もう一度	もういちど	numbers	N5		You did not catch it the first time, so you ask for a second go.	
+一	いち	numbers	N5	one	The first counting number, and the smallest amount you can have of anything.	
+一つ	ひとつ	numbers	N5	one thing	The count you reach for when a single object sits in front of you.	
+一万	いちまん	numbers	N5		A hundred hundreds, the figure printed on the largest common banknote.	万 is never a word alone
+七	なな	numbers	N5	seven	The number of days it takes to get back to the same weekday.	OpenJLPT gives しち / なな; one reading per row
+七つ	ななつ	numbers	N5	seven things	Counting objects, the amount that fills a week of days.	
+三	さん	numbers	N5	three	The number of corners on a triangle.	
+三つ	みっつ	numbers	N5	three things	Counting objects, the amount that matches a triangle's corners.	
+九	きゅう	numbers	N5	nine	The largest figure a single digit can hold.	OpenJLPT gives きゅう / く; one reading per row
+九つ	ここのつ	numbers	N5	nine things	Counting objects, the largest amount a single digit can hold.	
+二	に	numbers	N5	two	The number of eyes in a face.	
+二つ	ふたつ	numbers	N5	two things	Counting objects, the amount that makes a pair.	
+五	ご	numbers	N5	five	The number of fingers on a hand.	
+五つ	いつつ	numbers	N5	five things	Counting objects, the amount that matches the fingers of a hand.	
+何	なに	irregulars	N5		The question word you use when you cannot name the thing in front of you.	何 alone is なに; なん is the bound form before counters
+八	はち	numbers	N5	eight	The number of legs on a spider.	
+八つ	やっつ	numbers	N5	eight things	Counting objects, the amount that matches a spider's legs.	
+六	ろく	numbers	N5	six	The number of faces on a die.	
+六つ	むっつ	numbers	N5	six things	Counting objects, the amount that matches the faces of a die.	
+十	じゅう	numbers	N5		The number of fingers on both hands together.	OpenJLPT gives じゅう とお; one reading per row
+千	せん	numbers	N5		Ten hundreds.	
+半	はん	describing	N5	half past	On a clock, the moment thirty minutes into the hour.	
+半分	はんぶん	describing	N5	a half	What you get when something is cut into two equal parts.	
+四	よん	numbers	N5	four	The number of legs on a chair.	OpenJLPT gives し / よん; one reading per row
+四つ	よっつ	numbers	N5	four things	Counting objects, the amount that matches a chair's legs.	
+百	ひゃく	numbers	N5		Ten tens.	
+一日	いちにち	calendar	N5		Midnight to midnight, taken as a single stretch.	いちにち, one day; ついたち, 1st of the month, is a separate word
+一月	ひとつき	calendar	N5		A stretch of about thirty days, taken as a whole.	ひとつき, one month; いちがつ, January, is a separate word
+七日	なのか	calendar	N5		The date a week after the first of the calendar.	
+三日	みっか	calendar	N5		The date two days after the first of the calendar.	
+九日	ここのか	calendar	N5		The date eight days after the first of the calendar.	
+二日	ふつか	calendar	N5		The date directly after the first of the calendar.	
+五日	いつか	calendar	N5		The date four days after the first of the calendar.	
+今月	こんげつ	calendar	N5		The stretch of thirty-odd days you are living through right now.	
+今週	こんしゅう	calendar	N5		The run of seven days you are living through right now.	
+先月	せんげつ	calendar	N5		The stretch of thirty-odd days that ended when the current one began.	
+先週	せんしゅう	calendar	N5		The run of seven days that ended when the current run began.	
+八日	ようか	calendar	N5		The date seven days after the first of the calendar.	
+六日	むいか	calendar	N5		The date five days after the first of the calendar.	
+再来年	さらいねん	calendar	N5		Two new year's celebrations from where you stand.	OpenJLPT writes さ来年, which JMdict marks rK
+十日	とおか	calendar	N5		The date nine days after the first of the calendar.	
+去年	きょねん	calendar	N5		The twelve months that ended at the most recent new year.	
+四日	よっか	calendar	N5		The date three days after the first of the calendar.	
+土曜日	どようび	calendar	N5		The sixth day of the week, the first of the two free ones.	
+夏休み	なつやすみ	calendar	N5		The long break from school in the hottest part of the year.	
+年	とし	calendar	N5		A stretch of twelve months, from one January to the next.	
+日曜日	にちようび	calendar	N5		The seventh day of the week, the one calendars print in red.	
+月曜日	げつようび	calendar	N5		The first working day after the weekend.	
+木曜日	もくようび	calendar	N5		The fourth working day of the week, just before the last.	
+来年	らいねん	calendar	N5		The twelve months that start at the coming January.	
+来月	らいげつ	calendar	N5		The stretch of thirty-odd days that begins when the current one ends.	
+来週	らいしゅう	calendar	N5		The run of seven days that begins when the current run ends.	
+毎年	まいとし	calendar	N5		Something that comes round once in each twelve-month stretch, without fail.	OpenJLPT gives まいねん/まいとし; one reading per row
+毎日	まいにち	calendar	N5		Something that happens on all seven days, and on the next seven too.	
+毎月	まいつき	calendar	N5		Something that comes round once in each thirty-odd-day stretch.	OpenJLPT gives まいげつ/まいつき; one reading per row
+毎週	まいしゅう	calendar	N5		Something that comes round once in each run of seven days.	
+水曜日	すいようび	calendar	N5		The middle working day, with two before it and two after.	
+火曜日	かようび	calendar	N5		The second working day of the week.	
+誕生日	たんじょうび	calendar	N5		The date you were born, marked once a twelvemonth with a cake.	
+金曜日	きんようび	calendar	N5		The last working day before the weekend.	
+今	いま	time	N5		This very moment, neither earlier nor later.	
+今晩	こんばん	time	N5		The dark hours of the day you are living through.	
+休み	やすみ	time	N5		A pause from work or from school.	
+午前	ごぜん	time	N5		The half of the day that ends at noon.	
+午後	ごご	time	N5		The half of the day that starts at noon.	
+時々	ときどき	time	N5		Neither always nor never: every so often.	
+時計	とけい	time	N5		The round face on the wall whose two hands tell you the hour.	
+時間	じかん	time	N5		What an hourglass measures as its sand runs through.	
+毎晩	まいばん	time	N5		Something that happens after dark, and again after the next dark.	
+毎朝	まいあさ	time	N5		Something that happens when you wake, and again when you next wake.	
+お母さん	おかあさん	people	N5		The parent who gave birth to you, spoken of politely.	
+お父さん	おとうさん	people	N5		The parent who did not give birth to you, spoken of politely.	
+人	ひと	people	N5		A single human being, neither an animal nor a thing.	
+先生	せんせい	people	N5		The one who stands at the front of the class and explains.	
+外国人	がいこくじん	people	N5		Somebody who holds the passport of another country.	
+大勢	おおぜい	people	N5		A great many human beings packed into the same place.	
+女	おんな	people	N5		A grown human of the sex that can bear children.	
+女の子	おんなのこ	people	N5		A young human who will grow into a woman.	
+子供	こども	people	N5		A young human, not yet grown.	
+学生	がくせい	people	N5		Somebody enrolled at a university, working towards a degree.	
+生徒	せいと	people	N5		A young learner at a primary or a secondary school.	
+男	おとこ	people	N5		A grown human of the sex that cannot bear children.	
+男の子	おとこのこ	people	N5		A young human who will grow into a man.	
+留学生	りゅうがくせい	people	N5		Somebody studying at a university in a country not their own.	
+上	うえ	position	N5		The direction the sky lies in from where you stand.	
+下	した	position	N5		The direction the ground lies in from where you stand.	
+中	なか	position	N5		Within the walls of something, not out in the open.	
+先	さき	position	N5		The sharp end of a pencil or a needle.	
+前	まえ	position	N5		The side of you that your eyes face.	
+北	きた	position	N5		The direction a compass needle points.	
+南	みなみ	position	N5		The direction opposite the one a compass needle points.	
+右	みぎ	position	N5		The side most people hold a pen with.	
+外	そと	position	N5		Beyond the walls, where the weather is.	
+左	ひだり	position	N5		The side most people do not hold a pen with.	
+後	あと	position	N5		The side of you that your eyes cannot see.	
+後ろ	うしろ	position	N5		The far end of a queue, away from the counter.	
+東	ひがし	position	N5		The direction the sun rises from.	
+西	にし	position	N5		The direction the sun sets into.	
+上げる	あげる	actions	N5		To lift something so that it sits higher than it did.	
+休む	やすむ	actions	N5		To stay away from work or school for the day.	
+入る	はいる	actions	N5		To pass through a door and be indoors.	
+入れる	いれる	actions	N5		To place something inside a container.	
+出かける	でかける	actions	N5		To set off from home on an errand or an outing.	
+出す	だす	actions	N5		To bring something from a bag and hand it over.	
+出る	でる	actions	N5		To step from a room and be outdoors.	
+書く	かく	actions	N5		To put letters on paper with a pen.	
+来る	くる	actions	N5		To move towards where the speaker is standing.	
+生まれる	うまれる	actions	N5		To arrive in the world as a baby.	
+聞く	きく	actions	N5		To take a sound in through your ears.	
+行く	いく	actions	N5		To move away from where the speaker is standing.	
+見せる	みせる	actions	N5		To hold something up so another person can look at it.	
+話す	はなす	actions	N5		To use your voice to say things to another person.	
+読む	よむ	actions	N5		To take the sense off a printed page with your eyes.	
+食べる	たべる	actions	N5		To put something in your mouth, chew it and swallow.	
+お菓子	おかし	nature	N5		Small sweet things eaten between meals.	
+お金	おかね	places	N5		Coins and notes you hand over to buy things.	
+万年筆	まんねんひつ	describing	N5		A writing tool with a metal nib fed from an ink reservoir.	
+上着	うわぎ	describing	N5		The outer garment you pull on before stepping into the cold.	
+入口	いりぐち	places	N5		The opening in a building that you come in through.	
+出口	でぐち	places	N5		The opening in a building that you go out through.	
+名前	なまえ	places	N5		What you are called, written at the top of a form.	
+図書館	としょかん	places	N5		A quiet building full of shelves, where reading is borrowed.	
+国	くに	places	N5		A land with its own borders, flag and government.	
+地下鉄	ちかてつ	places	N5		The railway that runs through tunnels under a city.	
+外国	がいこく	places	N5		A land beyond your own borders.	
+大使館	たいしかん	places	N5		The building in a capital where another nation's officials work.	
+大学	だいがく	places	N5		The school you attend after eighteen, to earn a degree.	
+学校	がっこう	places	N5		The building where children are taught on weekday mornings.	
+帽子	ぼうし	describing	N5		What you wear on your head against the sun.	
+廊下	ろうか	places	N5		The long narrow passage that rooms open onto.	
+新聞	しんぶん	describing	N5		Folded sheets of cheap paper carrying the day's events.	
+旅行	りょこう	places	N5		Going far from home for pleasure, suitcase in hand.	
+本	ほん	irregulars	N5		Bound pages you work through from cover to cover.	
+本棚	ほんだな	irregulars	N5		The furniture of flat boards where your reading stands upright.	
+自動車	じどうしゃ	places	N5	automobile	The formal name for a four-wheeled machine with an engine.	
+自転車	じてんしゃ	places	N5		Two wheels, a saddle and pedals you push with your feet.	
+英語	えいご	describing	N5		The language spoken in London and in New York.	
+話	はなし	irregulars	N5		A story, or the thing somebody is saying to you.	
+車	くるま	places	N5	car	The everyday word for what you drive along a road.	
+辞書	じしょ	irregulars	N5		The volume you open to find out what a word means.	
+銀行	ぎんこう	places	N5		Where you keep your money and draw it out again.	
+電気	でんき	places	N5		What runs along a wire and makes a lamp glow.	
+電話	でんわ	describing	N5		What you make when you dial a number and somebody answers.	
+電車	でんしゃ	places	N5		Carriages running on rails, powered from an overhead wire.	
+靴下	くつした	describing	N5		What you pull onto your feet before your shoes.	
+飛行機	ひこうき	places	N5		A machine with wings that carries people through the sky.	
+食べ物	たべもの	nature	N5		Anything you put in your mouth to stay alive.	
+食堂	しょくどう	places	N5		The room with a table where meals are taken.	
+天気	てんき	nature	N5		Whether it is sunny, cloudy or pouring outside.	
+山	やま	nature	N5		A great mass of rock rising high above the land.	
+川	かわ	nature	N5		Water running downhill between two banks.	OpenJLPT writes 川/河
+木	き	nature	N5		A tall plant with a trunk, branches and leaves.	
+水	みず	nature	N5		The clear liquid you drink when you are thirsty.	
+雨	あめ	nature	N5		Drops falling from the clouds, which is why you carry an umbrella.	
+一緒	いっしょ	describing	N5		Doing something alongside somebody else rather than alone.	
+元気	げんき	describing	N5		Full of health and spirit, in fine form.	
+大きい	おおきい	describing	N5	big	Taking up much space; the plain form, which can end a sentence.	
+大きな	おおきな	describing	N5	big, before a noun	Taking up much space; the form that only ever sits in front of a noun.	
+大丈夫	だいじょうぶ	describing	N5		Nothing to worry about; everything is in order.	
+大切	たいせつ	describing	N5		Worth taking care of, and not to be treated lightly.	
+大好き	だいすき	describing	N5		Feeling a very strong fondness for something.	
+小さい	ちいさい	describing	N5	small	Taking up little space; the plain form, which can end a sentence.	
+小さな	ちいさな	describing	N5	small, before a noun	Taking up little space; the form that only ever sits in front of a noun.	
+有名	ゆうめい	describing	N5		Known by name to a great many people.	
+病気	びょうき	describing	N5		Being unwell enough to need a doctor.	
+白	しろ	describing	N5	white	The colour of fresh snow, spoken of as a colour in itself.	
+白い	しろい	describing	N5	white, describing	The colour of fresh snow, used to describe a thing.	
+長い	ながい	describing	N5		Stretching a great distance from end to end.	
+高い	たかい	describing	N5		Reaching far up, or else costing a great deal.	
+一人	ひとり	irregulars	N5		By yourself, with nobody else there.	
+一昨年	おととし	irregulars	N5		Two new year's celebrations back.	
+一昨日	おととい	irregulars	N5		Two sunrises back.	
+上手	じょうず	irregulars	N5		Good at something, through practice.	
+下手	へた	irregulars	N5		Bad at something, clumsy with it.	
+二人	ふたり	irregulars	N5		A pair of human beings, the smallest group there is.	
+二十日	はつか	irregulars	N5		The date nineteen days after the first of the calendar.	
+二十歳	はたち	irregulars	N5		The age at which a Japanese person is reckoned grown.	
+今年	ことし	irregulars	N5		The twelve months you are living through right now.	
+今日	きょう	irregulars	N5		The day you are living through, between yesterday and tomorrow.	
+今朝	けさ	irregulars	N5		The early hours of the day you are living through.	
+八百屋	やおや	irregulars	N5		The shop that sells vegetables and fruit.	
+友達	ともだち	irregulars	N5		Somebody you like and choose to spend your time with.	
+大人	おとな	irregulars	N5		A grown human, no longer a child.	
+明日	あした	irregulars	N5		The day that follows the one you are living through.	
+昨日	きのう	irregulars	N5		The day before the one you are living through.	

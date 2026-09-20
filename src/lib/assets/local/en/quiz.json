@@ -24,6 +24,17 @@
     "written": "Written",
     "gloss": "Meaning"
   },
+  "hint": {
+    "open": "Show a hint",
+    "close": "Close the hint",
+    "picture": "A picture hinting at the answer",
+    "kind": {
+      "romaji": "How it sounds",
+      "clue": "A clue",
+      "look": "How it is written",
+      "image": "A picture"
+    }
+  },
   "next": "Next",
   "continue": "Continue",
   "finish": "See the score",

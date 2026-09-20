@@ -18,6 +18,8 @@ export type Word = {
   readingClass?: ReadingClass;
   glosses: string[];
   meaning: string;
+  /** A sentence or two describing the word without naming it. */
+  clue: string;
   kanji: string[];
   /** How many kanji characters are in the word (1, 2+). */
   kanjiCount: 1 | 2;
@@ -30,6 +32,8 @@ export type Word = {
 export type Kanji = {
   character: string;
   level: string;
+  /** How the character looks, described in words. */
+  look: string;
   components: string[];
   /** On readings in katakana, as KANJIDIC writes them. */
   on: string[];

@@ -42,6 +42,11 @@ const NO_READINGS = { on: [], kun: [] };
 
 export const MEANING_LIMIT = 24;
 
+export function clueNames(clue: string, meaning: string): boolean {
+  const escaped = meaning.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`\\b${escaped}\\b`, "i").test(clue);
+}
+
 export function shortGloss(gloss: string): string {
   return gloss
     .replace(/\s*\([^)]*\)/g, "")
@@ -95,6 +100,12 @@ export function buildWords(
       );
       return;
     }
+    if (clueNames(row.clue, meaning)) {
+      problems.push(
+        `${where}: ${row.written} (${row.reading}) has a clue that says "${meaning}", which is the answer it is meant to hint at`
+      );
+      return;
+    }
     labelled.set(label, `${row.written} (${row.reading})`);
 
     words.push({
@@ -105,6 +116,7 @@ export function buildWords(
       ...(readingClass === null ? {} : { readingClass }),
       glosses: result.glosses,
       meaning,
+      clue: row.clue,
       kanji,
       kanjiCount,
       hasOkurigana,
@@ -143,6 +155,7 @@ export function buildKanji(
     kanji.push({
       character: row.character,
       level: row.level,
+      look: row.look,
       components,
       on: readings.on,
       kun: readings.kun
@@ -286,6 +299,7 @@ if (import.meta.vitest) {
     set: "places",
     level: "N5",
     meaning,
+    clue: "",
     note: ""
   });
 
@@ -326,6 +340,16 @@ if (import.meta.vitest) {
       expect(() =>
         buildWords([row("日本", "にほん", "sweets"), row("お菓子", "おかし")], index, levelKanji)
       ).toThrow(/お菓子 \(おかし\) and 日本 \(にほん\) both mean "sweets"/);
+    });
+
+    test("refuses a clue that names the meaning it is hinting at", () => {
+      expect(() =>
+        buildWords(
+          [{ ...row("日本", "にほん"), clue: "The country called Japan." }],
+          index,
+          levelKanji
+        )
+      ).toThrow(/has a clue that says "Japan"/);
     });
 
     test("refuses a label too long to read on a tile", () => {
@@ -439,15 +463,31 @@ if (import.meta.vitest) {
     ]
   });
 
+  describe("clueNames", () => {
+    test("catches a clue that gives the answer away", () => {
+      expect(clueNames("The country east of Korea, called Japan.", "Japan")).toBe(true);
+    });
+
+    test("lets a clue past that only shares letters with the answer", () => {
+      expect(clueNames("Somebody you like and spend time with.", "one")).toBe(false);
+      expect(clueNames("Coins and notes.", "money")).toBe(false);
+    });
+
+    test("treats a punctuated label as one phrase", () => {
+      expect(clueNames("A hundred hundreds.", "10,000")).toBe(false);
+      expect(clueNames("Worth 10,000 yen.", "10,000")).toBe(true);
+    });
+  });
+
   describe("buildKanji", () => {
     test("carries the on and kun readings of every kanji", () => {
-      const [built] = buildKanji([{ character: "本", level: "N5" }], kradfile, kanjidic);
+      const [built] = buildKanji([{ character: "本", level: "N5", look: "" }], kradfile, kanjidic);
       expect(built.on).toEqual(["ホン"]);
       expect(built.kun).toEqual(["もと"]);
     });
 
     test("fails on a kanji KANJIDIC2 does not hold", () => {
-      expect(() => buildKanji([{ character: "林", level: "N5" }], kradfile, kanjidic)).toThrow(
+      expect(() => buildKanji([{ character: "林", level: "N5", look: "" }], kradfile, kanjidic)).toThrow(
         /KANJIDIC2 has no entry for "林"/
       );
     });
@@ -455,8 +495,8 @@ if (import.meta.vitest) {
     test("sorts the level's kanji so a rebuild does not churn the diff", () => {
       const built = buildKanji(
         [
-          { character: "本", level: "N5" },
-          { character: "明", level: "N5" }
+          { character: "本", level: "N5", look: "" },
+          { character: "明", level: "N5", look: "" }
         ],
         kradfile,
         kanjidic
@@ -465,12 +505,12 @@ if (import.meta.vitest) {
     });
 
     test("gives every kanji at least one component", () => {
-      const built = buildKanji([{ character: "明", level: "N5" }], kradfile, kanjidic);
+      const built = buildKanji([{ character: "明", level: "N5", look: "" }], kradfile, kanjidic);
       expect(built[0].components).toEqual(["日", "月"]);
     });
 
     test("fails on a kanji KRADFILE does not decompose", () => {
-      expect(() => buildKanji([{ character: "々", level: "N5" }], kradfile, kanjidic)).toThrow(
+      expect(() => buildKanji([{ character: "々", level: "N5", look: "" }], kradfile, kanjidic)).toThrow(
         /no decomposition for "々"/
       );
     });

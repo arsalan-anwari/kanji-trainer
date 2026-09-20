@@ -10,6 +10,7 @@ export type Format =
 export type Surface = "written" | "reading" | "meaning";
 export type AnswerStyle = "choice" | "typing";
 export type WordShape = "1-kanji" | "2-kanji" | "okurigana";
+export type Difficulty = "beginner" | "advanced" | "expert";
 
 export type RunSettings = {
   level: string;
@@ -25,7 +26,11 @@ export type RunSettings = {
   wordShapes: WordShape[];
   /** Word ids held back by hand. Empty means every word the filters allow. */
   excludedWords: string[];
+  /** How believable the wrong answers are. */
+  difficulty: Difficulty;
 };
+
+export const DIFFICULTIES: readonly Difficulty[] = ["beginner", "advanced", "expert"];
 
 export const FORMATS: readonly Format[] = [
   "kanji-reading",
@@ -85,7 +90,8 @@ export const DEFAULT_SETTINGS: RunSettings = {
   choiceCount: 4,
   questionCount: 20,
   wordShapes: [],
-  excludedWords: []
+  excludedWords: [],
+  difficulty: "beginner"
 };
 
 export function typingAllowed(format: Format): boolean {
@@ -192,7 +198,8 @@ export function parseSettings(stored: unknown): RunSettings {
     choiceCount: typeof choices === "number" ? choices : DEFAULT_SETTINGS.choiceCount,
     questionCount: typeof count === "number" ? count : DEFAULT_SETTINGS.questionCount,
     wordShapes: pickWordShapes(stored.wordShapes),
-    excludedWords: pickWordIds(stored.excludedWords)
+    excludedWords: pickWordIds(stored.excludedWords),
+    difficulty: pick(stored.difficulty, DIFFICULTIES, DEFAULT_SETTINGS.difficulty)
   }).settings;
 }
 
@@ -248,7 +255,8 @@ if (import.meta.vitest) {
       choiceCount: 4,
       questionCount: 50,
       wordShapes: ["1-kanji"],
-      excludedWords: ["一|いち"]
+      excludedWords: ["一|いち"],
+      difficulty: "expert"
     };
     expect(parseSettings(wanted)).toEqual(wanted);
   });
@@ -261,7 +269,8 @@ if (import.meta.vitest) {
         sets: ["numbers", "kitchen", 4, "numbers"],
         kanji: ["一", "学校", 7, "一"],
         format: "sentence",
-        excludedWords: ["一|いち", "", 9, "一|いち"]
+        excludedWords: ["一|いち", "", 9, "一|いち"],
+        difficulty: "impossible"
       })
     ).toEqual({
       ...DEFAULT_SETTINGS,

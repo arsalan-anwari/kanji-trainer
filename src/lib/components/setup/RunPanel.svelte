@@ -2,7 +2,13 @@
   import { Card, Chip, Icon, OptionCard } from "kaizen-ui";
   import { app } from "../../state.svelte";
   import QuestionCountPicker from "./QuestionCountPicker.svelte";
-  import { ANSWER_STYLES, FORMATS, WORD_SHAPES, typingAllowed } from "../../quiz/settings";
+  import {
+    ANSWER_STYLES,
+    DIFFICULTIES,
+    FORMATS,
+    WORD_SHAPES,
+    typingAllowed
+  } from "../../quiz/settings";
   import { t } from "../../i18n.svelte";
 
   const LEVELS = ["N5", "N4", "N3", "N2", "N1"];
@@ -82,6 +88,22 @@
           : t(`setup.answerStyle.${style}`)}
         onclick={() => app.updateSettings({ answerStyle: style })}
       />
+    {/each}
+  </div>
+</Card>
+
+<Card title={t("setup.difficulty.title")} description={t("setup.difficulty.description")}>
+  {#snippet icon()}<Icon name="flame" class="size-5" />{/snippet}
+  <div role="group" aria-label={t("setup.difficulty.title")} class="flex flex-wrap gap-2">
+    {#each DIFFICULTIES as difficulty (difficulty)}
+      <Chip
+        size="sm"
+        active={app.settings.difficulty === difficulty}
+        title={t(`setup.difficulty.${difficulty}`)}
+        onclick={() => app.updateSettings({ difficulty })}
+      >
+        {t(`common.difficulty.${difficulty}`)}
+      </Chip>
     {/each}
   </div>
 </Card>

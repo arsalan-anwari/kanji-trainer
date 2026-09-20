@@ -31,6 +31,10 @@ function list<T>(value: unknown, parse: (entry: unknown) => T | null): T[] | nul
   return out;
 }
 
+function optionalText(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
 function parseReadingClass(value: unknown): ReadingClass | null {
   return value === "on" || value === "kun" ? value : null;
 }
@@ -61,6 +65,7 @@ function parseWord(value: unknown): Word | null {
     ...(readingClass === null ? {} : { readingClass }),
     glosses,
     meaning,
+    clue: optionalText(value.clue),
     kanji,
     kanjiCount,
     hasOkurigana,
@@ -78,7 +83,7 @@ function parseKanji(value: unknown): Kanji | null {
   const kun = textList(value.kun);
   if (character === null || level === null || components === null) return null;
   if (on === null || kun === null) return null;
-  return { character, level, components, on, kun };
+  return { character, level, look: optionalText(value.look), components, on, kun };
 }
 
 function parseSource(value: unknown): Source | null {
@@ -133,6 +138,7 @@ if (import.meta.vitest) {
     readingClass: "on",
     glosses: ["one", "best"],
     meaning: "one",
+    clue: "",
     kanji: ["一"],
     kanjiCount: 1 as const,
     hasOkurigana: false,
@@ -143,7 +149,9 @@ if (import.meta.vitest) {
     level: "N5",
     generated: "2026-09-19",
     sources: [],
-    kanji: [{ character: "一", level: "N5", components: ["一"], on: ["イチ"], kun: ["ひと.つ"] }],
+    kanji: [
+      { character: "一", level: "N5", look: "", components: ["一"], on: ["イチ"], kun: ["ひと.つ"] }
+    ],
     words: [word],
     taughtComponents: ["一"]
   };

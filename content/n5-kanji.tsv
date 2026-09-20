@@ -1,80 +1,80 @@
-character	level
-一	N5
-七	N5
-万	N5
-三	N5
-上	N5
-下	N5
-中	N5
-九	N5
-二	N5
-五	N5
-人	N5
-今	N5
-休	N5
-何	N5
-先	N5
-入	N5
-八	N5
-六	N5
-円	N5
-出	N5
-前	N5
-北	N5
-十	N5
-千	N5
-午	N5
-半	N5
-南	N5
-友	N5
-右	N5
-名	N5
-四	N5
-国	N5
-土	N5
-外	N5
-大	N5
-天	N5
-女	N5
-子	N5
-学	N5
-小	N5
-山	N5
-川	N5
-左	N5
-年	N5
-後	N5
-日	N5
-時	N5
-書	N5
-月	N5
-木	N5
-本	N5
-来	N5
-東	N5
-校	N5
-母	N5
-毎	N5
-気	N5
-水	N5
-火	N5
-父	N5
-生	N5
-男	N5
-白	N5
-百	N5
-聞	N5
-行	N5
-西	N5
-見	N5
-話	N5
-語	N5
-読	N5
-車	N5
-金	N5
-長	N5
-間	N5
-雨	N5
-電	N5
-食	N5
-高	N5
+character	level	look
+一	N5	A single horizontal stroke, and nothing else.
+七	N5	A short horizontal stroke crossed by a hook that swings up to the right.
+万	N5	A flat lid over a stroke that turns a corner and sweeps down to the left.
+三	N5	Three horizontal strokes stacked, the middle one shortest.
+上	N5	A vertical stroke standing on a base line, with a short tick on its right.
+下	N5	A horizontal line with a stem hanging below it and a tick on the stem's right.
+中	N5	A box with a vertical stroke driven straight through its middle.
+九	N5	A short stroke leaning left, then a long curve that hooks up at the end.
+二	N5	Two horizontal strokes, the lower one longer.
+五	N5	A lid and a base line with a zigzag caught between them.
+人	N5	Two legs meeting at a peak, like a figure in mid-stride.
+今	N5	A wide roof over a short horizontal stroke and a tick.
+休	N5	A standing figure on the left, a tree on the right.
+何	N5	A standing figure beside a lid over a small mouth and a hook.
+先	N5	A short slanted stroke over earth, sitting on two legs.
+入	N5	Two strokes meeting at a peak, the left one starting part way down.
+八	N5	Two short strokes spreading apart like the legs of a stool.
+六	N5	A dot and a bar on top, with two spread strokes below.
+円	N5	An open box with a horizontal bar and a stroke inside it.
+出	N5	Two hill shapes stacked, one growing out of the other.
+前	N5	A dot and a bar on top, a moon on the right, a blade beside it.
+北	N5	Two figures back to back, facing away from each other.
+十	N5	A vertical stroke crossing a horizontal one at the centre.
+千	N5	A short slanting stroke laid across a cross.
+午	N5	A short slant over a cross, with a longer bar through it.
+半	N5	Two dots spreading over a cross with an extra bar.
+南	N5	A lid over a box holding a cross and two small strokes.
+友	N5	A slant and a bar over the shape of a hand.
+右	N5	A slant and a bar over a mouth, the slant reaching to the left.
+名	N5	An evening shape on top, a mouth beneath it.
+四	N5	A box with two short legs bending inward inside it.
+国	N5	A closed box holding a jewel with a dot.
+土	N5	A cross standing on a longer base line.
+外	N5	An evening shape on the right, a short divining mark on the left.
+大	N5	A figure with arms and legs spread wide.
+天	N5	A figure with arms spread, under a lid across the top.
+女	N5	A crossed shape with one long stroke sweeping through it.
+子	N5	A hooked stroke with a crossbar, like a swaddled infant.
+学	N5	Three small sparks over a cover, with an infant beneath.
+小	N5	A central hook with a dot falling away on each side.
+山	N5	Three peaks rising from one base line.
+川	N5	Three strokes falling side by side, the middle one shortest.
+左	N5	A slant and a bar over a carpenter's square.
+年	N5	A short slant over a cross with two bars through it.
+後	N5	A step radical on the left, thread and a trailing foot on the right.
+日	N5	A narrow box with one bar across its middle.
+時	N5	A sun on the left, earth over a measure on the right.
+書	N5	A brush held above a sun-shaped box.
+月	N5	A tall box with two bars inside and a leg that hooks.
+木	N5	A cross with two legs sweeping down from the crossing.
+本	N5	A tree with a short stroke cut across its root.
+来	N5	A cross with two pairs of short strokes and two legs.
+東	N5	A tree with a sun-shaped box caught in its middle.
+校	N5	A tree on the left, a lid over crossed legs on the right.
+母	N5	A boxed shape crossed through, with two dots inside.
+毎	N5	A short lid over a crossed box with two dots.
+気	N5	A bent lid with a short stroke curving out from under it.
+水	N5	A central hook with strokes sweeping off to both sides.
+火	N5	A figure with two sparks flying off its shoulders.
+父	N5	Two strokes crossing above two spreading legs.
+生	N5	A short slant and two bars over a cross on a base line.
+男	N5	A rice field above a stroke of strength.
+白	N5	A narrow box with one bar inside and a short mark on top.
+百	N5	A flat line laid over a narrow boxed shape.
+聞	N5	A gate with an ear listening inside it.
+行	N5	A step radical on the left, two short bars and a hook on the right.
+西	N5	A lidded box with two legs bending outward inside it.
+見	N5	An eye standing on two legs.
+話	N5	Words on the left, a tongue over a mouth on the right.
+語	N5	Words on the left, the figure five over a mouth on the right.
+読	N5	Words on the left, a lid over a figure on two legs.
+車	N5	A boxed shape skewered by a long vertical stroke, barred above and below.
+金	N5	A wide roof over a jewel, with a dot to each side.
+長	N5	A long stroke with bars across it and a sweep away to the right.
+間	N5	A gate with a sun inside it.
+雨	N5	A lid over a frame, with four dots falling inside.
+電	N5	Rain on top, with a hooked field beneath it.
+食	N5	A wide roof over a shape with a bar and a sweeping foot.
+高	N5	A dot and a bar on top, a mouth, then a box with a small mouth inside.

@@ -1,0 +1,1516 @@
+{
+  "_comment": "One entry per N5 hint image. 'prompt' is what the image must show; the generator sends prompt + style and nothing else. Edit freely: the script never adds wording of its own.",
+  "style": "Simple flat vector illustration in a clean modern infographic style. One clear subject, centred, filling the frame, on a plain pale background. Bold clean linework, minimal detail, still readable at 200 pixels wide. Draw exactly and only what is described. No letters, no words, no captions, no labels, no Japanese or Chinese characters, no signage, no logos, no watermark. Digits only where the description explicitly asks for them. Not an anime or manga character, not a portrait, not a scene with a story: an icon-like picture of the thing described.",
+  "words": [
+    {
+      "set": "numbers",
+      "name": "once more",
+      "file": "once-more.png",
+      "word": "もう一度",
+      "reading": "もういちど",
+      "prompt": "A bold circular repeat arrow forming a closed loop, with a hand pressing a round button inside the loop: doing the same thing one more time"
+    },
+    {
+      "set": "numbers",
+      "name": "one",
+      "file": "one.png",
+      "word": "一",
+      "reading": "いち",
+      "prompt": "A single large thick digit 1, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "set": "numbers",
+      "name": "one thing",
+      "file": "one-thing.png",
+      "word": "一つ",
+      "reading": "ひとつ",
+      "prompt": "Exactly one red apple, alone on a plain surface, counted as a single item"
+    },
+    {
+      "set": "numbers",
+      "name": "10,000",
+      "file": "10-000.png",
+      "word": "一万",
+      "reading": "いちまん",
+      "prompt": "The number ten thousand written large as the digits 10,000 with a comma, standing alone and centred"
+    },
+    {
+      "set": "numbers",
+      "name": "seven",
+      "file": "seven.png",
+      "word": "七",
+      "reading": "なな",
+      "prompt": "A single large thick digit 7, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "set": "numbers",
+      "name": "seven things",
+      "file": "seven-things.png",
+      "word": "七つ",
+      "reading": "ななつ",
+      "prompt": "Seven identical red apples stacked: a bottom row of three apples and two rows of two apples above it"
+    },
+    {
+      "set": "numbers",
+      "name": "three",
+      "file": "three.png",
+      "word": "三",
+      "reading": "さん",
+      "prompt": "A single large thick digit 3, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "set": "numbers",
+      "name": "three things",
+      "file": "three-things.png",
+      "word": "三つ",
+      "reading": "みっつ",
+      "prompt": "Exactly three identical red apples arranged in a neat group, easy to count as three"
+    },
+    {
+      "set": "numbers",
+      "name": "nine",
+      "file": "nine.png",
+      "word": "九",
+      "reading": "きゅう",
+      "prompt": "A single large thick digit 9, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "set": "numbers",
+      "name": "nine things",
+      "file": "nine-things.png",
+      "word": "九つ",
+      "reading": "ここのつ",
+      "prompt": "Nine identical red apples stacked in a neat 3 by 3 grid, three rows of three"
+    },
+    {
+      "set": "numbers",
+      "name": "two",
+      "file": "two.png",
+      "word": "二",
+      "reading": "に",
+      "prompt": "A single large thick digit 2, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "set": "numbers",
+      "name": "two things",
+      "file": "two-things.png",
+      "word": "二つ",
+      "reading": "ふたつ",
+      "prompt": "Exactly two identical red apples side by side, easy to count as two"
+    },
+    {
+      "set": "numbers",
+      "name": "five",
+      "file": "five.png",
+      "word": "五",
+      "reading": "ご",
+      "prompt": "A single large thick digit 5, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "set": "numbers",
+      "name": "five things",
+      "file": "five-things.png",
+      "word": "五つ",
+      "reading": "いつつ",
+      "prompt": "Exactly five identical red apples arranged in a neat group, easy to count as five"
+    },
+    {
+      "set": "numbers",
+      "name": "eight",
+      "file": "eight.png",
+      "word": "八",
+      "reading": "はち",
+      "prompt": "A single large thick digit 8, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "set": "numbers",
+      "name": "eight things",
+      "file": "eight-things.png",
+      "word": "八つ",
+      "reading": "やっつ",
+      "prompt": "Exactly eight identical red apples arranged in a neat group, easy to count as eight"
+    },
+    {
+      "set": "numbers",
+      "name": "six",
+      "file": "six.png",
+      "word": "六",
+      "reading": "ろく",
+      "prompt": "A single large thick digit 6, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "set": "numbers",
+      "name": "six things",
+      "file": "six-things.png",
+      "word": "六つ",
+      "reading": "むっつ",
+      "prompt": "Exactly six identical red apples arranged in a neat group, easy to count as six"
+    },
+    {
+      "set": "numbers",
+      "name": "ten",
+      "file": "ten.png",
+      "word": "十",
+      "reading": "じゅう",
+      "prompt": "A single large thick number 10 written with two digits, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "set": "numbers",
+      "name": "thousand",
+      "file": "thousand.png",
+      "word": "千",
+      "reading": "せん",
+      "prompt": "The number one thousand written large as the digits 1,000 with a comma, standing alone and centred"
+    },
+    {
+      "set": "numbers",
+      "name": "four",
+      "file": "four.png",
+      "word": "四",
+      "reading": "よん",
+      "prompt": "A single large thick digit 4, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "set": "numbers",
+      "name": "four things",
+      "file": "four-things.png",
+      "word": "四つ",
+      "reading": "よっつ",
+      "prompt": "Exactly four identical red apples arranged in a neat group, easy to count as four"
+    },
+    {
+      "set": "numbers",
+      "name": "hundred",
+      "file": "hundred.png",
+      "word": "百",
+      "reading": "ひゃく",
+      "prompt": "The number one hundred written large as the digits 100, standing alone and centred"
+    },
+    {
+      "set": "irregulars",
+      "name": "what",
+      "file": "what.png",
+      "word": "何",
+      "reading": "なに",
+      "prompt": "One large bold question mark symbol floating above an open upturned palm, asking what something is"
+    },
+    {
+      "set": "irregulars",
+      "name": "book",
+      "file": "book.png",
+      "word": "本",
+      "reading": "ほん",
+      "prompt": "A single open book lying flat with completely blank pages"
+    },
+    {
+      "set": "irregulars",
+      "name": "bookshelves",
+      "file": "bookshelves.png",
+      "word": "本棚",
+      "reading": "ほんだな",
+      "prompt": "A tall wooden bookshelf unit with several shelves packed with rows of upright books"
+    },
+    {
+      "set": "irregulars",
+      "name": "talk",
+      "file": "talk.png",
+      "word": "話",
+      "reading": "はなし",
+      "prompt": "Two empty speech bubbles overlapping, one larger and one smaller, as in a conversation"
+    },
+    {
+      "set": "irregulars",
+      "name": "dictionary",
+      "file": "dictionary.png",
+      "word": "辞書",
+      "reading": "じしょ",
+      "prompt": "A thick closed reference book with a ribbon bookmark and a magnifying glass resting on its cover"
+    },
+    {
+      "set": "irregulars",
+      "name": "one person",
+      "file": "one-person.png",
+      "word": "一人",
+      "reading": "ひとり",
+      "prompt": "One single human figure standing completely alone in an empty frame"
+    },
+    {
+      "set": "irregulars",
+      "name": "year before last",
+      "file": "year-before-last.png",
+      "word": "一昨年",
+      "reading": "おととし",
+      "prompt": "A horizontal timeline of five identical year calendar blocks; a small person stands at the middle block marking now, and the first block on the far left is circled and highlighted"
+    },
+    {
+      "set": "irregulars",
+      "name": "day before yesterday",
+      "file": "day-before-yesterday.png",
+      "word": "一昨日",
+      "reading": "おととい",
+      "prompt": "A horizontal row of five identical calendar day pages; a small person stands at the middle page marking today, and the first page on the far left is circled and highlighted"
+    },
+    {
+      "set": "irregulars",
+      "name": "skillful",
+      "file": "skillful.png",
+      "word": "上手",
+      "reading": "じょうず",
+      "prompt": "A hand holding a brush that has just painted a flawless perfect circle, with a thumbs-up beside it: doing something well"
+    },
+    {
+      "set": "irregulars",
+      "name": "unskillful",
+      "file": "unskillful.png",
+      "word": "下手",
+      "reading": "へた",
+      "prompt": "A hand holding a brush that has painted a wobbly messy lopsided circle, with a thumbs-down beside it: doing something badly"
+    },
+    {
+      "set": "irregulars",
+      "name": "two persons",
+      "file": "two-persons.png",
+      "word": "二人",
+      "reading": "ふたり",
+      "prompt": "Exactly two identical human figures standing side by side, counted as a pair of people"
+    },
+    {
+      "set": "irregulars",
+      "name": "20th day of the month",
+      "file": "20th-day-of-the-month.png",
+      "word": "二十日",
+      "reading": "はつか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `20th day of Month`",
+      "text": true
+    },
+    {
+      "set": "irregulars",
+      "name": "20 years old",
+      "file": "20-years-old.png",
+      "word": "二十歳",
+      "reading": "はたち",
+      "prompt": "A birthday cake topped with two large candle numerals reading 20"
+    },
+    {
+      "set": "irregulars",
+      "name": "this year",
+      "file": "this-year.png",
+      "word": "今年",
+      "reading": "ことし",
+      "prompt": "Two square paper notes side by side, the left note showing the text `Year 1` and the right note showing the text `Year 2`, with a bold hand-drawn circle around the note showing `Year 1`",
+      "text": true
+    },
+    {
+      "set": "irregulars",
+      "name": "today",
+      "file": "today.png",
+      "word": "今日",
+      "reading": "きょう",
+      "prompt": "A square paper note with the single word `today` written on it, with a bold hand-drawn circle around that word",
+      "text": true
+    },
+    {
+      "set": "irregulars",
+      "name": "this morning",
+      "file": "this-morning.png",
+      "word": "今朝",
+      "reading": "けさ",
+      "prompt": "A sun rising over the horizon at dawn beside a single calendar day page circled in red: the morning of today"
+    },
+    {
+      "set": "irregulars",
+      "name": "greengrocer",
+      "file": "greengrocer.png",
+      "word": "八百屋",
+      "reading": "やおや",
+      "prompt": "A small greengrocer shopfront under a striped awning with crates of fruit and vegetables stacked outside"
+    },
+    {
+      "set": "irregulars",
+      "name": "friend",
+      "file": "friend.png",
+      "word": "友達",
+      "reading": "ともだち",
+      "prompt": "Two smiling people standing close with an arm over each other's shoulder, clearly friends"
+    },
+    {
+      "set": "irregulars",
+      "name": "adult",
+      "file": "adult.png",
+      "word": "大人",
+      "reading": "おとな",
+      "prompt": "A tall grown-up figure standing next to a much shorter child figure, the grown-up drawn bold and highlighted"
+    },
+    {
+      "set": "irregulars",
+      "name": "tomorrow",
+      "file": "tomorrow.png",
+      "word": "明日",
+      "reading": "あした",
+      "prompt": "A square paper note with the single word `tomorrow` written on it, with a bold hand-drawn circle around that word",
+      "text": true
+    },
+    {
+      "set": "irregulars",
+      "name": "yesterday",
+      "file": "yesterday.png",
+      "word": "昨日",
+      "reading": "きのう",
+      "prompt": "A square paper note with the single word `yesterday` written on it, with a bold hand-drawn circle around that word",
+      "text": true
+    },
+    {
+      "set": "describing",
+      "name": "half past",
+      "file": "half-past.png",
+      "word": "半",
+      "reading": "はん",
+      "prompt": "A round clock face whose minute hand points straight down at the half hour, with the lower half of the dial shaded"
+    },
+    {
+      "set": "describing",
+      "name": "a half",
+      "file": "a-half.png",
+      "word": "半分",
+      "reading": "はんぶん",
+      "prompt": "A round pie cut down the middle into two equal halves, one half shaded and the other plain"
+    },
+    {
+      "set": "describing",
+      "name": "fountain pen",
+      "file": "fountain-pen.png",
+      "word": "万年筆",
+      "reading": "まんねんひつ",
+      "prompt": "A fountain pen with its cap off, the gold nib clearly visible"
+    },
+    {
+      "set": "describing",
+      "name": "coat",
+      "file": "coat.png",
+      "word": "上着",
+      "reading": "うわぎ",
+      "prompt": "A buttoned outdoor coat hanging on a coat hanger"
+    },
+    {
+      "set": "describing",
+      "name": "hat",
+      "file": "hat.png",
+      "word": "帽子",
+      "reading": "ぼうし",
+      "prompt": "A single brimmed hat resting on a flat surface, seen from a slight angle"
+    },
+    {
+      "set": "describing",
+      "name": "newspaper",
+      "file": "newspaper.png",
+      "word": "新聞",
+      "reading": "しんぶん",
+      "prompt": "A folded newspaper with blank grey columns and an empty photo box, no readable writing"
+    },
+    {
+      "set": "describing",
+      "name": "English",
+      "file": "english.png",
+      "word": "英語",
+      "reading": "えいご",
+      "prompt": "A speech bubble containing the British Union Jack flag: speaking the English language"
+    },
+    {
+      "set": "describing",
+      "name": "telephone call",
+      "file": "telephone-call.png",
+      "word": "電話",
+      "reading": "でんわ",
+      "prompt": "A telephone handset with curved sound waves coming out of the earpiece"
+    },
+    {
+      "set": "describing",
+      "name": "socks",
+      "file": "socks.png",
+      "word": "靴下",
+      "reading": "くつした",
+      "prompt": "A matching pair of socks lying side by side"
+    },
+    {
+      "set": "describing",
+      "name": "together",
+      "file": "together.png",
+      "word": "一緒",
+      "reading": "いっしょ",
+      "prompt": "Two people walking side by side in step, enclosed together inside one circle"
+    },
+    {
+      "set": "describing",
+      "name": "lively",
+      "file": "lively.png",
+      "word": "元気",
+      "reading": "げんき",
+      "prompt": "A person jumping with both arms raised and energy lines radiating outwards, full of health and spirit"
+    },
+    {
+      "set": "describing",
+      "name": "big",
+      "file": "big.png",
+      "word": "大きい",
+      "reading": "おおきい",
+      "prompt": "A huge elephant beside a tiny mouse, the elephant filling most of the frame to show how big it is"
+    },
+    {
+      "set": "describing",
+      "name": "big, before a noun",
+      "file": "big-before-a-noun.png",
+      "word": "大きな",
+      "reading": "おおきな",
+      "prompt": "A very large ball next to a very small ball, the large one filling most of the frame"
+    },
+    {
+      "set": "describing",
+      "name": "safe",
+      "file": "safe.png",
+      "word": "大丈夫",
+      "reading": "だいじょうぶ",
+      "prompt": "A housewife standing safe and calm inside her house, the house drawn around her like a shelter"
+    },
+    {
+      "set": "describing",
+      "name": "important",
+      "file": "important.png",
+      "word": "大切",
+      "reading": "たいせつ",
+      "prompt": "Two cupped hands carefully holding a small treasured box with a heart floating above it"
+    },
+    {
+      "set": "describing",
+      "name": "liking very much",
+      "file": "liking-very-much.png",
+      "word": "大好き",
+      "reading": "だいすき",
+      "prompt": "A smiling person hugging a large heart shape to their chest"
+    },
+    {
+      "set": "describing",
+      "name": "small",
+      "file": "small.png",
+      "word": "小さい",
+      "reading": "ちいさい",
+      "prompt": "A single ant walking under a large magnifying glass that magnifies it"
+    },
+    {
+      "set": "describing",
+      "name": "small, before a noun",
+      "file": "small-before-a-noun.png",
+      "word": "小さな",
+      "reading": "ちいさな",
+      "prompt": "A very small ball next to a very large ball, the small one highlighted"
+    },
+    {
+      "set": "describing",
+      "name": "famous",
+      "file": "famous.png",
+      "word": "有名",
+      "reading": "ゆうめい",
+      "prompt": "A pop star singing into a handheld microphone on stage in front of a cheering crowd filling a stadium"
+    },
+    {
+      "set": "describing",
+      "name": "illness",
+      "file": "illness.png",
+      "word": "病気",
+      "reading": "びょうき",
+      "prompt": "A person lying sick in bed with a thermometer in their mouth and an ice pack on their forehead"
+    },
+    {
+      "set": "describing",
+      "name": "white",
+      "file": "white.png",
+      "word": "白",
+      "reading": "しろ",
+      "prompt": "An open tin of white paint with a white brush stroke swatch beside it, on a mid-grey background so the white reads clearly"
+    },
+    {
+      "set": "describing",
+      "name": "white, describing",
+      "file": "white-describing.png",
+      "word": "白い",
+      "reading": "しろい",
+      "prompt": "A pure white rabbit sitting, outlined in black on a mid-grey background so its whiteness reads clearly"
+    },
+    {
+      "set": "describing",
+      "name": "long",
+      "file": "long.png",
+      "word": "長い",
+      "reading": "ながい",
+      "prompt": "A very long measuring tape stretched right across the frame with a double-headed arrow underneath spanning its whole length"
+    },
+    {
+      "set": "describing",
+      "name": "high",
+      "file": "high.png",
+      "word": "高い",
+      "reading": "たかい",
+      "prompt": "A very tall skyscraper towering over a tiny house, with an upward arrow running up its full height"
+    },
+    {
+      "set": "calendar",
+      "name": "one day",
+      "file": "one-day.png",
+      "word": "一日",
+      "reading": "いちにち",
+      "prompt": "A single calendar day page with an arc above it running from a rising sun through midday to a moon: one whole day from start to end"
+    },
+    {
+      "set": "calendar",
+      "name": "one month",
+      "file": "one-month.png",
+      "word": "一月",
+      "reading": "ひとつき",
+      "prompt": "Note with text `1 Month`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "7th day of the month",
+      "file": "7th-day-of-the-month.png",
+      "word": "七日",
+      "reading": "なのか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `7th day of Month`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "3rd day of the month",
+      "file": "3rd-day-of-the-month.png",
+      "word": "三日",
+      "reading": "みっか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `3rd day of Month`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "9th day of the month",
+      "file": "9th-day-of-the-month.png",
+      "word": "九日",
+      "reading": "ここのか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `9th day of Month`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "2nd day of the month",
+      "file": "2nd-day-of-the-month.png",
+      "word": "二日",
+      "reading": "ふつか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `2nd day of Month`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "5th day of the month",
+      "file": "5th-day-of-the-month.png",
+      "word": "五日",
+      "reading": "いつか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `5th day of Month`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "this month",
+      "file": "this-month.png",
+      "word": "今月",
+      "reading": "こんげつ",
+      "prompt": "Two square paper notes side by side, the left note showing the text `Month 1` and the right note showing the text `Month 2`, with a bold hand-drawn circle around the note showing `Month 1`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "this week",
+      "file": "this-week.png",
+      "word": "今週",
+      "reading": "こんしゅう",
+      "prompt": "Two square paper notes side by side, the left note showing the text `Week 1` and the right note showing the text `Week 2`, with a bold hand-drawn circle around the note showing `Week 1`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "last month",
+      "file": "last-month.png",
+      "word": "先月",
+      "reading": "せんげつ",
+      "prompt": "Three monthly calendar pages in a row; a small person stands at the middle page marking now, and the page to its left is circled and highlighted"
+    },
+    {
+      "set": "calendar",
+      "name": "last week",
+      "file": "last-week.png",
+      "word": "先週",
+      "reading": "せんしゅう",
+      "prompt": "Two square paper notes side by side, the left note showing the text `Week 1` and the right note showing the text `Week 2`, with a bold hand-drawn circle around the note showing `Week 1`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "8th day of the month",
+      "file": "8th-day-of-the-month.png",
+      "word": "八日",
+      "reading": "ようか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `8th day of Month`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "6th day of the month",
+      "file": "6th-day-of-the-month.png",
+      "word": "六日",
+      "reading": "むいか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `6th day of Month`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "year after next",
+      "file": "year-after-next.png",
+      "word": "再来年",
+      "reading": "さらいねん",
+      "prompt": "A horizontal timeline of five identical year calendar blocks; a small person stands at the middle block marking now, and the last block on the far right is circled and highlighted"
+    },
+    {
+      "set": "calendar",
+      "name": "10th day of the month",
+      "file": "10th-day-of-the-month.png",
+      "word": "十日",
+      "reading": "とおか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `10th day of Month`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "last year",
+      "file": "last-year.png",
+      "word": "去年",
+      "reading": "きょねん",
+      "prompt": "Two square paper notes side by side, the left note showing the text `2025` and the right note showing the text `2026`, with a bold hand-drawn circle around the note showing `2025`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "4th day of the month",
+      "file": "4th-day-of-the-month.png",
+      "word": "四日",
+      "reading": "よっか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `4th day of Month`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "Saturday",
+      "file": "saturday.png",
+      "word": "土曜日",
+      "reading": "どようび",
+      "prompt": "A row of seven equal squares drawn in a notebook, with the texts `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun` written above the squares, one label per square in that order, and the single square under the text `Sat` filled in solid while the other six stay empty. Saterday is the 6th block NOT the last block.",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "summer vacation",
+      "file": "summer-vacation.png",
+      "word": "夏休み",
+      "reading": "なつやすみ",
+      "prompt": "A beach deck chair under a parasol with a beach ball and sunglasses, a blazing summer sun above: the summer holidays"
+    },
+    {
+      "set": "calendar",
+      "name": "year",
+      "file": "year.png",
+      "word": "年",
+      "reading": "とし",
+      "prompt": "A 4 by 3 grid of twelve calendar pages, each page showing the text of its month name: `January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`, `September`, `October`, `November`, `December`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "Sunday",
+      "file": "sunday.png",
+      "word": "日曜日",
+      "reading": "にちようび",
+      "prompt": "A row of seven equal squares drawn in a notebook, with the texts `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun` written above the squares, one label per square in that order, and the single square under the text `Sun` filled in solid while the other six stay empty",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "Monday",
+      "file": "monday.png",
+      "word": "月曜日",
+      "reading": "げつようび",
+      "prompt": "A row of seven equal squares drawn in a notebook, with the texts `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun` written above the squares, one label per square in that order, and the single square under the text `Mon` filled in solid while the other six stay empty",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "Thursday",
+      "file": "thursday.png",
+      "word": "木曜日",
+      "reading": "もくようび",
+      "prompt": "A row of seven equal squares drawn in a notebook, with the texts `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun` written above the squares, one label per square in that order, and the single square under the text `Thu` filled in solid while the other six stay empty",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "next year",
+      "file": "next-year.png",
+      "word": "来年",
+      "reading": "らいねん",
+      "prompt": "Two square paper notes side by side, the left note showing the text `2026` and the right note showing the text `2027`, with a bold hand-drawn circle around the note showing `2027`",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "next month",
+      "file": "next-month.png",
+      "word": "来月",
+      "reading": "らいげつ",
+      "prompt": "Three monthly calendar pages in a row; a small person stands at the middle page marking now, and the page to its right is circled and highlighted"
+    },
+    {
+      "set": "calendar",
+      "name": "next week",
+      "file": "next-week.png",
+      "word": "来週",
+      "reading": "らいしゅう",
+      "prompt": "Three weekly calendar strips stacked in a row; a small person stands at the middle strip marking now, and the strip below it, the following one, is circled and highlighted"
+    },
+    {
+      "set": "calendar",
+      "name": "every year",
+      "file": "every-year.png",
+      "word": "毎年",
+      "reading": "まいとし",
+      "prompt": "A row of five identical year calendar blocks, every single one of them ticked with a check mark: it happens each year"
+    },
+    {
+      "set": "calendar",
+      "name": "every day",
+      "file": "every-day.png",
+      "word": "毎日",
+      "reading": "まいにち",
+      "prompt": "A row of seven identical calendar day pages, every single one of them ticked with a check mark: it happens each day"
+    },
+    {
+      "set": "calendar",
+      "name": "every month",
+      "file": "every-month.png",
+      "word": "毎月",
+      "reading": "まいつき",
+      "prompt": "A row of four identical monthly calendar pages, every single one of them ticked with a check mark: it happens each month"
+    },
+    {
+      "set": "calendar",
+      "name": "every week",
+      "file": "every-week.png",
+      "word": "毎週",
+      "reading": "まいしゅう",
+      "prompt": "A minimal monthly calendar page. Instead of real numbers, each grid square contains a clean, generic placeholder symbol or placeholder text like `XX` or a simple solid bullet point representing a day. The layout is a perfect 7x5 grid. The headers clearly read `SUN, MON, TUE, WED, THU, FRI, SAT`. Crucially, every single day/placeholder in the first column under `SUN` is distinctly circled with a hand-drawn red marker loop. All other columns are left completely clean and uncircled. Flat design, stark white background, high contrast, crisp lines, geometric perfection, no gibberish text."
+    },
+    {
+      "set": "calendar",
+      "name": "Wednesday",
+      "file": "wednesday.png",
+      "word": "水曜日",
+      "reading": "すいようび",
+      "prompt": "A row of seven equal squares drawn in a notebook, with the texts `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun` written above the squares, one label per square in that order, and the single square under the text `Wed` filled in solid while the other six stay empty",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "Tuesday",
+      "file": "tuesday.png",
+      "word": "火曜日",
+      "reading": "かようび",
+      "prompt": "A row of seven equal squares drawn in a notebook, with the texts `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun` written above the squares, one label per square in that order, and the single square under the text `Tue` filled in solid while the other six stay empty",
+      "text": true
+    },
+    {
+      "set": "calendar",
+      "name": "birthday",
+      "file": "birthday.png",
+      "word": "誕生日",
+      "reading": "たんじょうび",
+      "prompt": "A birthday cake with lit candles and a party hat and streamers beside it"
+    },
+    {
+      "set": "calendar",
+      "name": "Friday",
+      "file": "friday.png",
+      "word": "金曜日",
+      "reading": "きんようび",
+      "prompt": "A row of seven equal squares drawn in a notebook, with the texts `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun` written above the squares, one label per square in that order, and the single square under the text `Fri` filled in solid while the other six stay empty",
+      "text": true
+    },
+    {
+      "set": "time",
+      "name": "now",
+      "file": "now.png",
+      "word": "今",
+      "reading": "いま",
+      "prompt": "Note with text `Now`"
+    },
+    {
+      "set": "time",
+      "name": "tonight",
+      "file": "tonight.png",
+      "word": "今晩",
+      "reading": "こんばん",
+      "prompt": "A square paper note with the single word `tonight` written on it, with a bold hand-drawn circle around that word",
+      "text": true
+    },
+    {
+      "set": "time",
+      "name": "rest",
+      "file": "rest.png",
+      "word": "休み",
+      "reading": "やすみ",
+      "prompt": "A person sitting back on a bench with their eyes closed and a cup of tea beside them, taking a break"
+    },
+    {
+      "set": "time",
+      "name": "morning",
+      "file": "morning.png",
+      "word": "午前",
+      "reading": "ごぜん",
+      "prompt": "A round clock face showing nine o'clock with a sun rising over the horizon behind it: before noon, a.m."
+    },
+    {
+      "set": "time",
+      "name": "afternoon",
+      "file": "afternoon.png",
+      "word": "午後",
+      "reading": "ごご",
+      "prompt": "A round clock face showing three o'clock with a low sinking afternoon sun behind it: after noon, p.m."
+    },
+    {
+      "set": "time",
+      "name": "sometimes",
+      "file": "sometimes.png",
+      "word": "時々",
+      "reading": "ときどき",
+      "prompt": "A row of seven small circles of which only three, scattered at irregular intervals, are filled in: happening now and then"
+    },
+    {
+      "set": "time",
+      "name": "clock",
+      "file": "clock.png",
+      "word": "時計",
+      "reading": "とけい",
+      "prompt": "A round wall clock with hour and minute hands and tick marks around the dial"
+    },
+    {
+      "set": "time",
+      "name": "time",
+      "file": "time.png",
+      "word": "時間",
+      "reading": "じかん",
+      "prompt": "An hourglass with sand streaming from the top bulb into the bottom one"
+    },
+    {
+      "set": "time",
+      "name": "every night",
+      "file": "every-night.png",
+      "word": "毎晩",
+      "reading": "まいばん",
+      "prompt": "A row of seven calendar day boxes, each and every one containing a crescent moon: it happens every night"
+    },
+    {
+      "set": "time",
+      "name": "every morning",
+      "file": "every-morning.png",
+      "word": "毎朝",
+      "reading": "まいあさ",
+      "prompt": "A row of seven calendar day boxes, each and every one containing a rising sun: it happens every morning"
+    },
+    {
+      "set": "people",
+      "name": "mother",
+      "file": "mother.png",
+      "word": "お母さん",
+      "reading": "おかあさん",
+      "prompt": "A mother holding her young child on her hip, both smiling: a mum with her kid"
+    },
+    {
+      "set": "people",
+      "name": "father",
+      "file": "father.png",
+      "word": "お父さん",
+      "reading": "おとうさん",
+      "prompt": "A father carrying his young child on his shoulders, both smiling: a dad with his kid"
+    },
+    {
+      "set": "people",
+      "name": "person",
+      "file": "person.png",
+      "word": "人",
+      "reading": "ひと",
+      "prompt": "One plain human figure standing facing forward, a generic person with no distinguishing features"
+    },
+    {
+      "set": "people",
+      "name": "teacher",
+      "file": "teacher.png",
+      "word": "先生",
+      "reading": "せんせい",
+      "prompt": "A teacher standing at a blank blackboard holding a pointer, facing a row of small seated pupils"
+    },
+    {
+      "set": "people",
+      "name": "foreigner",
+      "file": "foreigner.png",
+      "word": "外国人",
+      "reading": "がいこくじん",
+      "prompt": "A traveller with a suitcase holding up a passport, a globe behind them: a person from another country"
+    },
+    {
+      "set": "people",
+      "name": "crowd of people",
+      "file": "crowd-of-people.png",
+      "word": "大勢",
+      "reading": "おおぜい",
+      "prompt": "A dense crowd of many human figures packed together filling the frame: a great number of people"
+    },
+    {
+      "set": "people",
+      "name": "woman",
+      "file": "woman.png",
+      "word": "女",
+      "reading": "おんな",
+      "prompt": "One adult woman standing facing forward, clearly a grown woman"
+    },
+    {
+      "set": "people",
+      "name": "girl",
+      "file": "girl.png",
+      "word": "女の子",
+      "reading": "おんなのこ",
+      "prompt": "One young girl child standing facing forward, small, clearly a child and not an adult"
+    },
+    {
+      "set": "people",
+      "name": "child",
+      "file": "child.png",
+      "word": "子供",
+      "reading": "こども",
+      "prompt": "A small child holding a toy, drawn beside the leg of a much taller adult to show how small they are"
+    },
+    {
+      "set": "people",
+      "name": "student",
+      "file": "student.png",
+      "word": "学生",
+      "reading": "がくせい",
+      "prompt": "A university student with a backpack carrying a stack of books, a campus building behind them"
+    },
+    {
+      "set": "people",
+      "name": "pupil",
+      "file": "pupil.png",
+      "word": "生徒",
+      "reading": "せいと",
+      "prompt": "A schoolchild in uniform with a school satchel sitting at a classroom desk with a hand raised"
+    },
+    {
+      "set": "people",
+      "name": "man",
+      "file": "man.png",
+      "word": "男",
+      "reading": "おとこ",
+      "prompt": "One adult man standing facing forward, clearly a grown man"
+    },
+    {
+      "set": "people",
+      "name": "boy",
+      "file": "boy.png",
+      "word": "男の子",
+      "reading": "おとこのこ",
+      "prompt": "One young boy child standing facing forward, small, clearly a child and not an adult"
+    },
+    {
+      "set": "people",
+      "name": "overseas student",
+      "file": "overseas-student.png",
+      "word": "留学生",
+      "reading": "りゅうがくせい",
+      "prompt": "A student with a backpack and books pulling a suitcase, an aeroplane arcing over a globe behind them: studying abroad"
+    },
+    {
+      "set": "position",
+      "name": "above",
+      "file": "above.png",
+      "word": "上",
+      "reading": "うえ",
+      "prompt": "A plain box with a ball hovering directly above its top surface, an arrow pointing up at the ball"
+    },
+    {
+      "set": "position",
+      "name": "below",
+      "file": "below.png",
+      "word": "下",
+      "reading": "した",
+      "prompt": "A plain box with a ball sitting directly underneath it, an arrow pointing down at the ball"
+    },
+    {
+      "set": "position",
+      "name": "inside",
+      "file": "inside.png",
+      "word": "中",
+      "reading": "なか",
+      "prompt": "An open box seen from the side with a ball clearly inside it, an arrow pointing into the box at the ball"
+    },
+    {
+      "set": "position",
+      "name": "point",
+      "file": "point.png",
+      "word": "先",
+      "reading": "さき",
+      "prompt": "A whole sharpened pencil lying diagonally with only its sharp tip circled and highlighted: the tip, the point of the thing"
+    },
+    {
+      "set": "position",
+      "name": "in front",
+      "file": "in-front.png",
+      "word": "前",
+      "reading": "まえ",
+      "prompt": "A large box with a ball standing in front of it, nearer to the viewer, the ball highlighted and an arrow pointing at it from the front"
+    },
+    {
+      "set": "position",
+      "name": "north",
+      "file": "north.png",
+      "word": "北",
+      "reading": "きた",
+      "prompt": "A compass rose with four points; the needle points straight up to the top point, which is highlighted in red: north"
+    },
+    {
+      "set": "position",
+      "name": "south",
+      "file": "south.png",
+      "word": "南",
+      "reading": "みなみ",
+      "prompt": "A compass rose with four points; the needle points straight down to the bottom point, which is highlighted in red: south"
+    },
+    {
+      "set": "position",
+      "name": "right",
+      "file": "right.png",
+      "word": "右",
+      "reading": "みぎ",
+      "prompt": "A raised right hand with a bold arrow beside it pointing to the right-hand side of the picture"
+    },
+    {
+      "set": "position",
+      "name": "outside",
+      "file": "outside.png",
+      "word": "外",
+      "reading": "そと",
+      "prompt": "A closed box with a ball sitting clearly outside it on the ground beside it, an arrow pointing away from the box at the ball"
+    },
+    {
+      "set": "position",
+      "name": "left",
+      "file": "left.png",
+      "word": "左",
+      "reading": "ひだり",
+      "prompt": "A raised left hand with a bold arrow beside it pointing to the left-hand side of the picture"
+    },
+    {
+      "set": "position",
+      "name": "behind",
+      "file": "behind.png",
+      "word": "後",
+      "reading": "あと",
+      "prompt": "A large box with a ball peeking out from behind it, further from the viewer, the ball highlighted and an arrow curving around the box to it"
+    },
+    {
+      "set": "position",
+      "name": "back",
+      "file": "back.png",
+      "word": "後ろ",
+      "reading": "うしろ",
+      "prompt": "A person seen from behind, their back towards the viewer, with an arrow pointing at their back"
+    },
+    {
+      "set": "position",
+      "name": "east",
+      "file": "east.png",
+      "word": "東",
+      "reading": "ひがし",
+      "prompt": "A compass rose with four points; the needle points to the right-hand point, which is highlighted in red: east"
+    },
+    {
+      "set": "position",
+      "name": "west",
+      "file": "west.png",
+      "word": "西",
+      "reading": "にし",
+      "prompt": "A compass rose with four points; the needle points to the left-hand point, which is highlighted in red: west"
+    },
+    {
+      "set": "actions",
+      "name": "to raise",
+      "file": "to-raise.png",
+      "word": "上げる",
+      "reading": "あげる",
+      "prompt": "Two hands lifting a box upward from a low shelf to a higher one, a bold upward motion arrow beside it"
+    },
+    {
+      "set": "actions",
+      "name": "to be absent",
+      "file": "to-be-absent.png",
+      "word": "休む",
+      "reading": "やすむ",
+      "prompt": "A row of classroom desks with pupils seated at all of them except one, which is conspicuously empty and circled"
+    },
+    {
+      "set": "actions",
+      "name": "to enter",
+      "file": "to-enter.png",
+      "word": "入る",
+      "reading": "はいる",
+      "prompt": "A person stepping through an open doorway into a room, an arrow pointing inward through the door"
+    },
+    {
+      "set": "actions",
+      "name": "to put in",
+      "file": "to-put-in.png",
+      "word": "入れる",
+      "reading": "いれる",
+      "prompt": "A hand dropping a ball down into an open box, an arrow pointing down into the box"
+    },
+    {
+      "set": "actions",
+      "name": "to go out",
+      "file": "to-go-out.png",
+      "word": "出かける",
+      "reading": "でかける",
+      "prompt": "A person leaving a house through its front door carrying a bag, an arrow pointing away from the house: setting off out"
+    },
+    {
+      "set": "actions",
+      "name": "to take out",
+      "file": "to-take-out.png",
+      "word": "出す",
+      "reading": "だす",
+      "prompt": "A hand pulling a ball up out of an open box, an arrow pointing up and out of the box"
+    },
+    {
+      "set": "actions",
+      "name": "to leave",
+      "file": "to-leave.png",
+      "word": "出る",
+      "reading": "でる",
+      "prompt": "A person stepping out through an open doorway, an arrow pointing outward through the door"
+    },
+    {
+      "set": "actions",
+      "name": "to write",
+      "file": "to-write.png",
+      "word": "書く",
+      "reading": "かく",
+      "prompt": "A hand holding a pencil, drawing a wavy scribbled line across a sheet of paper, no readable writing"
+    },
+    {
+      "set": "actions",
+      "name": "to come",
+      "file": "to-come.png",
+      "word": "来る",
+      "reading": "くる",
+      "prompt": "A person walking towards the viewer with footprints approaching from the distance and an arrow pointing forwards at the viewer"
+    },
+    {
+      "set": "actions",
+      "name": "to be born",
+      "file": "to-be-born.png",
+      "word": "生まれる",
+      "reading": "うまれる",
+      "prompt": "A newborn baby cradled in two adult hands with a few sparkles around it"
+    },
+    {
+      "set": "actions",
+      "name": "to hear",
+      "file": "to-hear.png",
+      "word": "聞く",
+      "reading": "きく",
+      "prompt": "A large ear with curved sound waves arriving at it from the side"
+    },
+    {
+      "set": "actions",
+      "name": "to go",
+      "file": "to-go.png",
+      "word": "行く",
+      "reading": "いく",
+      "prompt": "A person walking away from the viewer into the distance, footprints leading away and an arrow pointing off into the distance"
+    },
+    {
+      "set": "actions",
+      "name": "to show",
+      "file": "to-show.png",
+      "word": "見せる",
+      "reading": "みせる",
+      "prompt": "One person holding up a photograph towards a second person who is looking at it"
+    },
+    {
+      "set": "actions",
+      "name": "to talk",
+      "file": "to-talk.png",
+      "word": "話す",
+      "reading": "はなす",
+      "prompt": "A person in profile with their mouth open speaking, an empty speech bubble coming from their mouth"
+    },
+    {
+      "set": "actions",
+      "name": "to read",
+      "file": "to-read.png",
+      "word": "読む",
+      "reading": "よむ",
+      "prompt": "A person holding an open book up in front of them, eyes down on the blank page"
+    },
+    {
+      "set": "actions",
+      "name": "to eat",
+      "file": "to-eat.png",
+      "word": "食べる",
+      "reading": "たべる",
+      "prompt": "A person raising a mouthful of food to their open mouth with chopsticks"
+    },
+    {
+      "set": "nature",
+      "name": "confections",
+      "file": "confections.png",
+      "word": "お菓子",
+      "reading": "おかし",
+      "prompt": "An assortment of sweets: wrapped candies, a cupcake and a lollipop grouped together"
+    },
+    {
+      "set": "nature",
+      "name": "food",
+      "file": "food.png",
+      "word": "食べ物",
+      "reading": "たべもの",
+      "prompt": "A served meal on a plate with a bowl of rice and chopsticks beside it"
+    },
+    {
+      "set": "nature",
+      "name": "weather",
+      "file": "weather.png",
+      "word": "天気",
+      "reading": "てんき",
+      "prompt": "A sun half hidden behind a cloud with a few raindrops falling below it: the weather"
+    },
+    {
+      "set": "nature",
+      "name": "mountain",
+      "file": "mountain.png",
+      "word": "山",
+      "reading": "やま",
+      "prompt": "A single tall mountain with a snow-capped peak"
+    },
+    {
+      "set": "nature",
+      "name": "river",
+      "file": "river.png",
+      "word": "川",
+      "reading": "かわ",
+      "prompt": "A winding river flowing between two grassy banks, seen from slightly above"
+    },
+    {
+      "set": "nature",
+      "name": "tree",
+      "file": "tree.png",
+      "word": "木",
+      "reading": "き",
+      "prompt": "A single broad tree with a thick trunk and a full leafy crown"
+    },
+    {
+      "set": "nature",
+      "name": "water",
+      "file": "water.png",
+      "word": "水",
+      "reading": "みず",
+      "prompt": "A clear glass of water with a droplet splashing into it"
+    },
+    {
+      "set": "nature",
+      "name": "rain",
+      "file": "rain.png",
+      "word": "雨",
+      "reading": "あめ",
+      "prompt": "Rain falling in streaks from a single dark cloud onto an open umbrella below"
+    },
+    {
+      "set": "places",
+      "name": "money",
+      "file": "money.png",
+      "word": "お金",
+      "reading": "おかね",
+      "prompt": "A stack of blank banknotes with a few coins piled beside it, no writing or numbers on the notes"
+    },
+    {
+      "set": "places",
+      "name": "entrance",
+      "file": "entrance.png",
+      "word": "入口",
+      "reading": "いりぐち",
+      "prompt": "A doorway in a wall with a bold arrow passing through it pointing inward: the way in"
+    },
+    {
+      "set": "places",
+      "name": "exit",
+      "file": "exit.png",
+      "word": "出口",
+      "reading": "でぐち",
+      "prompt": "A doorway in a wall with a bold arrow passing through it pointing outward: the way out"
+    },
+    {
+      "set": "places",
+      "name": "name",
+      "file": "name.png",
+      "word": "名前",
+      "reading": "なまえ",
+      "prompt": "A blank name-tag badge pinned to a shirt, its writing line empty, a pen resting beside it"
+    },
+    {
+      "set": "places",
+      "name": "library",
+      "file": "library.png",
+      "word": "図書館",
+      "reading": "としょかん",
+      "prompt": "A grand public library building with columns and front steps and an open-book emblem above the door"
+    },
+    {
+      "set": "places",
+      "name": "country",
+      "file": "country.png",
+      "word": "国",
+      "reading": "くに",
+      "prompt": "A globe with the outline of one single country highlighted on it, a plain flag on a pole planted beside it"
+    },
+    {
+      "set": "places",
+      "name": "subway",
+      "file": "subway.png",
+      "word": "地下鉄",
+      "reading": "ちかてつ",
+      "prompt": "A cross-section of a city street with a train running through a tunnel underneath it: an underground railway"
+    },
+    {
+      "set": "places",
+      "name": "foreign country",
+      "file": "foreign-country.png",
+      "word": "外国",
+      "reading": "がいこく",
+      "prompt": "A globe with a dashed arrow arcing from one country across the sea to a distant other country, a suitcase beside it: abroad"
+    },
+    {
+      "set": "places",
+      "name": "embassy",
+      "file": "embassy.png",
+      "word": "大使館",
+      "reading": "たいしかん",
+      "prompt": "A formal official building with a gated railing and a row of different national flags on poles outside it"
+    },
+    {
+      "set": "places",
+      "name": "university",
+      "file": "university.png",
+      "word": "大学",
+      "reading": "だいがく",
+      "prompt": "A large campus building with a clock tower and a graduation cap floating above it"
+    },
+    {
+      "set": "places",
+      "name": "school",
+      "file": "school.png",
+      "word": "学校",
+      "reading": "がっこう",
+      "prompt": "A school building with a bell tower, a gate and a small playground with a swing in front of it"
+    },
+    {
+      "set": "places",
+      "name": "corridor",
+      "file": "corridor.png",
+      "word": "廊下",
+      "reading": "ろうか",
+      "prompt": "A long indoor corridor with closed doors along both walls receding into the distance"
+    },
+    {
+      "set": "places",
+      "name": "travel",
+      "file": "travel.png",
+      "word": "旅行",
+      "reading": "りょこう",
+      "prompt": "A packed suitcase with a camera, a folded map and a sun hat beside it: going on a trip"
+    },
+    {
+      "set": "places",
+      "name": "automobile",
+      "file": "automobile.png",
+      "word": "自動車",
+      "reading": "じどうしゃ",
+      "prompt": "A modern saloon car seen from the front three-quarter angle with its headlights on"
+    },
+    {
+      "set": "places",
+      "name": "bicycle",
+      "file": "bicycle.png",
+      "word": "自転車",
+      "reading": "じてんしゃ",
+      "prompt": "A bicycle seen from the side, both wheels, frame, saddle and handlebars clearly drawn"
+    },
+    {
+      "set": "places",
+      "name": "car",
+      "file": "car.png",
+      "word": "車",
+      "reading": "くるま",
+      "prompt": "A simple car seen from the side with its two wheels picked out and highlighted"
+    },
+    {
+      "set": "places",
+      "name": "bank",
+      "file": "bank.png",
+      "word": "銀行",
+      "reading": "ぎんこう",
+      "prompt": "A bank building with tall columns and a stack of coins standing in front of it"
+    },
+    {
+      "set": "places",
+      "name": "electricity",
+      "file": "electricity.png",
+      "word": "電気",
+      "reading": "でんき",
+      "prompt": "A lit light bulb glowing with a lightning bolt symbol beside it"
+    },
+    {
+      "set": "places",
+      "name": "train",
+      "file": "train.png",
+      "word": "電車",
+      "reading": "でんしゃ",
+      "prompt": "An electric commuter train on rails with overhead power wires, seen from the front three-quarter angle"
+    },
+    {
+      "set": "places",
+      "name": "airplane",
+      "file": "airplane.png",
+      "word": "飛行機",
+      "reading": "ひこうき",
+      "prompt": "A passenger aeroplane in flight seen from the side with a vapour trail behind it"
+    },
+    {
+      "set": "places",
+      "name": "dining room",
+      "file": "dining-room.png",
+      "word": "食堂",
+      "reading": "しょくどう",
+      "prompt": "A dining hall interior with rows of tables and chairs and trays of food on them"
+    }
+  ],
+  "style_text": "Simple flat vector illustration in a clean modern infographic style. One clear subject, centred, filling the frame, on a plain pale background. Bold clean linework, minimal detail. Render every piece of text quoted in the description exactly as written, in plain Latin letters and Arabic digits, large and legible. Draw exactly and only what is described. No other lettering: no extra captions, no labels, no Japanese or Chinese characters, no signage, no logos, no watermark. Not an anime or manga character, not a portrait, not a scene with a story: an icon-like picture of the thing described."
+}

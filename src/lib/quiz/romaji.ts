@@ -87,6 +87,60 @@ export function toHiragana(input: string): string {
   return out;
 }
 
+const KANA: Record<string, string> = {};
+for (const [letters, kana] of Object.entries(ROMAJI)) {
+  if (!(kana in KANA)) KANA[kana] = letters;
+}
+
+function lastVowel(letters: string): string {
+  for (let at = letters.length - 1; at >= 0; at -= 1) {
+    if (isVowel(letters[at])) return letters[at];
+  }
+  return "";
+}
+
+function romajiSyllables(input: string): string[] {
+  const kana = katakanaToHiragana(input.trim());
+  const out: string[] = [];
+  let at = 0;
+
+  while (at < kana.length) {
+    if (kana[at] === "っ") {
+      const next = KANA[kana.slice(at + 1, at + 3)] ?? KANA[kana[at + 1]] ?? "";
+      const doubled = next.startsWith("ch") ? "t" : next === "" || isVowel(next[0]) ? "" : next[0];
+      if (doubled !== "") out.push(doubled);
+      at += 1;
+      continue;
+    }
+
+    if (kana[at] === "ー") {
+      out.push(lastVowel(out.at(-1) ?? ""));
+      at += 1;
+      continue;
+    }
+
+    const pair = KANA[kana.slice(at, at + 2)];
+    if (pair !== undefined) {
+      out.push(pair);
+      at += 2;
+      continue;
+    }
+
+    out.push(KANA[kana[at]] ?? kana[at]);
+    at += 1;
+  }
+
+  return out;
+}
+
+export function toRomaji(input: string): string {
+  return romajiSyllables(input).join("");
+}
+
+export function toRomajiHint(input: string): string {
+  return romajiSyllables(input).join("-");
+}
+
 export function normalizeReading(input: string): string {
   const trimmed = katakanaToHiragana(input.trim());
   return /^[a-zA-Z'\- ]+$/.test(trimmed) ? toHiragana(trimmed) : trimmed;
@@ -124,6 +178,38 @@ if (import.meta.vitest) {
       expect(toHiragana("ookii")).toBe("おおきい");
       expect(toHiragana("obaasan")).toBe("おばあさん");
       expect(toHiragana("yuubinkyoku")).toBe("ゆうびんきょく");
+    });
+  });
+
+  describe("writing kana back as romaji", () => {
+    test("spells a small ya as one sound with the consonant before it", () => {
+      expect(toRomaji("しゃ")).toBe("sha");
+      expect(toRomaji("りょこう")).toBe("ryokou");
+      expect(toRomaji("びょういん")).toBe("byouin");
+    });
+
+    test("spells a small tsu as the consonant that follows it", () => {
+      expect(toRomaji("がっこう")).toBe("gakkou");
+      expect(toRomaji("まっちゃ")).toBe("matcha");
+      expect(toRomaji("きって")).toBe("kitte");
+    });
+
+    test("reads katakana and its long vowel mark", () => {
+      expect(toRomaji("コーヒー")).toBe("koohii");
+    });
+
+    test("comes back to the kana it was written from", () => {
+      for (const reading of ["がっこう", "せんせい", "りょこう", "にほん", "ひとつ", "まっちゃ"]) {
+        expect(toHiragana(toRomaji(reading))).toBe(reading);
+      }
+    });
+  });
+
+  describe("spelling romaji as one hyphenated sound per kana", () => {
+    test("separates each kana character with a hyphen", () => {
+      expect(toRomajiHint("がっこう")).toBe("ga-k-ko-u");
+      expect(toRomajiHint("しゃしん")).toBe("sha-shi-n");
+      expect(toRomajiHint("コーヒー")).toBe("ko-o-hi-i");
     });
   });
 

@@ -113,6 +113,13 @@ if (import.meta.vitest) {
       expect(parseReport(JSON.parse(JSON.stringify(report)))).toEqual(report);
     });
 
+    test("keeps the difficulty the run was set to", () => {
+      const expert = { ...report, settings: { ...report.settings, difficulty: "expert" as const } };
+      const read = parseReport(JSON.parse(JSON.stringify(expert)));
+      expect(read?.settings.difficulty).toBe("expert");
+      expect(parseReport(JSON.parse(JSON.stringify(report)))?.settings.difficulty).toBe("beginner");
+    });
+
     test("refuses anything that is not a run", () => {
       expect(parseReport(null)).toBeNull();
       expect(parseReport({ ...report, id: "" })).toBeNull();

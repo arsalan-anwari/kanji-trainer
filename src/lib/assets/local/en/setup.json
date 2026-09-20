@@ -44,6 +44,13 @@
     "okurigana": "Kanji with okurigana (上げる)",
     "hint": "Leave blank for all."
   },
+  "difficulty": {
+    "title": "Difficulty",
+    "description": "How believable the wrong answers are.",
+    "beginner": "Wrong answers look nothing like the right one.",
+    "advanced": "One wrong answer resembles the right one.",
+    "expert": "Every wrong answer resembles the right one."
+  },
   "run": {
     "title": "Run options",
     "description": "How long the run is.",

@@ -1,7 +1,8 @@
 import type { Word } from "../content/types";
 import { normalizeReading } from "./romaji";
-import { answerSurface, DEFAULT_SETTINGS, promptSurface } from "./settings";
-import type { Format, RunSettings, WordShape } from "./settings";
+import { answerSurface, DEFAULT_SETTINGS, DIFFICULTIES, promptSurface } from "./settings";
+import type { Difficulty, Format, RunSettings, WordShape } from "./settings";
+import { similarity, type ComponentIndex } from "./similarity";
 
 export type Question = {
   index: number;
@@ -74,26 +75,91 @@ function shuffle<T>(items: readonly T[], rng: () => number): T[] {
   return copy;
 }
 
+export function similarCount(difficulty: Difficulty): number {
+  if (difficulty === "expert") return 3;
+  return difficulty === "advanced" ? 1 : 0;
+}
+
+function byScore(
+  target: Word,
+  candidates: readonly Word[],
+  format: Format,
+  components: ComponentIndex
+): Word[] {
+  const surface = answerSurface(format);
+  return candidates
+    .map((candidate) => ({ candidate, score: similarity(target, candidate, surface, components) }))
+    .filter((entry) => entry.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .map((entry) => entry.candidate);
+}
+
+function crossable(word: Word): string[] | null {
+  const glyphs = [...word.written];
+  if (glyphs.length !== 2 || word.kanjiCount !== 2 || word.hasOkurigana) return null;
+  return glyphs;
+}
+
+export function crossings(
+  target: Word,
+  others: readonly Word[],
+  real: ReadonlySet<string>
+): string[] {
+  const glyphs = crossable(target);
+  if (glyphs === null) return [];
+  const crossed: string[] = [];
+  for (const other of others) {
+    const swap = crossable(other);
+    if (swap === null) continue;
+    for (const at of [0, 1]) {
+      const made = glyphs.map((glyph, index) => (index === at ? swap[at] : glyph)).join("");
+      if (made === target.written || real.has(made) || crossed.includes(made)) continue;
+      if (swap[at] === glyphs[1 - at]) continue;
+      crossed.push(made);
+    }
+  }
+  return crossed;
+}
+
+const CROSSING_SLOTS = 1;
+
 function buildChoices(
   target: Word,
   pool: readonly Word[],
   reserve: readonly Word[],
   format: Format,
   count: number,
-  rng: () => number
+  rng: () => number,
+  difficulty: Difficulty,
+  components: ComponentIndex
 ): string[] {
   const answer = answerOf(target, format);
   const taken = new Set([answer]);
   const choices = [answer];
 
-  const candidates = [...shuffle(pool, rng), ...shuffle(reserve, rng)];
-  for (const candidate of candidates) {
-    if (choices.length >= count) break;
-    const surface = answerOf(candidate, format);
-    if (taken.has(surface)) continue;
-    taken.add(surface);
-    choices.push(surface);
+  const take = (surfaces: readonly string[], limit: number) => {
+    for (const surface of surfaces) {
+      if (choices.length >= limit) break;
+      if (taken.has(surface)) continue;
+      taken.add(surface);
+      choices.push(surface);
+    }
+  };
+
+  const surfaces = (candidates: readonly Word[]) =>
+    candidates.map((candidate) => answerOf(candidate, format));
+
+  const similar = similarCount(difficulty);
+  if (similar > 0) {
+    const scored = [...shuffle(pool, rng), ...shuffle(reserve, rng)];
+    if (difficulty === "expert" && answerSurface(format) === "written") {
+      const real = new Set(reserve.map((word) => word.written));
+      take(crossings(target, scored, real), choices.length + CROSSING_SLOTS);
+    }
+    take(surfaces(byScore(target, scored, format, components)), Math.min(count, similar + 1));
   }
+
+  take(surfaces([...shuffle(pool, rng), ...shuffle(reserve, rng)]), count);
 
   return shuffle(choices, rng);
 }
@@ -105,7 +171,8 @@ function distinctSurfaces(words: readonly Word[], format: Format): number {
 export function buildQuestions(
   settings: RunSettings,
   words: readonly Word[],
-  rng: () => number = Math.random
+  rng: () => number = Math.random,
+  components: ComponentIndex = new Map()
 ): Question[] {
   const pool = eligibleWords(settings, words);
   if (pool.length === 0) return [];
@@ -136,7 +203,9 @@ export function buildQuestions(
               everything,
               settings.format,
               settings.choiceCount,
-              rng
+              rng,
+              settings.difficulty,
+              components
             )
           : []
     });
@@ -172,6 +241,7 @@ if (import.meta.vitest) {
       readings: [`${id}reading`],
       glosses: [id],
       meaning: id,
+      clue: "",
       kanji: [id],
       kanjiCount: 1,
       hasOkurigana: false,
@@ -353,6 +423,70 @@ test("asks the written form and answers the reading on kanji to reading", () => 
     test("leaves the choices empty when the learner is typing", () => {
       const typed = { ...settings, answerStyle: "typing" as const };
       expect(buildQuestions(typed, all, seeded(7))[0].choices).toEqual([]);
+    });
+  });
+
+  describe("choosing distractors by difficulty", () => {
+    const schools = [
+      word("学校", "places", { kanji: ["学", "校"], kanjiCount: 2 }),
+      word("学生", "places", { kanji: ["学", "生"], kanjiCount: 2 }),
+      word("大学", "places", { kanji: ["大", "学"], kanjiCount: 2 }),
+      word("高校", "places", { kanji: ["高", "校"], kanjiCount: 2 }),
+      word("山", "nature"),
+      word("川", "nature"),
+      word("木", "nature")
+    ];
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      sets: ["places" as const, "nature" as const],
+      format: "kana-kanji" as const,
+      questionCount: 1,
+      excludedWords: schools.filter((entry) => entry.written !== "学校").map((entry) => entry.id)
+    };
+    const target = schools[0];
+    const scores = (question: Question) =>
+      question.choices
+        .filter((choice) => choice !== question.answer)
+        .map((choice) => {
+          const found = schools.find((entry) => entry.written === choice);
+          return found === undefined ? crossing : similarity(target, found, "written");
+        });
+    const crossing = -1;
+    const real = new Set(schools.map((entry) => entry.written));
+
+    test("gives an expert every distractor that scores against the answer", () => {
+      const [question] = buildQuestions({ ...settings, difficulty: "expert" }, schools, seeded(11));
+      expect(question.choices).toHaveLength(4);
+      expect(scores(question).filter((score) => score === 0)).toEqual([]);
+    });
+
+    test("crosses two compounds into a string that is no word of the level", () => {
+      const made = crossings(target, schools, real);
+      expect(made).toEqual(["大校"]);
+      expect(made.filter((entry) => real.has(entry))).toEqual([]);
+      expect(made).not.toContain(target.written);
+      expect(made.every((entry) => [...entry].length === 2)).toBe(true);
+    });
+
+    test("crosses nothing into a word that is not two kanji", () => {
+      expect(crossings(schools[4], schools, real)).toEqual([]);
+      const tail = word("上げる", "actions", { hasOkurigana: true });
+      expect(crossings(tail, schools, real)).toEqual([]);
+    });
+
+    test("offers an expert one crossed compound where the answer is written", () => {
+      const [question] = buildQuestions({ ...settings, difficulty: "expert" }, schools, seeded(11));
+      expect(scores(question).filter((score) => score === crossing)).toHaveLength(1);
+    });
+
+    test("leaves a beginner the draw it had before difficulty existed", () => {
+      const [question] = buildQuestions(settings, schools, seeded(11));
+      expect(question.choices).toHaveLength(4);
+      expect(scores(question)).toContain(0);
+    });
+
+    test("fills one slot on advanced and none on beginner", () => {
+      expect(DIFFICULTIES.map(similarCount)).toEqual([0, 1, 3]);
     });
   });
 

@@ -1,5 +1,6 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, test } from "vitest";
 import { renderAttribution, renderLicence } from "../../tools/content/attribution.ts";
 import {
@@ -7,9 +8,11 @@ import {
   buildKanji,
   buildTaughtComponents,
   buildWords,
+  clueNames,
   OUTPUT_DIR,
   readCached
 } from "../../tools/content/build.ts";
+import { imageUrl } from "../../src/lib/quiz/hints.ts";
 import { CACHE_DIR } from "../../tools/content/fetch.ts";
 import { indexByWrittenForm, parseJmdict } from "../../tools/content/jmdict.ts";
 import { parseKradfile } from "../../tools/content/kradfile.ts";
@@ -24,6 +27,8 @@ import {
 } from "../../tools/content/validate.ts";
 
 const WHERE = "data/content/n5.json";
+
+const IMAGE_DIR = fileURLToPath(new URL("../../data/images/", import.meta.url));
 
 const read = (name: string) => readFileSync(join(OUTPUT_DIR, name), "utf8");
 
@@ -112,6 +117,30 @@ describe("the shipped N5 content", () => {
       sizes.set(word.set, (sizes.get(word.set) ?? 0) + 1);
     }
     expect([...sizes].filter(([, size]) => size === 0).map(([id]) => id)).toEqual(["body"]);
+  });
+
+  test("gives every word a clue that never names the answer", () => {
+    expect(content.words.filter((word) => word.clue === "")).toEqual([]);
+    expect(content.words.filter((word) => clueNames(word.clue, word.meaning))).toEqual([]);
+  });
+
+  test("describes the shape of every kanji the level teaches", () => {
+    expect(content.kanji.filter((entry) => entry.look === "")).toEqual([]);
+  });
+
+  test("names a picture file for every word", () => {
+    const paths = content.words.map((word) => imageUrl(word));
+    expect(new Set(paths).size).toBe(content.words.length);
+    for (const path of paths) {
+      expect(existsSync(join(IMAGE_DIR, path.replace("/images/", "")))).toBe(true);
+    }
+  });
+
+  test("writes only its own folder, so a rebuild leaves the pictures alone", () => {
+    expect(OUTPUT_DIR.endsWith("/data/content/")).toBe(true);
+    expect(IMAGE_DIR.startsWith(OUTPUT_DIR)).toBe(false);
+    expect(readdirSync(OUTPUT_DIR).sort()).toEqual(["ATTRIBUTION.md", "LICENSE", "n5.json"]);
+    expect(readdirSync(IMAGE_DIR).length).toBe(content.words.length);
   });
 
   test("stays small enough to parse instantly on WebKitGTK and low-end Android", () => {

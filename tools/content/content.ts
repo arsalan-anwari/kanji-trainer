@@ -52,6 +52,14 @@ function readings(record: Record<string, unknown>, where: string): string[] {
   });
 }
 
+function optionalText(record: Record<string, unknown>, key: string, where: string): string {
+  const value = record[key];
+  if (typeof value !== "string") {
+    throw new Error(`${where}: "${key}" must be a string`);
+  }
+  return value;
+}
+
 function parseReadingClass(value: unknown, where: string): ReadingClass | null {
   if (value === undefined) return null;
   if (value !== "on" && value !== "kun") {
@@ -96,6 +104,7 @@ function parseWord(value: unknown, where: string): Word {
     ...(readingClass === null ? {} : { readingClass }),
     glosses: glosses(value, where),
     meaning: text(value, "meaning", where),
+    clue: optionalText(value, "clue", where),
     kanji,
     kanjiCount,
     hasOkurigana,
@@ -119,6 +128,7 @@ function parseKanji(value: unknown, where: string): Kanji {
   return {
     character,
     level: text(value, "level", where),
+    look: optionalText(value, "look", where),
     components,
     on: list(value, "on", where).map((item, index) => {
       if (typeof item !== "string" || item === "") {

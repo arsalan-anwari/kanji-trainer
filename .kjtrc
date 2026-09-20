@@ -1,0 +1,20 @@
+# Local dev shell for Kanji Trainer: source this, then call the scripts in
+# scripts/ by name without the .sh, e.g. "generate_images --one clock".
+#
+#   source .kjtrc
+
+KJT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+
+# Ink Noir, the hint-image style: www.recraft.ai/styles/55e24d02-4fb6-452c-a02f-b3c341912259
+export RECRAFT_STYLE_ID=55e24d02-4fb6-452c-a02f-b3c341912259
+export BWS_PROJECT_ID=da0d011e-424f-44eb-a9d1-b4b001437287
+export BWS_ACCESS_TOKEN="${BWS_ACCESS_TOKEN:-$(secret-tool lookup service bws)}"
+
+export PATH="$KJT_ROOT/scripts:$PATH"
+# Functions, not aliases: aliases are off in non-interactive shells.
+for _kjt_script in "$KJT_ROOT"/scripts/*.sh; do
+  eval "$(basename "$_kjt_script" .sh)() { \"$_kjt_script\" \"\$@\"; }"
+done
+unset _kjt_script
+
+echo "kanji-trainer: $(cd "$KJT_ROOT/scripts" && ls *.sh | sed 's/\.sh$//' | tr '\n' ' ')"

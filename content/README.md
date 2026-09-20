@@ -11,8 +11,8 @@ instruction if you forget.
 | File | Columns | Edited by |
 |---|---|---|
 | `sources.json` | (none) | hand, when an upstream version is bumped |
-| `n5-kanji.tsv` | `character`, `level` | hand |
-| `n5-words.tsv` | `written`, `reading`, `set`, `level`, `note` | hand |
+| `n5-kanji.tsv` | `character`, `level`, `look` | hand |
+| `n5-words.tsv` | `written`, `reading`, `set`, `level`, `meaning`, `clue`, `note` | hand |
 | `bound-readings.tsv` | `written`, `reading`, `why` | hand |
 | `components.tsv` | `character`, `name` | hand |
 
@@ -26,6 +26,12 @@ and clock times to `time`. The same kanji may appear in several sets when the
 words differ, but each word has exactly one set. `GUIDELINES.md` §7 is the rule;
 an in-source test in `tools/content/validate.ts` pins the size of every set, so
 moving words between sets means updating those numbers in the same commit.
+
+`clue` is one or two English sentences describing the word without naming it;
+the build rejects a clue that contains its own `meaning`, since that clue would
+hand the learner the answer. `look` describes the shape of a kanji in words.
+Both feed the hint panel, and both may be left blank — a word or kanji with
+nothing written there simply offers no hint.
 
 Nothing in this file records word shape. Whether a word is one kanji, two or more,
 or kanji with a kana tail is derived from `written` at build time.
