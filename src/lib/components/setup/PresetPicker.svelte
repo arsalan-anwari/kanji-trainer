@@ -3,14 +3,11 @@
   import { app } from "../../state.svelte";
   import { t } from "../../i18n.svelte";
 
-  let chosen = $state("");
   let naming = $state(false);
   let name = $state("");
   let confirming = $state(false);
 
-  $effect(() => {
-    if (chosen !== "" && !app.presets.some((preset) => preset.name === chosen)) chosen = "";
-  });
+  const chosen = $derived(app.chosenPreset);
 
   const names = $derived(app.presets.map((preset) => preset.name));
 
@@ -47,20 +44,18 @@
     const trimmed = name.trim();
     if (trimmed === "") return;
     app.storePreset(trimmed);
-    chosen = trimmed;
     naming = false;
   }
 
   function remove(): void {
     app.removePreset(chosen);
-    chosen = "";
     confirming = false;
   }
 </script>
 
 <div class="flex flex-col gap-2">
   <ActionSelect
-    bind:value={chosen}
+    bind:value={app.chosenPreset}
     options={names}
     label={t("setup.presets.label")}
     empty={t(app.presets.length === 0 ? "setup.presets.none" : "setup.presets.some")}

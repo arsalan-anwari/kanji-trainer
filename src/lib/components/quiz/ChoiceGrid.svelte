@@ -1,10 +1,13 @@
 <script lang="ts">
   import { ChoiceTile, roving, type ChoiceState } from "kaizen-ui";
+  import { answerSurface, isJapanese } from "../../quiz/settings";
   import type { Question } from "../../quiz/questions";
   import { app } from "../../state.svelte";
   import { t } from "../../i18n.svelte";
 
   let { question }: { question: Question } = $props();
+
+  const japanese = $derived(isJapanese(answerSurface(app.settings.format)));
 
   function state(choice: string): ChoiceState {
     if (app.phase === "answering") return "idle";
@@ -21,7 +24,7 @@
 >
   {#each question.choices as choice, index (choice)}
     <ChoiceTile
-      jp
+      jp={japanese}
       slot={index + 1}
       label={choice}
       state={state(choice)}

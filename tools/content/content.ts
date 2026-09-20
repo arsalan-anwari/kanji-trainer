@@ -30,6 +30,19 @@ function characters(record: Record<string, unknown>, key: string, where: string)
   });
 }
 
+function glosses(record: Record<string, unknown>, where: string): string[] {
+  const found = list(record, "glosses", where).map((item, index) => {
+    if (typeof item !== "string" || item === "") {
+      throw new Error(`${where}: glosses[${index}] must be a non-empty string`);
+    }
+    return item;
+  });
+  if (found.length === 0) {
+    throw new Error(`${where}: has no glosses, so its meaning cannot be checked`);
+  }
+  return found;
+}
+
 function readings(record: Record<string, unknown>, where: string): string[] {
   return list(record, "readings", where).map((item, index) => {
     if (typeof item !== "string" || !isKana(item)) {
@@ -81,7 +94,8 @@ function parseWord(value: unknown, where: string): Word {
     reading,
     readings: accepted,
     ...(readingClass === null ? {} : { readingClass }),
-    gloss: text(value, "gloss", where),
+    glosses: glosses(value, where),
+    meaning: text(value, "meaning", where),
     kanji,
     kanjiCount,
     hasOkurigana,

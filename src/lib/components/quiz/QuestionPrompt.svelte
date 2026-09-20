@@ -1,10 +1,13 @@
 <script lang="ts">
   import { Board, FitText, viewport } from "kaizen-ui";
+  import { isJapanese, promptSurface } from "../../quiz/settings";
   import type { Question } from "../../quiz/questions";
   import { app } from "../../state.svelte";
   import { t } from "../../i18n.svelte";
 
   let { question }: { question: Question } = $props();
+
+  const japanese = $derived(isJapanese(promptSurface(app.settings.format)));
 
   // A phone in portrait has height to spare and no width; everything else is
   // the other way round.
@@ -27,9 +30,10 @@
       cap={46}
       unit="cqmin"
       pad={8}
-      perLine={4}
-      lang="ja"
-      class="jp font-medium"
+      perLine={japanese ? 4 : 12}
+      em={japanese ? 1 : 0.55}
+      lang={japanese ? "ja" : undefined}
+      class="font-medium {japanese ? 'jp' : ''}"
     />
   </Board>
 </div>

@@ -40,6 +40,15 @@ export function readCached(name: string): unknown {
 
 const NO_READINGS = { on: [], kun: [] };
 
+export const MEANING_LIMIT = 24;
+
+export function shortGloss(gloss: string): string {
+  return gloss
+    .replace(/\s*\([^)]*\)/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export function buildWords(
   rows: readonly WordRow[],
   index: Lookup,
@@ -48,6 +57,7 @@ export function buildWords(
 ): Word[] {
   const problems: string[] = [];
   const words: Word[] = [];
+  const labelled = new Map<string, string>();
 
   rows.forEach((row, position) => {
     const where = `content/${row.level.toLowerCase()}-words.tsv row ${position + 1}`;
@@ -66,6 +76,26 @@ export function buildWords(
     const kanji = kanjiIn(row.written).filter((character) => levelKanji.has(character));
     const kanjiCount = (kanji.length >= 2 ? 2 : 1) as 1 | 2;
     const hasOkurigana = row.written.length > kanji.length;
+    const meaning = row.meaning === "" ? shortGloss(result.glosses[0]) : row.meaning;
+    const label = `${row.level}|${meaning}`;
+    const twin = labelled.get(label);
+    if (meaning === "") {
+      problems.push(`${where}: ${row.written} (${row.reading}) has no meaning to label it with`);
+      return;
+    }
+    if (meaning.length > MEANING_LIMIT) {
+      problems.push(
+        `${where}: ${row.written} (${row.reading}) is labelled "${meaning}", ${meaning.length} characters — shorten it to ${MEANING_LIMIT} in the meaning column`
+      );
+      return;
+    }
+    if (twin !== undefined) {
+      problems.push(
+        `${where}: ${row.written} (${row.reading}) and ${twin} both mean "${meaning}" — give one of them its own meaning column`
+      );
+      return;
+    }
+    labelled.set(label, `${row.written} (${row.reading})`);
 
     words.push({
       id: wordId(row.written, row.reading),
@@ -73,7 +103,8 @@ export function buildWords(
       reading: row.reading,
       readings: acceptedReadings(result.entry, row.written, row.reading),
       ...(readingClass === null ? {} : { readingClass }),
-      gloss: result.gloss,
+      glosses: result.glosses,
+      meaning,
       kanji,
       kanjiCount,
       hasOkurigana,
@@ -84,7 +115,7 @@ export function buildWords(
 
   if (problems.length > 0) {
     throw new Error(
-      `${problems.length} curated row(s) do not resolve against JMdict:\n${problems.join("\n")}`
+      `${problems.length} curated row(s) did not build:\n${problems.join("\n")}`
     );
   }
   return words;
@@ -249,17 +280,59 @@ if (import.meta.vitest) {
   };
   const index = indexByWrittenForm(parseJmdict(dictionary));
   const levelKanji = new Set(["日", "本", "子"]);
-  const row = (written: string, reading: string): WordRow => ({
+  const row = (written: string, reading: string, meaning = ""): WordRow => ({
     written,
     reading,
     set: "places",
     level: "N5",
+    meaning,
     note: ""
   });
 
+  describe("shortGloss", () => {
+    test("drops the parenthetical JMdict hangs off a sense", () => {
+      expect(shortGloss("water (esp. cool or cold)")).toBe("water");
+    });
+
+    test("drops a parenthetical that opens the gloss", () => {
+      expect(shortGloss("(the) day before yesterday")).toBe("day before yesterday");
+    });
+
+    test("closes the gap a parenthetical in the middle leaves behind", () => {
+      expect(shortGloss("older (male) sibling")).toBe("older sibling");
+    });
+
+    test("leaves a gloss with no parenthetical alone", () => {
+      expect(shortGloss("Japan")).toBe("Japan");
+    });
+  });
+
   describe("buildWords", () => {
-    test("attaches the gloss JMdict carries for the curated reading", () => {
-      expect(buildWords([row("日本", "にほん")], index, levelKanji)[0].gloss).toBe("Japan");
+    test("attaches every English sense JMdict carries as its own entry", () => {
+      expect(buildWords([row("日本", "にほん")], index, levelKanji)[0].glosses).toEqual(["Japan"]);
+    });
+
+    test("labels a word with the first gloss when the curator filled nothing in", () => {
+      expect(buildWords([row("日本", "にほん")], index, levelKanji)[0].meaning).toBe("Japan");
+    });
+
+    test("prefers the curator's meaning over the gloss", () => {
+      const built = buildWords([row("日本", "にほん", "the country")], index, levelKanji);
+      expect(built[0].meaning).toBe("the country");
+      expect(built[0].glosses).toEqual(["Japan"]);
+    });
+
+    test("refuses two words of a level that would answer one meaning question", () => {
+      expect(() =>
+        buildWords([row("日本", "にほん", "sweets"), row("お菓子", "おかし")], index, levelKanji)
+      ).toThrow(/お菓子 \(おかし\) and 日本 \(にほん\) both mean "sweets"/);
+    });
+
+    test("refuses a label too long to read on a tile", () => {
+      const wordy = "a".repeat(MEANING_LIMIT + 1);
+      expect(() => buildWords([row("日本", "にほん", wordy)], index, levelKanji)).toThrow(
+        new RegExp(`is labelled "${wordy}", ${MEANING_LIMIT + 1} characters`)
+      );
     });
 
     test("builds the id from the written form and the reading", () => {
@@ -323,6 +396,11 @@ if (import.meta.vitest) {
 
     test("leaves a compound with no reading class, since it is read as a whole", () => {
       expect(buildWords([row("日本", "にほん")], index, levelKanji)[0].readingClass).toBeUndefined();
+    });
+
+    test("lets two words of different levels share a label", () => {
+      const other = { ...row("お菓子", "おかし", "Japan"), level: "N4" };
+      expect(buildWords([row("日本", "にほん"), other], index, levelKanji)).toHaveLength(2);
     });
 
     test("reports every unresolved row, not only the first", () => {

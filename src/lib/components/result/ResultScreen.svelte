@@ -42,7 +42,7 @@
               <Glyph text={word.written} class="text-lg font-bold" />
               <Glyph text={word.reading} class="text-sm text-muted-foreground" />
             </span>
-            <span class="text-xs leading-snug text-muted-foreground">{word.gloss}</span>
+            <span class="text-xs leading-snug text-muted-foreground">{word.meaning}</span>
           </li>
         {/each}
       </ul>

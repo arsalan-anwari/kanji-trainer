@@ -1,5 +1,12 @@
 import { loadContent } from "./content/load";
-import { kanjiBySet, setsWithWords, wordsPerKanji, SET_IDS, type SetId } from "./content/sets";
+import {
+  groupWordsByKanji,
+  kanjiBySet,
+  setsWithWords,
+  wordsPerKanji,
+  SET_IDS,
+  type SetId
+} from "./content/sets";
 import type { Content, Word } from "./content/types";
 import {
   buildQuestions,
@@ -29,7 +36,7 @@ import {
   type Preset
 } from "./storage";
 
-export type Route = "setup" | "study" | "quiz" | "result" | "reports";
+export type Route = "setup" | "study" | "words" | "quiz" | "result" | "reports";
 export type Phase = "answering" | "feedback" | "done";
 
 /** The tabs the header pages between. Study and the run are sub-screens. */
@@ -38,6 +45,7 @@ export const TAB_ROUTES = ["setup", "reports"] as const;
 export type TabRoute = (typeof TAB_ROUTES)[number];
 
 const SETTINGS_KEY = "kanji-trainer-settings";
+const CHOSEN_PRESET_KEY = "kanji-trainer-chosen-preset";
 
 
 class AppState {
@@ -47,6 +55,7 @@ class AppState {
   settings = $state<RunSettings>({ ...DEFAULT_SETTINGS });
   notes = $state<string[]>([]);
   presets = $state<Preset[]>([]);
+  #chosenPreset = $state("");
   message = $state("");
 
   questions = $state<Question[]>([]);
@@ -67,7 +76,10 @@ class AppState {
   levels = $derived<string[]>([...new Set(this.words.map((word) => word.level))]);
   availableSets = $derived<SetId[]>(setsWithWords(this.words));
   kanjiInSet = $derived(kanjiBySet(this.words));
-  wordCounts = $derived(wordsPerKanji(this.words));
+  excludedWords = $derived<Set<string>>(new Set(this.settings.excludedWords));
+  wordCounts = $derived(
+    wordsPerKanji(this.words.filter((word) => !this.excludedWords.has(word.id)))
+  );
 
   /** Every kanji the chosen sets teach — what an empty selection stands for. */
   kanjiOfChosenSets = $derived<string[]>(
@@ -76,6 +88,12 @@ class AppState {
   selectedKanji = $derived<Set<string>>(
     new Set(this.settings.kanji.length === 0 ? this.kanjiOfChosenSets : this.settings.kanji)
   );
+
+  pickerOrder = $derived<string[]>(SET_IDS.flatMap((id) => this.kanjiInSet[id]));
+  selectableWords = $derived<Word[]>(
+    eligibleWords({ ...this.settings, excludedWords: [] }, this.words)
+  );
+  wordGroups = $derived(groupWordsByKanji(this.selectableWords, this.pickerOrder));
 
   pool = $derived<Word[]>(eligibleWords(this.settings, this.words));
   eligibleCount = $derived(this.pool.length);
@@ -106,10 +124,24 @@ class AppState {
         })
   );
 
+  get chosenPreset(): string {
+    return this.#chosenPreset;
+  }
+
+  set chosenPreset(name: string) {
+    this.#chosenPreset = name;
+    storeJson(CHOSEN_PRESET_KEY, name);
+  }
+
   load(): void {
     this.settings = parseSettings(loadJson<unknown>(SETTINGS_KEY, null));
     this.reports = listReports();
     this.presets = listPresets();
+    const chosen = loadJson<unknown>(CHOSEN_PRESET_KEY, "");
+    this.#chosenPreset =
+      typeof chosen === "string" && this.presets.some((preset) => preset.name === chosen)
+        ? chosen
+        : "";
     void this.loadContent();
   }
 
@@ -169,20 +201,47 @@ class AppState {
     this.updateSettings({ kanji: [] });
   }
 
+  toggleWord(id: string): void {
+    const held = this.settings.excludedWords;
+    this.updateSettings({
+      excludedWords: held.includes(id) ? held.filter((entry) => entry !== id) : [...held, id]
+    });
+  }
+
+  selectWords(ids: readonly string[]): void {
+    const wanted = new Set(ids);
+    this.updateSettings({
+      excludedWords: this.settings.excludedWords.filter((id) => !wanted.has(id))
+    });
+  }
+
+  clearWords(ids: readonly string[]): void {
+    const held = new Set(this.settings.excludedWords);
+    for (const id of ids) held.add(id);
+    this.updateSettings({ excludedWords: [...held] });
+  }
+
+  resetWords(): void {
+    this.updateSettings({ excludedWords: [] });
+  }
+
 
   storePreset(name: string): void {
     this.presets = savePreset(name, this.settings);
+    this.chosenPreset = name;
     this.message = "setup.presets.saved";
   }
 
   applyPreset(name: string): void {
     const preset = this.presets.find((entry) => entry.name === name);
     if (preset === undefined) return;
+    this.chosenPreset = name;
     this.updateSettings({ ...preset.settings });
   }
 
   removePreset(name: string): void {
     this.presets = deletePreset(name);
+    this.chosenPreset = "";
   }
 
   start(): void {

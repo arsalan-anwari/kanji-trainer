@@ -12,6 +12,7 @@
   import { app, TAB_ROUTES, type TabRoute } from "./lib/state.svelte";
   import SetupScreen from "./lib/components/setup/SetupScreen.svelte";
   import StudyScreen from "./lib/components/setup/StudyScreen.svelte";
+  import WordPicker from "./lib/components/setup/WordPicker.svelte";
   import QuizScreen from "./lib/components/quiz/QuizScreen.svelte";
   import ResultScreen from "./lib/components/result/ResultScreen.svelte";
   import ReportsScreen from "./lib/components/reports/ReportsScreen.svelte";
@@ -102,6 +103,8 @@
       <SetupScreen />
     {:else if app.route === "study"}
       <StudyScreen />
+    {:else if app.route === "words"}
+      <WordPicker />
     {:else if app.route === "quiz"}
       <QuizScreen />
     {:else if app.route === "result"}

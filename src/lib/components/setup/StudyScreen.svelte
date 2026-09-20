@@ -1,16 +1,16 @@
 <script lang="ts">
   import { Button, Card, EmptyState, Glyph, Icon } from "kaizen-ui";
   import { app } from "../../state.svelte";
-  import { SET_IDS, type SetId } from "../../content/sets";
+  import { groupWordsByKanji, SET_IDS, type SetId } from "../../content/sets";
   import { n, t } from "../../i18n.svelte";
 
   // Grouped the way the picker groups them, so a study pass reads like the set
-  // it was built from.
+  // it was built from, and by kanji under that, so a long set stays scannable.
   const grouped = $derived(
-    SET_IDS.map((id: SetId) => ({
-      id,
-      words: app.pool.filter((word) => word.set === id)
-    })).filter((group) => group.words.length > 0)
+    SET_IDS.map((id: SetId) => {
+      const words = app.pool.filter((word) => word.set === id);
+      return { id, words, byKanji: groupWordsByKanji(words, app.pickerOrder) };
+    }).filter((group) => group.words.length > 0)
   );
 </script>
 
@@ -40,17 +40,29 @@
       description={t("common.words", { count: n(group.words.length) })}
     >
       {#snippet icon()}<Icon name="sprout" class="size-5" />{/snippet}
-      <ul class="grid gap-2 sm:grid-cols-2">
-        {#each group.words as word (word.id)}
-          <li class="flex flex-col gap-0.5 rounded-lg border border-wire bg-surface px-3 py-2">
-            <span class="flex flex-wrap items-baseline gap-x-2">
-              <Glyph text={word.written} class="text-lg font-bold" />
-              <Glyph text={word.reading} class="text-sm text-muted-foreground" />
-            </span>
-            <span class="text-xs leading-snug text-muted-foreground">{word.gloss}</span>
-          </li>
+      <div class="flex flex-col gap-4">
+        {#each group.byKanji as kanji (kanji.character)}
+          <section class="flex flex-col gap-2">
+            <h4 class="flex items-baseline gap-2 border-b border-wire pb-1">
+              <Glyph text={kanji.character} class="text-h4 font-bold" />
+              <span class="text-xs text-muted-foreground">
+                {t("common.words", { count: n(kanji.words.length) })}
+              </span>
+            </h4>
+            <ul class="grid gap-2 sm:grid-cols-2">
+              {#each kanji.words as word (word.id)}
+                <li class="flex flex-col gap-0.5 rounded-lg border border-wire bg-surface px-3 py-2">
+                  <span class="flex flex-wrap items-baseline gap-x-2">
+                    <Glyph text={word.written} class="text-lg font-bold" />
+                    <Glyph text={word.reading} class="text-sm text-muted-foreground" />
+                  </span>
+                  <span class="text-xs leading-snug text-muted-foreground">{word.meaning}</span>
+                </li>
+              {/each}
+            </ul>
+          </section>
         {/each}
-      </ul>
+      </div>
     </Card>
   {:else}
     <EmptyState icon="target" title={t("setup.study.empty")} />

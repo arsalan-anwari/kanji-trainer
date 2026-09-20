@@ -4,7 +4,10 @@
   "announce": "Question {index} of {total}. {prompt}",
   "prompt": {
     "kanji-reading": "How is this word read?",
-    "kana-kanji": "Which word is this?"
+    "kana-kanji": "Which word is this?",
+    "kanji-meaning": "What does this word mean?",
+    "kana-meaning": "What does this word mean?",
+    "meaning-word": "Which word means this?"
   },
   "choices": "Answers",
   "typed": {

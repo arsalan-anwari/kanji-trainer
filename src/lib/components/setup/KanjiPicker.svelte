@@ -18,6 +18,15 @@
       <Icon name="select-none" />
       {t("setup.kanji.clear")}
     </Button>
+    <Button
+      size="sm"
+      variant="outline"
+      disabled={app.selectableWords.length === 0}
+      onclick={() => app.go("words")}
+    >
+      <Icon name="filter" />
+      {t("setup.words.button")}
+    </Button>
   </div>
 
   <div class="flex flex-col gap-2 sm:gap-3">

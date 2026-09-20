@@ -64,13 +64,36 @@ export function wordsPerKanji(items: readonly Tagged[]): Record<string, number> 
   return counts;
 }
 
+export type KanjiGroup<T> = {
+  character: string;
+  words: T[];
+};
+
+export function groupWordsByKanji<T extends { kanji: string[] }>(
+  words: readonly T[],
+  order: readonly string[]
+): KanjiGroup<T>[] {
+  const rank = new Map(order.map((character, index) => [character, index]));
+  const grouped = new Map<string, T[]>();
+  for (const word of words) {
+    const head = word.kanji[0];
+    if (head === undefined) continue;
+    const found = grouped.get(head);
+    if (found === undefined) grouped.set(head, [word]);
+    else found.push(word);
+  }
+  return [...grouped]
+    .sort(([a], [b]) => (rank.get(a) ?? order.length) - (rank.get(b) ?? order.length))
+    .map(([character, words]) => ({ character, words }));
+}
+
 export function setsWithWords(items: readonly { set: SetId }[]): SetId[] {
   const counts = countBySet(items);
   return SET_IDS.filter((id) => counts[id] > 0);
 }
 
 if (import.meta.vitest) {
-  const { test, expect } = import.meta.vitest;
+  const { describe, test, expect } = import.meta.vitest;
 
   test("lists set ids in the order they are declared", () => {
     expect(SET_IDS[0]).toBe("numbers");
@@ -107,6 +130,33 @@ if (import.meta.vitest) {
     expect(grouped.people).toEqual(["人", "女"]);
     expect(grouped.actions).toEqual(["見"]);
     expect(grouped.numbers).toEqual([]);
+  });
+
+  describe("groupWordsByKanji", () => {
+    const word = (id: string, kanji: string[]) => ({ id, kanji });
+
+    test("files a word under the first kanji it carries", () => {
+      const grouped = groupWordsByKanji([word("学校", ["学", "校"])], ["学", "校"]);
+      expect(grouped).toEqual([{ character: "学", words: [word("学校", ["学", "校"])] }]);
+    });
+
+    test("keeps the groups in the order the picker draws the kanji", () => {
+      const grouped = groupWordsByKanji(
+        [word("水", ["水"]), word("一", ["一"]), word("一つ", ["一"])],
+        ["一", "水"]
+      );
+      expect(grouped.map((group) => group.character)).toEqual(["一", "水"]);
+      expect(grouped[0].words).toHaveLength(2);
+    });
+
+    test("puts a kanji the picker does not draw last rather than losing it", () => {
+      const grouped = groupWordsByKanji([word("山", ["山"]), word("水", ["水"])], ["水"]);
+      expect(grouped.map((group) => group.character)).toEqual(["水", "山"]);
+    });
+
+    test("drops a word carrying no kanji of the level", () => {
+      expect(groupWordsByKanji([word("とても", [])], ["水"])).toEqual([]);
+    });
   });
 
   test("counts the words each kanji turns up in", () => {

@@ -16,7 +16,8 @@ export type Word = {
    * it: a compound is read as a whole, so the question has no single answer.
    */
   readingClass?: ReadingClass;
-  gloss: string;
+  glosses: string[];
+  meaning: string;
   kanji: string[];
   /** How many kanji characters are in the word (1, 2+). */
   kanjiCount: 1 | 2;

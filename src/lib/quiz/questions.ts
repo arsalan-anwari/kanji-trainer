@@ -1,6 +1,6 @@
 import type { Word } from "../content/types";
 import { normalizeReading } from "./romaji";
-import { DEFAULT_SETTINGS } from "./settings";
+import { answerSurface, DEFAULT_SETTINGS, promptSurface } from "./settings";
 import type { Format, RunSettings, WordShape } from "./settings";
 
 export type Question = {
@@ -21,15 +21,15 @@ export type Answer = {
 };
 
 export function promptOf(word: Word, format: Format): string {
-  return format === "kanji-reading" ? word.written : word.reading;
+  return word[promptSurface(format)];
 }
 
 export function answerOf(word: Word, format: Format): string {
-  return format === "kanji-reading" ? word.reading : word.written;
+  return word[answerSurface(format)];
 }
 
 export function acceptedOf(word: Word, format: Format): string[] {
-  return format === "kanji-reading" ? word.readings : [word.written];
+  return answerSurface(format) === "reading" ? word.readings : [answerOf(word, format)];
 }
 
 export function atLevel(words: readonly Word[], level: string): Word[] {
@@ -55,7 +55,9 @@ export function eligibleWords(settings: RunSettings, words: readonly Word[]): Wo
   const sets = new Set(settings.sets);
   const kanji = new Set(settings.kanji);
   const shapes = new Set(settings.wordShapes);
+  const excluded = new Set(settings.excludedWords);
   return atLevel(words, settings.level).filter((word) => {
+    if (excluded.has(word.id)) return false;
     if (!sets.has(word.set)) return false;
     if (kanji.size > 0 && !word.kanji.every((character) => kanji.has(character))) return false;
     if (shapes.size > 0 && !shapes.has(wordShape(word))) return false;
@@ -168,7 +170,8 @@ if (import.meta.vitest) {
       written: id,
       reading: `${id}reading`,
       readings: [`${id}reading`],
-      gloss: id,
+      glosses: [id],
+      meaning: id,
       kanji: [id],
       kanjiCount: 1,
       hasOkurigana: false,
@@ -221,6 +224,25 @@ if (import.meta.vitest) {
       expect(eligibleWords(settings, pool)).toHaveLength(3);
     });
 
+    test("holds back a word the learner deselected by hand", () => {
+      const settings = {
+        ...DEFAULT_SETTINGS,
+        sets: ["numbers" as const],
+        excludedWords: ["一|一", "二|二"]
+      };
+      const kept = eligibleWords(settings, all).map((word) => word.written);
+      expect(kept).toEqual(["三", "四", "五", "六"]);
+    });
+
+    test("ignores an exclusion naming a word of another level", () => {
+      const settings = {
+        ...DEFAULT_SETTINGS,
+        sets: ["numbers" as const],
+        excludedWords: ["山|山"]
+      };
+      expect(eligibleWords(settings, all)).toHaveLength(6);
+    });
+
     test("draws on every kanji of the chosen sets when none was picked", () => {
       const settings = { ...DEFAULT_SETTINGS, sets: ["numbers" as const], kanji: [] };
       expect(eligibleWords(settings, all)).toHaveLength(6);
@@ -258,6 +280,51 @@ test("asks the written form and answers the reading on kanji to reading", () => 
       const [question] = buildQuestions({ ...settings, format: "kana-kanji" }, all, seeded(3));
       expect(question.prompt).toContain("reading");
       expect(question.answer).not.toContain("reading");
+    });
+
+    test("asks the written form and answers the meaning on kanji to meaning", () => {
+      const pool = [word("水", "nature", { meaning: "water" })];
+      const [question] = buildQuestions(
+        { ...settings, sets: ["nature"], format: "kanji-meaning" },
+        pool,
+        seeded(3)
+      );
+      expect(question.prompt).toBe("水");
+      expect(question.answer).toBe("water");
+      expect(question.accepted).toEqual(["water"]);
+    });
+
+    test("asks the reading and answers the meaning on kana to meaning", () => {
+      const pool = [word("水", "nature", { reading: "みず", meaning: "water" })];
+      const [question] = buildQuestions(
+        { ...settings, sets: ["nature"], format: "kana-meaning" },
+        pool,
+        seeded(3)
+      );
+      expect(question.prompt).toBe("みず");
+      expect(question.answer).toBe("water");
+    });
+
+    test("asks the meaning and answers the written form on meaning to word", () => {
+      const pool = [word("水", "nature", { meaning: "water" })];
+      const [question] = buildQuestions(
+        { ...settings, sets: ["nature"], format: "meaning-word" },
+        pool,
+        seeded(3)
+      );
+      expect(question.prompt).toBe("water");
+      expect(question.answer).toBe("水");
+    });
+
+    test("accepts every reading only where the reading is the answer", () => {
+      const seven = word("七", "numbers", {
+        reading: "なな",
+        readings: ["なな", "しち"],
+        meaning: "seven"
+      });
+      expect(acceptedOf(seven, "kanji-reading")).toEqual(["なな", "しち"]);
+      expect(acceptedOf(seven, "kanji-meaning")).toEqual(["seven"]);
+      expect(acceptedOf(seven, "meaning-word")).toEqual(["七"]);
     });
 
     test("borrows distractors from the whole level when the selection is too small", () => {

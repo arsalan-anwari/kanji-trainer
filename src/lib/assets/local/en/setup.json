@@ -24,7 +24,10 @@
     "title": "Question format",
     "description": "What is shown and what you answer.",
     "kanji-reading": "See the word, answer its reading",
-    "kana-kanji": "See the reading, pick the written word"
+    "kana-kanji": "See the reading, pick the written word",
+    "kanji-meaning": "See the word, pick what it means",
+    "kana-meaning": "See the reading, pick what it means",
+    "meaning-word": "See a meaning, pick the word"
   },
   "answerStyle": {
     "title": "Answer style",
@@ -78,5 +81,17 @@
     "back": "Back to setup",
     "start": "Start the run",
     "empty": "Pick a set to study."
+  },
+  "words": {
+    "button": "Select words",
+    "title": "Words in play",
+    "inPlay": "{count} words selected.",
+    "taken": "{taken} of {total} kept",
+    "back": "Back to setup",
+    "reset": "Reset",
+    "selectAll": "All",
+    "clear": "None",
+    "empty": "Pick a kanji to see its words.",
+    "group": "Words written with {character}"
   }
 }

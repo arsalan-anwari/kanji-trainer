@@ -75,7 +75,13 @@ describe("the shipped N5 content", () => {
   });
 
   test("gives every word an English gloss for the reveal", () => {
-    expect(content.words.filter((word) => word.gloss === "")).toEqual([]);
+    expect(content.words.filter((word) => word.glosses.length === 0)).toEqual([]);
+  });
+
+  test("gives every word of the level a label no other word answers to", () => {
+    const labels = content.words.map((word) => word.meaning);
+    expect(labels.filter((label) => label === "")).toEqual([]);
+    expect(new Set(labels).size).toBe(labels.length);
   });
 
   test("accepts at least the pinned reading for every word", () => {

@@ -114,7 +114,7 @@ function appliesTo(scope: string[], written: string): boolean {
 
 export type Match = {
   entry: JmdictEntry;
-  gloss: string;
+  glosses: string[];
 };
 
 export type Rejection = {
@@ -155,16 +155,15 @@ export function lookupWord(
       detail: `JMdict marks "${written}" usually kana, so there is no form to test`
     };
   }
-  const gloss = senses
+  const glosses = senses
     .flatMap((meaning) => meaning.gloss)
     .filter((item) => item.lang === "eng")
     .map((item) => item.text)
-    .slice(0, 3)
-    .join("; ");
-  if (gloss === "") {
+    .slice(0, 3);
+  if (glosses.length === 0) {
     return { reason: "gloss", detail: `JMdict has no English gloss for "${written}"` };
   }
-  return { entry, gloss };
+  return { entry, glosses };
 }
 
 export function isMatch(result: Match | Rejection): result is Match {
@@ -232,18 +231,18 @@ if (import.meta.vitest) {
   });
 
   describe("lookupWord", () => {
-    test("returns the English gloss of a word that resolves", () => {
+    test("returns the English glosses of a word that resolves", () => {
       const index = fixture(entry([["日本", []]], [["にほん", []]], [{ gloss: ["Japan"] }]));
       const result = lookupWord(index, "日本", "にほん");
-      expect(isMatch(result) && result.gloss).toBe("Japan");
+      expect(isMatch(result) && result.glosses).toEqual(["Japan"]);
     });
 
-    test("joins at most three glosses of the matching senses", () => {
+    test("keeps at most three glosses of the matching senses, each its own entry", () => {
       const index = fixture(
         entry([["話", []]], [["はなし", []]], [{ gloss: ["talk", "speech", "chat", "story"] }])
       );
       const result = lookupWord(index, "話", "はなし");
-      expect(isMatch(result) && result.gloss).toBe("talk; speech; chat");
+      expect(isMatch(result) && result.glosses).toEqual(["talk", "speech", "chat"]);
     });
 
     test("names the written form when JMdict does not have it", () => {

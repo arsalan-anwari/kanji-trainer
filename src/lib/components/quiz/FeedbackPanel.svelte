@@ -30,7 +30,7 @@
           </span>
         {/if}
       </span>
-      <span class="truncate text-xs text-muted-foreground">{word.gloss}</span>
+      <span class="truncate text-xs text-muted-foreground">{word.meaning}</span>
     </div>
     <span class="shrink-0">
       <Button size="lg" variant="primary" onclick={() => app.next()}>

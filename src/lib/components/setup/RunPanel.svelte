@@ -26,6 +26,35 @@
   </div>
 </Card>
 
+<Card title={t("setup.wordShapes.title")} description={t("setup.wordShapes.description")}>
+  {#snippet icon()}<Icon name="filter" class="size-5" />{/snippet}
+  <div class="flex flex-col gap-3">
+    <div role="group" aria-label={t("setup.wordShapes.title")} class="flex flex-wrap gap-2">
+      {#each WORD_SHAPES as shape (shape)}
+        <Chip
+          size="sm"
+          active={app.settings.wordShapes.includes(shape)}
+          title={t(`setup.wordShapes.${shape}`)}
+          onclick={() => {
+            const current = new Set(app.settings.wordShapes);
+            if (current.has(shape)) {
+              current.delete(shape);
+            } else {
+              current.add(shape);
+            }
+            app.updateSettings({ wordShapes: [...current] });
+          }}
+        >
+          {t(`common.wordShapes.${shape}`)}
+        </Chip>
+      {/each}
+    </div>
+    <p class="text-xs text-muted-foreground">
+      {t("setup.wordShapes.hint")}
+    </p>
+  </div>
+</Card>
+
 <Card title={t("setup.format.title")} description={t("setup.format.description")}>
   {#snippet icon()}<Icon name="target" class="size-5" />{/snippet}
   <div role="group" aria-label={t("setup.format.title")} class="grid gap-3 sm:grid-cols-2">
@@ -54,35 +83,6 @@
         onclick={() => app.updateSettings({ answerStyle: style })}
       />
     {/each}
-  </div>
-</Card>
-
-<Card title={t("setup.wordShapes.title")} description={t("setup.wordShapes.description")}>
-  {#snippet icon()}<Icon name="filter" class="size-5" />{/snippet}
-  <div class="flex flex-col gap-3">
-    <div role="group" aria-label={t("setup.wordShapes.title")} class="flex flex-wrap gap-2">
-      {#each WORD_SHAPES as shape (shape)}
-        <Chip
-          size="sm"
-          active={app.settings.wordShapes.includes(shape)}
-          title={t(`setup.wordShapes.${shape}`)}
-          onclick={() => {
-            const current = new Set(app.settings.wordShapes);
-            if (current.has(shape)) {
-              current.delete(shape);
-            } else {
-              current.add(shape);
-            }
-            app.updateSettings({ wordShapes: [...current] });
-          }}
-        >
-          {t(`common.wordShapes.${shape}`)}
-        </Chip>
-      {/each}
-    </div>
-    <p class="text-xs text-muted-foreground">
-      {t("setup.wordShapes.hint")}
-    </p>
   </div>
 </Card>
 

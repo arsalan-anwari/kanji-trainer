@@ -1,4 +1,14 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+// Wide layouts put the preset actions beside the select; a phone hides them in
+// the sheet the select opens.
+async function presetAction(page: Page, label: string): Promise<void> {
+  const action = page.getByRole("button", { name: label });
+  if (!(await action.isVisible())) {
+    await page.getByRole("button", { name: "Saved runs" }).click();
+  }
+  await action.click();
+}
 
 test("cannot start a run before a set is picked", async ({ page }) => {
   await page.goto("/");
@@ -60,4 +70,75 @@ test("ships a Japanese face for machines that have none", async ({ page }) => {
     [...document.fonts].map((face) => face.family)
   );
   expect(families).toContain("Kaizen JP");
+});
+
+test("holds back hand-picked words, and keeps them held across a reload", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /^Nature/ }).click();
+
+  const inPlay = page.getByText("Words in play").locator("..");
+  const before = Number(((await inPlay.textContent()) ?? "").replace(/\D+/g, ""));
+  expect(before).toBeGreaterThan(2);
+
+  await page.getByRole("button", { name: "Select words" }).click();
+
+  const groups = page.getByRole("group", { name: /^Words written with/ });
+  const words = groups.getByRole("button");
+  await expect(words.first()).toHaveAttribute("aria-pressed", "true");
+
+  await words.nth(0).click();
+  await words.nth(1).click();
+  await expect(groups.locator("button[aria-pressed='false']")).toHaveCount(2);
+
+  await page.getByRole("button", { name: "Back to setup" }).click();
+  await expect(inPlay).toContainText(String(before - 2));
+
+  await page.reload();
+  await expect(inPlay).toContainText(String(before - 2));
+
+  await page.getByRole("button", { name: "Select words" }).click();
+  await expect(groups.locator("button[aria-pressed='false']")).toHaveCount(2);
+});
+
+test("keeps the loaded preset selected through the word picker, so it can be updated", async ({
+  page
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /^Nature/ }).click();
+
+  await presetAction(page, "Save this run");
+  await page.getByPlaceholder("Name this run").fill("nature run");
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+
+  const picker = page.getByRole("button", { name: "Saved runs" });
+  await expect(picker).toContainText("nature run");
+
+  await page.getByRole("button", { name: "Select words" }).click();
+  const groups = page.getByRole("group", { name: /^Words written with/ });
+  await groups.getByRole("button").first().click();
+  await page.getByRole("button", { name: "Back to setup" }).click();
+
+  await expect(picker).toContainText("nature run");
+  await presetAction(page, "Update");
+  await expect(page.getByText("Saved.")).toBeVisible();
+});
+
+test("keeps the loaded preset selected while the run is edited", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /^Nature/ }).click();
+  await presetAction(page, "Save this run");
+  await page.getByPlaceholder("Name this run").fill("editable");
+  await page.getByRole("button", { name: "Save", exact: true }).click();
+
+  const picker = page.getByRole("button", { name: "Saved runs" });
+  await expect(picker).toContainText("editable");
+
+  await page.getByRole("group", { name: "Word shapes" }).getByRole("button").first().click();
+  await expect(picker).toContainText("editable");
+
+  await page.getByRole("button", { name: "Kana to kanji" }).click();
+  await expect(picker).toContainText("editable");
+
+  await page.reload();
+  await expect(picker).toContainText("editable");
 });

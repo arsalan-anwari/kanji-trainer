@@ -1,7 +1,13 @@
 import { isSetId } from "../content/sets";
 import type { SetId } from "../content/sets";
 
-export type Format = "kanji-reading" | "kana-kanji";
+export type Format =
+  | "kanji-reading"
+  | "kana-kanji"
+  | "kanji-meaning"
+  | "kana-meaning"
+  | "meaning-word";
+export type Surface = "written" | "reading" | "meaning";
 export type AnswerStyle = "choice" | "typing";
 export type WordShape = "1-kanji" | "2-kanji" | "okurigana";
 
@@ -17,9 +23,38 @@ export type RunSettings = {
   questionCount: number;
   /** Word shape filters. Empty array means allow all. */
   wordShapes: WordShape[];
+  /** Word ids held back by hand. Empty means every word the filters allow. */
+  excludedWords: string[];
 };
 
-export const FORMATS: readonly Format[] = ["kanji-reading", "kana-kanji"];
+export const FORMATS: readonly Format[] = [
+  "kanji-reading",
+  "kana-kanji",
+  "kanji-meaning",
+  "kana-meaning",
+  "meaning-word"
+];
+
+const SIDES: Record<Format, { prompt: Surface; answer: Surface }> = {
+  "kanji-reading": { prompt: "written", answer: "reading" },
+  "kana-kanji": { prompt: "reading", answer: "written" },
+  "kanji-meaning": { prompt: "written", answer: "meaning" },
+  "kana-meaning": { prompt: "reading", answer: "meaning" },
+  "meaning-word": { prompt: "meaning", answer: "written" }
+};
+
+export function promptSurface(format: Format): Surface {
+  return SIDES[format].prompt;
+}
+
+export function answerSurface(format: Format): Surface {
+  return SIDES[format].answer;
+}
+
+export function isJapanese(surface: Surface): boolean {
+  return surface !== "meaning";
+}
+
 export const ANSWER_STYLES: readonly AnswerStyle[] = ["choice", "typing"];
 export const CHOICE_COUNTS: readonly number[] = [4];
 
@@ -49,7 +84,8 @@ export const DEFAULT_SETTINGS: RunSettings = {
   answerStyle: "choice",
   choiceCount: 4,
   questionCount: 20,
-  wordShapes: []
+  wordShapes: [],
+  excludedWords: []
 };
 
 export function typingAllowed(format: Format): boolean {
@@ -108,15 +144,21 @@ function pickSets(value: unknown): SetId[] {
   return out;
 }
 
-function pickKanji(value: unknown): string[] {
+function pickText(value: unknown, keep: (entry: string) => boolean): string[] {
   if (!Array.isArray(value)) return [];
   const out: string[] = [];
   for (const entry of value) {
-    if (typeof entry === "string" && [...entry].length === 1 && !out.includes(entry)) {
-      out.push(entry);
-    }
+    if (typeof entry === "string" && keep(entry) && !out.includes(entry)) out.push(entry);
   }
   return out;
+}
+
+function pickKanji(value: unknown): string[] {
+  return pickText(value, (entry) => [...entry].length === 1);
+}
+
+function pickWordIds(value: unknown): string[] {
+  return pickText(value, (entry) => entry !== "");
 }
 
 function pick<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
@@ -149,7 +191,8 @@ export function parseSettings(stored: unknown): RunSettings {
     answerStyle: pick(stored.answerStyle, ANSWER_STYLES, DEFAULT_SETTINGS.answerStyle),
     choiceCount: typeof choices === "number" ? choices : DEFAULT_SETTINGS.choiceCount,
     questionCount: typeof count === "number" ? count : DEFAULT_SETTINGS.questionCount,
-    wordShapes: pickWordShapes(stored.wordShapes)
+    wordShapes: pickWordShapes(stored.wordShapes),
+    excludedWords: pickWordIds(stored.excludedWords)
   }).settings;
 }
 
@@ -204,7 +247,8 @@ if (import.meta.vitest) {
       answerStyle: "choice",
       choiceCount: 4,
       questionCount: 50,
-      wordShapes: ["1-kanji"]
+      wordShapes: ["1-kanji"],
+      excludedWords: ["一|いち"]
     };
     expect(parseSettings(wanted)).toEqual(wanted);
   });
@@ -216,9 +260,42 @@ if (import.meta.vitest) {
       parseSettings({
         sets: ["numbers", "kitchen", 4, "numbers"],
         kanji: ["一", "学校", 7, "一"],
-        format: "sentence"
+        format: "sentence",
+        excludedWords: ["一|いち", "", 9, "一|いち"]
       })
-    ).toEqual({ ...DEFAULT_SETTINGS, sets: ["numbers"], kanji: ["一"] });
+    ).toEqual({
+      ...DEFAULT_SETTINGS,
+      sets: ["numbers"],
+      kanji: ["一"],
+      excludedWords: ["一|いち"]
+    });
+  });
+
+  test("names the two sides of every format the app offers", () => {
+    expect(FORMATS.map(promptSurface)).toEqual([
+      "written",
+      "reading",
+      "written",
+      "reading",
+      "meaning"
+    ]);
+    expect(FORMATS.map(answerSurface)).toEqual([
+      "reading",
+      "written",
+      "meaning",
+      "meaning",
+      "written"
+    ]);
+  });
+
+  test("calls only a meaning latin, so the quiz screen knows what to tag", () => {
+    expect(isJapanese("written")).toBe(true);
+    expect(isJapanese("reading")).toBe(true);
+    expect(isJapanese("meaning")).toBe(false);
+  });
+
+  test("leaves every format but the reading on multiple choice", () => {
+    expect(FORMATS.filter(typingAllowed)).toEqual(["kanji-reading"]);
   });
 
   test("offers a custom length ladder the roller can step through", () => {

@@ -41,7 +41,10 @@
   },
   "format": {
     "kanji-reading": "Kanji to reading",
-    "kana-kanji": "Kana to kanji"
+    "kana-kanji": "Kana to kanji",
+    "kanji-meaning": "Kanji to meaning",
+    "kana-meaning": "Kana to meaning",
+    "meaning-word": "Meaning to word"
   },
   "answerStyle": {
     "choice": "Multiple choice",

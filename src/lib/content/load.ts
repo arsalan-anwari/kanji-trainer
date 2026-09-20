@@ -41,11 +41,13 @@ function parseWord(value: unknown): Word | null {
   const written = text(value.written);
   const reading = text(value.reading);
   const readings = textList(value.readings);
-  const gloss = text(value.gloss);
+  const glosses = textList(value.glosses);
+  const meaning = text(value.meaning);
   const kanji = textList(value.kanji);
   const set = text(value.set);
   const level = text(value.level);
-  if (id === null || written === null || reading === null || gloss === null) return null;
+  if (id === null || written === null || reading === null || meaning === null) return null;
+  if (glosses === null || glosses.length === 0) return null;
   if (readings === null || !readings.includes(reading)) return null;
   if (kanji === null || set === null || level === null || !isSetId(set)) return null;
   const readingClass = parseReadingClass(value.readingClass);
@@ -57,7 +59,8 @@ function parseWord(value: unknown): Word | null {
     reading,
     readings,
     ...(readingClass === null ? {} : { readingClass }),
-    gloss,
+    glosses,
+    meaning,
     kanji,
     kanjiCount,
     hasOkurigana,
@@ -128,7 +131,8 @@ if (import.meta.vitest) {
     reading: "いち",
     readings: ["いち"],
     readingClass: "on",
-    gloss: "one",
+    glosses: ["one", "best"],
+    meaning: "one",
     kanji: ["一"],
     kanjiCount: 1 as const,
     hasOkurigana: false,
@@ -176,6 +180,16 @@ if (import.meta.vitest) {
     test("drops a reading class that is neither on nor kun", () => {
       const odd = { ...payload, words: [{ ...word, readingClass: "gikun" }] };
       expect(parseContent(odd)?.words[0].readingClass).toBeUndefined();
+    });
+
+    test("keeps every sense as its own entry alongside the one label", () => {
+      const parsed = parseContent(payload)?.words[0];
+      expect(parsed?.glosses).toEqual(["one", "best"]);
+      expect(parsed?.meaning).toBe("one");
+    });
+
+    test("rejects a word with no gloss to justify its label", () => {
+      expect(parseContent({ ...payload, words: [{ ...word, glosses: [] }] })).toBeNull();
     });
 
     test("rejects a word missing a reading", () => {

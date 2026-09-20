@@ -71,3 +71,35 @@ test("takes a typed reading and offers typing only where an answer can be typed"
   await page.getByRole("button", { name: "Kana to kanji" }).click();
   await expect(page.getByRole("button", { name: /needs an IME/ })).toBeDisabled();
 });
+
+async function startMeaningRun(page: Page, format: string): Promise<void> {
+  await page.goto("/");
+  await page.getByRole("button", { name: format }).click();
+  await page.getByRole("button", { name: /^Nature/ }).click();
+  await page
+    .getByRole("group", { name: "Number of questions" })
+    .getByRole("button", { name: "10", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Start" }).click();
+  await expect(page.getByRole("progressbar")).toBeVisible();
+}
+
+test("asks a kanji in Japanese and answers it in English", async ({ page }) => {
+  await startMeaningRun(page, "Kanji to meaning");
+  await expect(page.getByText("What does this word mean?")).toBeVisible();
+
+  await expect(page.locator("[lang='ja']")).toHaveCount(1);
+  await expect(page.getByRole("group", { name: "Answers" }).locator("[lang='ja']")).toHaveCount(0);
+
+  await tabTo(page, "[role='group'][aria-label='Answers'] button");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
+});
+
+test("asks a meaning in English and answers it in Japanese", async ({ page }) => {
+  await startMeaningRun(page, "Meaning to word");
+  await expect(page.getByText("Which word means this?")).toBeVisible();
+
+  await expect(page.locator("[lang='ja']")).toHaveCount(4);
+  await expect(page.getByRole("group", { name: "Answers" }).locator("[lang='ja']")).toHaveCount(4);
+});
