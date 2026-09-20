@@ -15,7 +15,7 @@
   import QuizScreen from "./lib/components/quiz/QuizScreen.svelte";
   import ResultScreen from "./lib/components/result/ResultScreen.svelte";
   import ReportsScreen from "./lib/components/reports/ReportsScreen.svelte";
-  import { n, t } from "./lib/i18n.svelte";
+  import { t } from "./lib/i18n.svelte";
 
   app.load();
 
@@ -74,12 +74,7 @@
         sticky={false}
         glyph="漢"
         title={t("common.appName")}
-        subtitle={app.content === null
-          ? t("common.tagline")
-          : t("common.content.summary", {
-              words: n(app.content.words.length),
-              kanji: n(app.content.kanji.length)
-            })}
+        subtitle={t("common.tagline")}
         items={tabs}
         value={tab}
         onpick={(route) => app.go(route)}

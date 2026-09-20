@@ -5,12 +5,13 @@ local, no account and no network sync.
 
 ## Scope
 
-The app trains the writing system. Every answer is a form or a sound, never a
-meaning. Word to reading, kana to kanji, hear a word and pick its kanji, build a
-kanji from its components. Meaning shows up on the answer reveal only.
+The app trains words: how they are written, how they sound, and what they mean.
+Word to reading, kana to kanji, word to meaning, hear a word and pick its kanji,
+build a kanji from its components. Every answer is a property of a single word.
 
-Anything that needs you to understand a sentence belongs in the planned
-`jlpt-trainer` instead.
+Anything that needs you to understand a sentence, grammar, sentence structure,
+reading passages, conversation audio will be added in the planned `jlpt-trainer`
+instead. That app assumes you already know the vocabulary this one trains.
 
 No SRS and no review queue. You configure each run by hand. Past results get
 charts and reports, but the app never decides what you practise next.

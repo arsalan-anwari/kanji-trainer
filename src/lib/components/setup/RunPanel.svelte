@@ -3,10 +3,8 @@
   import { app } from "../../state.svelte";
   import QuestionCountPicker from "./QuestionCountPicker.svelte";
   import { ANSWER_STYLES, FORMATS, WORD_SHAPES, typingAllowed } from "../../quiz/settings";
-  import { n, t } from "../../i18n.svelte";
+  import { t } from "../../i18n.svelte";
 
-  // Every JLPT level, so the ones this build has no content for are visible and
-  // plainly switched off rather than missing.
   const LEVELS = ["N5", "N4", "N3", "N2", "N1"];
 </script>
 
@@ -90,10 +88,5 @@
 
 <Card title={t("setup.run.title")} description={t("setup.run.description")}>
   {#snippet icon()}<Icon name="sliders" class="size-5" />{/snippet}
-  <div class="flex flex-col gap-3">
-    <QuestionCountPicker />
-    <p class="text-sm text-muted-foreground">
-      {t("setup.run.pool", { count: n(app.eligibleCount) })}
-    </p>
-  </div>
+  <QuestionCountPicker />
 </Card>

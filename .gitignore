@@ -28,3 +28,5 @@ DEVELOPMENT_GUIDELINES.md
 *.log
 test-results
 playwright-report
+test-results/
+playwright-report/

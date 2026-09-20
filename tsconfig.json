@@ -14,5 +14,12 @@
     "checkJs": true,
     "types": ["vite/client", "svelte", "node", "vitest/importMeta"]
   },
-  "include": ["src/**/*.ts", "src/**/*.svelte", "tools/**/*.ts", "vite.config.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.svelte",
+    "tools/**/*.ts",
+    "tests/**/*.ts",
+    "playwright.config.ts",
+    "vite.config.ts"
+  ]
 }

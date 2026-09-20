@@ -1,6 +1,6 @@
 {
   "appName": "Kanji Trainer",
-  "tagline": "Read and write the words of the JLPT levels",
+  "tagline": "Drill JLPT vocabulary.",
   "level": "Level",
   "apply": "Apply",
   "cancel": "Cancel",
@@ -19,8 +19,7 @@
   "content": {
     "loading": "Loading the word list…",
     "failed": "The word list could not be read.",
-    "retry": "Try again",
-    "summary": "{words} words, {kanji} kanji"
+    "retry": "Try again"
   },
   "set": {
     "numbers": "Numbers",

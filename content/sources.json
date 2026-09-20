@@ -60,6 +60,21 @@
       ]
     },
     {
+      "id": "kanjidic",
+      "title": "KANJIDIC2, via jmdict-simplified",
+      "url": "https://github.com/scriptin/jmdict-simplified",
+      "licence": "CC BY-SA 4.0",
+      "licenceUrl": "https://www.edrdg.org/edrdg/licence.html",
+      "version": "3.6.2+20260914172325",
+      "files": [
+        {
+          "url": "https://github.com/scriptin/jmdict-simplified/releases/download/3.6.2%2B20260914172325/kanjidic2-en-3.6.2%2B20260914172325.json.tgz",
+          "sha256": "9ac76e39b322ad58737d417273d21f9845042b9f29eecc98c5cf34d5dae93ee1",
+          "as": "kanjidic2.json"
+        }
+      ]
+    },
+    {
       "id": "curation",
       "title": "Kanji Trainer hand curation",
       "url": "https://github.com/arsalan-anwari/kanji-trainer",

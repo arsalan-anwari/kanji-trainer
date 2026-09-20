@@ -13,6 +13,7 @@ import {
 import { CACHE_DIR } from "../../tools/content/fetch.ts";
 import { indexByWrittenForm, parseJmdict } from "../../tools/content/jmdict.ts";
 import { parseKradfile } from "../../tools/content/kradfile.ts";
+import { parseKanjidic } from "../../tools/content/kanjidic.ts";
 import { loadManifest } from "../../tools/content/sources.ts";
 import { contentProblems, parseContent } from "../../tools/content/content.ts";
 import {
@@ -77,6 +78,22 @@ describe("the shipped N5 content", () => {
     expect(content.words.filter((word) => word.gloss === "")).toEqual([]);
   });
 
+  test("accepts at least the pinned reading for every word", () => {
+    for (const word of content.words) {
+      expect(word.readings[0]).toBe(word.reading);
+    }
+  });
+
+  test("tells on from kun on every one-character word", () => {
+    const singles = content.words.filter((word) => [...word.written].length === 1);
+    expect(singles.length).toBeGreaterThan(0);
+    expect(singles.filter((word) => word.readingClass === undefined)).toEqual([]);
+  });
+
+  test("gives every kanji the readings the on and kun setting needs", () => {
+    expect(content.kanji.filter((entry) => entry.on.length + entry.kun.length === 0)).toEqual([]);
+  });
+
   test("ships the curated components as bare characters, not their English names", () => {
     const curated = loadComponentList();
     expect(content.taughtComponents).toEqual([...curated.map((row) => row.character)].sort());
@@ -126,11 +143,12 @@ describe.skipIf(!cacheIsPopulated)("rebuilding from the pinned sources", () => {
   test("reproduces the committed file byte for byte", () => {
     const index = indexByWrittenForm(parseJmdict(readCached("jmdict-eng-common.json")));
     const kradfile = parseKradfile(readCached("kradfile.json"));
+    const kanjidic = parseKanjidic(readCached("kanjidic2.json"));
     const rebuilt = buildContent(
       "N5",
       loadManifest().sources,
-      buildKanji(kanjiRows, kradfile),
-      buildWords(wordRows, index, levelKanji),
+      buildKanji(kanjiRows, kradfile, kanjidic),
+      buildWords(wordRows, index, levelKanji, kanjidic),
       buildTaughtComponents(
         loadComponentList(),
         kradfile,

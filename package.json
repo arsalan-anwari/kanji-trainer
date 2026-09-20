@@ -12,6 +12,7 @@
     "content:fetch": "node tools/content/fetch.ts",
     "content:build": "npm run content:fetch && node tools/content/build.ts",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "tauri": "tauri",
     "tauri:dev": "tauri dev -- --no-default-features",
     "tauri:build": "tauri build --no-bundle",
@@ -22,6 +23,7 @@
     "kaizen-ui": "file:vendor/kaizen-ui"
   },
   "devDependencies": {
+    "@playwright/test": "1.62.1",
     "@sveltejs/vite-plugin-svelte": "7.3.0",
     "@tailwindcss/vite": "4.3.3",
     "@tauri-apps/cli": "2.11.4",

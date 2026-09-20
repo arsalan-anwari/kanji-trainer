@@ -170,10 +170,11 @@ if (import.meta.vitest) {
       }
     });
 
-    test("pins the jmdict and kradfile releases to the same version", () => {
+    test("pins every jmdict-simplified release to the same version", () => {
       const versionOf = (id: string) =>
         manifest.sources.find((source) => source.id === id)?.version;
       expect(versionOf("jmdict")).toBe(versionOf("kradfile"));
+      expect(versionOf("jmdict")).toBe(versionOf("kanjidic"));
     });
   });
 }

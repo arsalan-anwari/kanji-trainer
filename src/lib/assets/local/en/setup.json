@@ -15,12 +15,10 @@
   "kanji": {
     "title": "Kanji in play",
     "description": "Which kanji the run covers.",
-    "selectAll": "Every kanji",
+    "selectAll": "All",
     "clear": "None",
-    "chosen": "{count} of {total} kanji",
     "wordCount": "{count} words",
-    "empty": "Pick a set to see its kanji.",
-    "wholeWord": "A word is asked only when every kanji in it is picked."
+    "empty": "Pick a set to see its kanji."
   },
   "format": {
     "title": "Question format",
@@ -47,12 +45,11 @@
     "title": "Run options",
     "description": "How long the run is.",
     "count": "Number of questions",
-    "onePass": "One pass",
-    "pool": "{count} words in play"
+    "onePass": "One pass"
   },
   "presets": {
     "label": "Saved runs",
-    "none": "Nothing saved yet",
+    "none": "Presets",
     "some": "Pick a saved run",
     "create": "Save this run",
     "update": "Update",

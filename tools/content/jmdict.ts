@@ -31,6 +31,12 @@ export type Lookup = ReadonlyMap<string, JmdictEntry[]>;
 
 const EXCLUDED_KANJI_TAGS = ["rK", "sK"];
 
+// Readings a learner would be marked wrong for never having met: outdated,
+// irregular, rare, and the search-only forms that are not readings at all.
+const EXCLUDED_KANA_TAGS = ["ok", "ik", "rk", "sk"];
+
+const HIRAGANA = /^[\p{Script=Hiragana}ー]+$/u;
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -165,6 +171,27 @@ export function isMatch(result: Match | Rejection): result is Match {
   return "entry" in result;
 }
 
+/**
+ * Every reading of the written form a typed answer may give, the curated one
+ * first. One word often has more than one live reading (七 なな and しち), and
+ * the prompt cannot say which was wanted without giving it away.
+ */
+export function acceptedReadings(
+  entry: JmdictEntry,
+  written: string,
+  primary: string
+): string[] {
+  const readings = [primary];
+  for (const form of entry.kana) {
+    if (readings.includes(form.text)) continue;
+    if (!appliesTo(form.appliesToKanji, written)) continue;
+    if (form.tags.some((tag) => EXCLUDED_KANA_TAGS.includes(tag))) continue;
+    if (!HIRAGANA.test(form.text)) continue;
+    readings.push(form.text);
+  }
+  return readings;
+}
+
 if (import.meta.vitest) {
   const { describe, test, expect } = import.meta.vitest;
 
@@ -279,6 +306,29 @@ if (import.meta.vitest) {
         })
       );
       expect(isMatch(lookupWord(index, "行った", "いった"))).toBe(true);
+    });
+  });
+
+  describe("acceptedReadings", () => {
+    const readingsOf = (written: string, primary: string, ...kana: [string, string[]][]) => {
+      const index = fixture(entry([[written, []]], kana, [{ gloss: ["x"] }]));
+      const result = lookupWord(index, written, primary);
+      if (!isMatch(result)) throw new Error(result.detail);
+      return acceptedReadings(result.entry, written, primary);
+    };
+
+    test("puts the curated reading first, whatever order JMdict holds", () => {
+      expect(readingsOf("七", "なな", ["しち", []], ["なな", []])).toEqual(["なな", "しち"]);
+    });
+
+    test("leaves out a reading marked outdated or search-only", () => {
+      expect(readingsOf("二十", "にじゅう", ["にじゅう", []], ["はた", ["ok"]])).toEqual([
+        "にじゅう"
+      ]);
+    });
+
+    test("leaves out a katakana form, which is not an answer to type", () => {
+      expect(readingsOf("何", "なに", ["なに", []], ["ナニ", []])).toEqual(["なに"]);
     });
   });
 }
