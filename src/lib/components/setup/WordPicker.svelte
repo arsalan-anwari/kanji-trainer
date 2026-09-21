@@ -1,7 +1,10 @@
 <script lang="ts">
-  import { Button, Card, EmptyState, Glyph, Icon, roving } from "kaizen-ui";
+  import { Button, Card, Chip, EmptyState, Glyph, Icon, roving } from "kaizen-ui";
   import { app } from "../../state.svelte";
+  import { WORD_SHAPES } from "../../quiz/settings";
   import { n, t } from "../../i18n.svelte";
+
+  const LEVELS = ["N5", "N4", "N3", "N2", "N1"];
 </script>
 
 <div class="flex flex-col gap-4">
@@ -30,6 +33,53 @@
       </Button>
     </div>
   </div>
+
+  <Card title={t("setup.level.title")} description={t("setup.level.description")}>
+    {#snippet icon()}<Icon name="trophy" class="size-5" />{/snippet}
+    <div role="group" aria-label={t("setup.level.title")} class="flex flex-wrap gap-2">
+      {#each LEVELS as level (level)}
+        {@const known = app.levels.includes(level)}
+        <Chip
+          size="sm"
+          disabled={!known}
+          active={app.settings.level === level}
+          title={known ? level : t("setup.level.unavailable", { level })}
+          onclick={() => app.updateSettings({ level })}
+        >
+          {level}
+        </Chip>
+      {/each}
+    </div>
+  </Card>
+
+  <Card title={t("setup.wordShapes.title")} description={t("setup.wordShapes.description")}>
+    {#snippet icon()}<Icon name="filter" class="size-5" />{/snippet}
+    <div class="flex flex-col gap-3">
+      <div role="group" aria-label={t("setup.wordShapes.title")} class="flex flex-wrap gap-2">
+        {#each WORD_SHAPES as shape (shape)}
+          <Chip
+            size="sm"
+            active={app.settings.wordShapes.includes(shape)}
+            title={t(`setup.wordShapes.${shape}`)}
+            onclick={() => {
+              const current = new Set(app.settings.wordShapes);
+              if (current.has(shape)) {
+                current.delete(shape);
+              } else {
+                current.add(shape);
+              }
+              app.updateSettings({ wordShapes: [...current] });
+            }}
+          >
+            {t(`common.wordShapes.${shape}`)}
+          </Chip>
+        {/each}
+      </div>
+      <p class="text-xs text-muted-foreground">
+        {t("setup.wordShapes.hint")}
+      </p>
+    </div>
+  </Card>
 
   {#each app.wordGroups as group (group.character)}
     {@const ids = group.words.map((word) => word.id)}

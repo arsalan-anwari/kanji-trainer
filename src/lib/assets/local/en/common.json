@@ -44,12 +44,20 @@
     "advanced": "Advanced",
     "expert": "Expert"
   },
+  "category": {
+    "reading": "Reading",
+    "meaning": "Meaning",
+    "visualize": "Visualize"
+  },
   "format": {
-    "kanji-reading": "Kanji to reading",
+    "kanji-kana": "Kanji to kana",
     "kana-kanji": "Kana to kanji",
-    "kanji-meaning": "Kanji to meaning",
-    "kana-meaning": "Kana to meaning",
-    "meaning-word": "Meaning to word"
+    "kanji-meaning": "Kanji to romaji",
+    "meaning-kanji": "Romaji to kanji",
+    "kana-meaning": "Kana to romaji",
+    "meaning-kana": "Romaji to kana",
+    "image-kanji": "Image to kanji",
+    "image-kana": "Image to kana"
   },
   "answerStyle": {
     "choice": "Multiple choice",

@@ -3,16 +3,20 @@
   "runProgress": "Run progress",
   "announce": "Question {index} of {total}. {prompt}",
   "prompt": {
-    "kanji-reading": "How is this word read?",
+    "kanji-kana": "How is this word read?",
     "kana-kanji": "Which word is this?",
     "kanji-meaning": "What does this word mean?",
+    "meaning-kanji": "Which word means this?",
     "kana-meaning": "What does this word mean?",
-    "meaning-word": "Which word means this?"
+    "meaning-kana": "How is this word read?",
+    "image-kanji": "Which word is this?",
+    "image-kana": "How is this word read?",
+    "imageAlt": "A picture illustrating the word"
   },
   "choices": "Answers",
   "typed": {
-    "label": "Reading",
-    "placeholder": "Type the reading",
+    "label": "Answer",
+    "placeholder": "Type your answer",
     "submit": "Check"
   },
   "correct": "Correct",

@@ -1,4 +1,5 @@
 import type { Word } from "../content/types";
+import { imageUrl } from "./hints";
 import { normalizeReading } from "./romaji";
 import { answerSurface, DEFAULT_SETTINGS, DIFFICULTIES, promptSurface } from "./settings";
 import type { Difficulty, Format, RunSettings, WordShape } from "./settings";
@@ -22,15 +23,20 @@ export type Answer = {
 };
 
 export function promptOf(word: Word, format: Format): string {
-  return word[promptSurface(format)];
+  const surface = promptSurface(format);
+  return surface === "image" ? imageUrl(word) : word[surface];
 }
 
 export function answerOf(word: Word, format: Format): string {
-  return word[answerSurface(format)];
+  const surface = answerSurface(format);
+  return surface === "image" ? "" : word[surface];
 }
 
 export function acceptedOf(word: Word, format: Format): string[] {
-  return answerSurface(format) === "reading" ? word.readings : [answerOf(word, format)];
+  const surface = answerSurface(format);
+  if (surface === "reading") return word.readings;
+  if (surface === "meaning") return word.glosses;
+  return [answerOf(word, format)];
 }
 
 export function atLevel(words: readonly Word[], level: string): Word[] {
@@ -218,8 +224,12 @@ export function checkChoice(question: Question, choice: string): boolean {
   return choice === question.answer;
 }
 
-export function checkTyped(question: Question, typed: string): boolean {
-  return question.accepted.includes(normalizeReading(typed));
+export function checkTyped(question: Question, typed: string, format: Format): boolean {
+  if (answerSurface(format) === "reading") {
+    return question.accepted.includes(normalizeReading(typed));
+  }
+  const given = typed.trim().toLowerCase();
+  return question.accepted.some((accepted) => accepted.toLowerCase() === given);
 }
 
 if (import.meta.vitest) {
@@ -234,13 +244,14 @@ if (import.meta.vitest) {
   }
 
   function word(id: string, set: Word["set"], extra: Partial<Word> = {}): Word {
+    const meaning = extra.meaning ?? id;
     return {
       id: `${id}|${id}`,
       written: id,
       reading: `${id}reading`,
       readings: [`${id}reading`],
-      glosses: [id],
-      meaning: id,
+      glosses: [meaning],
+      meaning,
       clue: "",
       kanji: [id],
       kanjiCount: 1,
@@ -340,7 +351,7 @@ if (import.meta.vitest) {
       }
     });
 
-test("asks the written form and answers the reading on kanji to reading", () => {
+test("asks the written form and answers the reading on kanji to kana", () => {
       const [question] = buildQuestions(settings, all, seeded(3));
       expect(question.prompt).not.toContain("reading");
       expect(question.answer).toContain("reading");
@@ -375,10 +386,10 @@ test("asks the written form and answers the reading on kanji to reading", () => 
       expect(question.answer).toBe("water");
     });
 
-    test("asks the meaning and answers the written form on meaning to word", () => {
+    test("asks the meaning and answers the written form on meaning to kanji", () => {
       const pool = [word("水", "nature", { meaning: "water" })];
       const [question] = buildQuestions(
-        { ...settings, sets: ["nature"], format: "meaning-word" },
+        { ...settings, sets: ["nature"], format: "meaning-kanji" },
         pool,
         seeded(3)
       );
@@ -386,15 +397,27 @@ test("asks the written form and answers the reading on kanji to reading", () => 
       expect(question.answer).toBe("水");
     });
 
-    test("accepts every reading only where the reading is the answer", () => {
+    test("asks a picture and answers the written form on image to kanji", () => {
+      const pool = [word("水", "nature", { meaning: "water" })];
+      const [question] = buildQuestions(
+        { ...settings, sets: ["nature"], format: "image-kanji" },
+        pool,
+        seeded(3)
+      );
+      expect(question.prompt).toBe("/images/n5/light/nature/svg/water.svg");
+      expect(question.answer).toBe("水");
+    });
+
+    test("accepts every reading only where the reading is the answer, and every gloss where the meaning is", () => {
       const seven = word("七", "numbers", {
         reading: "なな",
         readings: ["なな", "しち"],
-        meaning: "seven"
+        meaning: "seven",
+        glosses: ["seven", "7"]
       });
-      expect(acceptedOf(seven, "kanji-reading")).toEqual(["なな", "しち"]);
-      expect(acceptedOf(seven, "kanji-meaning")).toEqual(["seven"]);
-      expect(acceptedOf(seven, "meaning-word")).toEqual(["七"]);
+      expect(acceptedOf(seven, "kanji-kana")).toEqual(["なな", "しち"]);
+      expect(acceptedOf(seven, "kanji-meaning")).toEqual(["seven", "7"]);
+      expect(acceptedOf(seven, "meaning-kanji")).toEqual(["七"]);
     });
 
     test("borrows distractors from the whole level when the selection is too small", () => {
@@ -503,13 +526,13 @@ test("asks the written form and answers the reading on kanji to reading", () => 
     });
 
     test("ignores space around a typed answer", () => {
-      expect(checkTyped(question, `  ${question.answer} `)).toBe(true);
+      expect(checkTyped(question, `  ${question.answer} `, DEFAULT_SETTINGS.format)).toBe(true);
     });
 
     test("accepts a reading that was typed as romaji", () => {
       const reading = { ...question, answer: "がっこう", accepted: ["がっこう"] };
-      expect(checkTyped(reading, "gakkou")).toBe(true);
-      expect(checkTyped(reading, "gakko")).toBe(false);
+      expect(checkTyped(reading, "gakkou", "kanji-kana")).toBe(true);
+      expect(checkTyped(reading, "gakko", "kanji-kana")).toBe(false);
     });
 
     test("accepts any reading the word carries, not only the pinned one", () => {
@@ -522,9 +545,27 @@ test("asks the written form and answers the reading on kanji to reading", () => 
         [seven],
         seeded(9)
       );
-      expect(checkTyped(asked, "しち")).toBe(true);
-      expect(checkTyped(asked, "shichi")).toBe(true);
-      expect(checkTyped(asked, "はち")).toBe(false);
+      expect(checkTyped(asked, "しち", "kanji-kana")).toBe(true);
+      expect(checkTyped(asked, "shichi", "kanji-kana")).toBe(true);
+      expect(checkTyped(asked, "はち", "kanji-kana")).toBe(false);
+    });
+
+    test("accepts a typed meaning against any gloss, ignoring case", () => {
+      const pool = [word("水", "nature", { meaning: "water", glosses: ["water", "H2O"] })];
+      const [asked] = buildQuestions(
+        {
+          ...DEFAULT_SETTINGS,
+          sets: ["nature"],
+          format: "kanji-meaning",
+          answerStyle: "typing",
+          questionCount: 1
+        },
+        pool,
+        seeded(10)
+      );
+      expect(checkTyped(asked, "Water", "kanji-meaning")).toBe(true);
+      expect(checkTyped(asked, "h2o", "kanji-meaning")).toBe(true);
+      expect(checkTyped(asked, "ice", "kanji-meaning")).toBe(false);
     });
   });
 }

@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, test } from "vitest";
 import { renderAttribution, renderLicence } from "../../tools/content/attribution.ts";
@@ -12,7 +12,7 @@ import {
   OUTPUT_DIR,
   readCached
 } from "../../tools/content/build.ts";
-import { imageUrl } from "../../src/lib/quiz/hints.ts";
+import { imagePngUrl, imageUrl } from "../../src/lib/quiz/hints.ts";
 import { CACHE_DIR } from "../../tools/content/fetch.ts";
 import { indexByWrittenForm, parseJmdict } from "../../tools/content/jmdict.ts";
 import { parseKradfile } from "../../tools/content/kradfile.ts";
@@ -31,6 +31,19 @@ const WHERE = "data/content/n5.json";
 const IMAGE_DIR = fileURLToPath(new URL("../../data/images/", import.meta.url));
 
 const read = (name: string) => readFileSync(join(OUTPUT_DIR, name), "utf8");
+
+function countFiles(dir: string, matches: (path: string) => boolean): number {
+  return readdirSync(dir, { withFileTypes: true }).reduce(
+    (total, entry) =>
+      total +
+      (entry.isDirectory()
+        ? countFiles(join(dir, entry.name), matches)
+        : matches(join(dir, entry.name))
+          ? 1
+          : 0),
+    0
+  );
+}
 
 function loadContent() {
   if (!existsSync(join(OUTPUT_DIR, "n5.json"))) {
@@ -129,10 +142,12 @@ describe("the shipped N5 content", () => {
   });
 
   test("names a picture file for every word", () => {
-    const paths = content.words.map((word) => imageUrl(word));
-    expect(new Set(paths).size).toBe(content.words.length);
-    for (const path of paths) {
-      expect(existsSync(join(IMAGE_DIR, path.replace("/images/", "")))).toBe(true);
+    const svgPaths = content.words.map((word) => imageUrl(word));
+    expect(new Set(svgPaths).size).toBe(content.words.length);
+    // The svg and the dark png are both optional (vectorize.py and invert.py
+    // fill them in later); the light png behind them is not.
+    for (const word of content.words) {
+      expect(existsSync(join(IMAGE_DIR, imagePngUrl(word, false).replace("/images/", "")))).toBe(true);
     }
   });
 
@@ -140,7 +155,8 @@ describe("the shipped N5 content", () => {
     expect(OUTPUT_DIR.endsWith("/data/content/")).toBe(true);
     expect(IMAGE_DIR.startsWith(OUTPUT_DIR)).toBe(false);
     expect(readdirSync(OUTPUT_DIR).sort()).toEqual(["ATTRIBUTION.md", "LICENSE", "n5.json"]);
-    expect(readdirSync(IMAGE_DIR).length).toBe(content.words.length);
+    const isLightPng = (path: string) => path.includes(`${sep}light${sep}`) && path.endsWith(".png");
+    expect(countFiles(IMAGE_DIR, isLightPng)).toBe(content.words.length);
   });
 
   test("stays small enough to parse instantly on WebKitGTK and low-end Android", () => {

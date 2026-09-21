@@ -111,7 +111,7 @@ if (import.meta.vitest) {
       const query = {
         ...ANY_QUERY,
         answerStyles: ["typing" as const],
-        formats: ["kanji-reading" as const]
+        formats: ["kanji-kana" as const]
       };
       expect(queryReports(runs, query, now)).toHaveLength(1);
       expect(activeFilters(query)).toBe(2);

@@ -2,12 +2,16 @@ import { isSetId } from "../content/sets";
 import type { SetId } from "../content/sets";
 
 export type Format =
-  | "kanji-reading"
+  | "kanji-kana"
   | "kana-kanji"
   | "kanji-meaning"
+  | "meaning-kanji"
   | "kana-meaning"
-  | "meaning-word";
-export type Surface = "written" | "reading" | "meaning";
+  | "meaning-kana"
+  | "image-kanji"
+  | "image-kana";
+export type Surface = "written" | "reading" | "meaning" | "image";
+export type Category = "reading" | "meaning" | "visualize";
 export type AnswerStyle = "choice" | "typing";
 export type WordShape = "1-kanji" | "2-kanji" | "okurigana";
 export type Difficulty = "beginner" | "advanced" | "expert";
@@ -32,20 +36,35 @@ export type RunSettings = {
 
 export const DIFFICULTIES: readonly Difficulty[] = ["beginner", "advanced", "expert"];
 
-export const FORMATS: readonly Format[] = [
-  "kanji-reading",
-  "kana-kanji",
-  "kanji-meaning",
-  "kana-meaning",
-  "meaning-word"
-];
+export const CATEGORIES: readonly Category[] = ["reading", "meaning", "visualize"];
+
+export const DIRECTIONS_BY_CATEGORY: Record<Category, readonly Format[]> = {
+  reading: ["kanji-kana", "kana-kanji"],
+  meaning: ["kanji-meaning", "meaning-kanji", "kana-meaning", "meaning-kana"],
+  visualize: ["image-kanji", "image-kana"]
+};
+
+export const FORMATS: readonly Format[] = CATEGORIES.flatMap(
+  (category) => DIRECTIONS_BY_CATEGORY[category]
+);
+
+const CATEGORY_OF: Record<Format, Category> = Object.fromEntries(
+  CATEGORIES.flatMap((category) => DIRECTIONS_BY_CATEGORY[category].map((format) => [format, category]))
+) as Record<Format, Category>;
+
+export function categoryOf(format: Format): Category {
+  return CATEGORY_OF[format];
+}
 
 const SIDES: Record<Format, { prompt: Surface; answer: Surface }> = {
-  "kanji-reading": { prompt: "written", answer: "reading" },
+  "kanji-kana": { prompt: "written", answer: "reading" },
   "kana-kanji": { prompt: "reading", answer: "written" },
   "kanji-meaning": { prompt: "written", answer: "meaning" },
+  "meaning-kanji": { prompt: "meaning", answer: "written" },
   "kana-meaning": { prompt: "reading", answer: "meaning" },
-  "meaning-word": { prompt: "meaning", answer: "written" }
+  "meaning-kana": { prompt: "meaning", answer: "reading" },
+  "image-kanji": { prompt: "image", answer: "written" },
+  "image-kana": { prompt: "image", answer: "reading" }
 };
 
 export function promptSurface(format: Format): Surface {
@@ -57,7 +76,7 @@ export function answerSurface(format: Format): Surface {
 }
 
 export function isJapanese(surface: Surface): boolean {
-  return surface !== "meaning";
+  return surface === "written" || surface === "reading";
 }
 
 export const ANSWER_STYLES: readonly AnswerStyle[] = ["choice", "typing"];
@@ -85,7 +104,7 @@ export const DEFAULT_SETTINGS: RunSettings = {
   level: "N5",
   sets: [],
   kanji: [],
-  format: "kanji-reading",
+  format: "kanji-kana",
   answerStyle: "choice",
   choiceCount: 4,
   questionCount: 20,
@@ -93,10 +112,6 @@ export const DEFAULT_SETTINGS: RunSettings = {
   excludedWords: [],
   difficulty: "beginner"
 };
-
-export function typingAllowed(format: Format): boolean {
-  return format === "kanji-reading";
-}
 
 export function isCustomCount(count: number): boolean {
   return count > 0 && !QUESTION_COUNTS.includes(count);
@@ -122,11 +137,6 @@ export function normalizeSettings(settings: RunSettings): {
 } {
   const notes: string[] = [];
   const next: RunSettings = { ...settings };
-
-  if (next.answerStyle === "typing" && !typingAllowed(next.format)) {
-    next.answerStyle = "choice";
-    notes.push("setup.notes.kanjiNeedsChoice");
-  }
 
   if (!CHOICE_COUNTS.includes(next.choiceCount)) {
     next.choiceCount = DEFAULT_SETTINGS.choiceCount;
@@ -206,15 +216,13 @@ export function parseSettings(stored: unknown): RunSettings {
 if (import.meta.vitest) {
   const { test, expect } = import.meta.vitest;
 
-  test("moves a typed run back to multiple choice when the answer is a kanji", () => {
+  test("leaves a typed run answering a kanji alone, IME entry is on the learner's machine", () => {
     const wanted: RunSettings = {
       ...DEFAULT_SETTINGS,
       format: "kana-kanji",
       answerStyle: "typing"
     };
-    const { settings, notes } = normalizeSettings(wanted);
-    expect(settings.answerStyle).toBe("choice");
-    expect(notes).toContain("setup.notes.kanjiNeedsChoice");
+    expect(normalizeSettings(wanted).settings.answerStyle).toBe("typing");
   });
 
   test("leaves a typed reading run alone", () => {
@@ -285,26 +293,42 @@ if (import.meta.vitest) {
       "written",
       "reading",
       "written",
+      "meaning",
       "reading",
-      "meaning"
+      "meaning",
+      "image",
+      "image"
     ]);
     expect(FORMATS.map(answerSurface)).toEqual([
       "reading",
       "written",
       "meaning",
+      "written",
       "meaning",
-      "written"
+      "reading",
+      "written",
+      "reading"
     ]);
   });
 
-  test("calls only a meaning latin, so the quiz screen knows what to tag", () => {
+  test("groups every format under exactly one category", () => {
+    expect(FORMATS.map(categoryOf)).toEqual([
+      "reading",
+      "reading",
+      "meaning",
+      "meaning",
+      "meaning",
+      "meaning",
+      "visualize",
+      "visualize"
+    ]);
+  });
+
+  test("calls only a meaning or a picture latin, so the quiz screen knows what to tag", () => {
     expect(isJapanese("written")).toBe(true);
     expect(isJapanese("reading")).toBe(true);
     expect(isJapanese("meaning")).toBe(false);
-  });
-
-  test("leaves every format but the reading on multiple choice", () => {
-    expect(FORMATS.filter(typingAllowed)).toEqual(["kanji-reading"]);
+    expect(isJapanese("image")).toBe(false);
   });
 
   test("offers a custom length ladder the roller can step through", () => {

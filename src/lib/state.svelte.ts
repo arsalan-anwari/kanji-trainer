@@ -302,7 +302,7 @@ class AppState {
     if (this.phase !== "answering" || this.current === null) return;
     const given = this.typed.trim();
     if (given === "") return;
-    this.record(checkTyped(this.current, given), given);
+    this.record(checkTyped(this.current, given, this.settings.format), given);
   }
 
   next(): void {

@@ -1,17 +1,32 @@
 <script lang="ts">
-  import { Board, FitText, viewport } from "kaizen-ui";
+  import { Board, FitText, Projector, viewport } from "kaizen-ui";
   import { isJapanese, promptSurface } from "../../quiz/settings";
   import type { Question } from "../../quiz/questions";
+  import { pngFallback } from "../../quiz/hints";
+  import { isDarkTheme } from "../../theme.svelte";
   import { app } from "../../state.svelte";
   import { t } from "../../i18n.svelte";
 
   let { question }: { question: Question } = $props();
 
-  const japanese = $derived(isJapanese(promptSurface(app.settings.format)));
+  const surface = $derived(promptSurface(app.settings.format));
+  const japanese = $derived(isJapanese(surface));
+  const dark = $derived(isDarkTheme());
 
   // A phone in portrait has height to spare and no width; everything else is
   // the other way round.
   const compact = $derived(!viewport.wide && viewport.short);
+
+  // Not every word has an svg yet; the picture that failed to load names its
+  // own fallback, so a stale failure from a previous question never matches
+  // the current one.
+  let failedSrc = $state<string | null>(null);
+  const usingPngFallback = $derived(failedSrc === question.prompt);
+  const imgSrc = $derived(usingPngFallback ? pngFallback(question.prompt, dark) : question.prompt);
+
+  function useSvgOrPng() {
+    failedSrc = question.prompt;
+  }
 </script>
 
 <div class="flex w-full flex-col items-center gap-2 sm:gap-3">
@@ -19,21 +34,33 @@
     {t(`quiz.prompt.${app.settings.format}`)}
   </span>
 
-  <Board size="lg" {compact}>
-    <!-- The board is square, so a word laid out on one line has to shrink far
-         below what its height would allow. Past four glyphs it takes two lines
-         instead, which is how Japanese wraps anyway. The padding clears the
-         dashed guide, and the cap is on the short side so a tall glyph on a
-         board that is not square never spills either. -->
-    <FitText
-      text={question.prompt}
-      cap={46}
-      unit="cqmin"
-      pad={8}
-      perLine={japanese ? 4 : 12}
-      em={japanese ? 1 : 0.55}
-      lang={japanese ? "ja" : undefined}
-      class="font-medium {japanese ? 'jp' : ''}"
-    />
-  </Board>
+  {#if surface === "image"}
+    <Projector size="lg" {compact}>
+      <img
+        src={imgSrc}
+        onerror={useSvgOrPng}
+        alt={t("quiz.prompt.imageAlt")}
+        class="aspect-square w-full max-w-full rounded-xl object-contain p-2"
+        style={dark && !usingPngFallback ? "filter: invert(1) hue-rotate(180deg)" : undefined}
+      />
+    </Projector>
+  {:else}
+    <Board size="lg" {compact}>
+      <!-- The board is square, so a word laid out on one line has to shrink far
+           below what its height would allow. Past four glyphs it takes two lines
+           instead, which is how Japanese wraps anyway. The padding clears the
+           dashed guide, and the cap is on the short side so a tall glyph on a
+           board that is not square never spills either. -->
+      <FitText
+        text={question.prompt}
+        cap={46}
+        unit="cqmin"
+        pad={8}
+        perLine={japanese ? 4 : 12}
+        em={japanese ? 1 : 0.55}
+        lang={japanese ? "ja" : undefined}
+        class="font-medium {japanese ? 'jp' : ''}"
+      />
+    </Board>
+  {/if}
 </div>

@@ -88,6 +88,6 @@ describe("an expert run over the places set", () => {
   });
 
   test("still lets a beginner meet a distractor that shares nothing", () => {
-    expect(distractorScores(run("beginner", "kanji-reading"), "kanji-reading")).toContain(0);
+    expect(distractorScores(run("beginner", "kanji-kana"), "kanji-kana")).toContain(0);
   });
 });

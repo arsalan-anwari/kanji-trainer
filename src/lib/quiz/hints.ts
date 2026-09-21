@@ -7,17 +7,19 @@ export type Hint = { kind: HintKind; text: string };
 
 export type LookIndex = ReadonlyMap<string, string>;
 
-const KINDS: Record<Format, Record<"beginner" | "advanced", HintKind>> = {
-  "kanji-reading": { beginner: "romaji", advanced: "clue" },
+const KINDS: Record<Format, { beginner: HintKind; advanced: HintKind | null }> = {
+  "kanji-kana": { beginner: "romaji", advanced: "clue" },
   "kana-kanji": { beginner: "look", advanced: "image" },
   "kanji-meaning": { beginner: "image", advanced: "clue" },
+  "meaning-kanji": { beginner: "look", advanced: null },
   "kana-meaning": { beginner: "image", advanced: "clue" },
-  "meaning-word": { beginner: "look", advanced: "image" }
+  "meaning-kana": { beginner: "romaji", advanced: null },
+  "image-kanji": { beginner: "look", advanced: null },
+  "image-kana": { beginner: "romaji", advanced: null }
 };
 
 export function hintKind(format: Format, difficulty: Difficulty): HintKind | null {
   if (difficulty === "expert") return null;
-  if (format === "meaning-word" && difficulty === "advanced") return null;
   return KINDS[format][difficulty];
 }
 
@@ -32,8 +34,25 @@ export function imageSlug(meaning: string): string {
     .replace(/^-|-$/g, "");
 }
 
+/**
+ * The svg is a single light-theme drawing; dark and high-contrast invert it
+ * in CSS (see theme.svelte.ts) rather than shipping a second copy. Only the
+ * png fallback needs a theme, because it has no way to be inverted at
+ * render time.
+ */
 export function imageUrl(word: Word): string {
-  return `/images/${imageSlug(word.meaning)}.png`;
+  return `/images/${word.level.toLowerCase()}/light/${word.set}/svg/${imageSlug(word.meaning)}.svg`;
+}
+
+export function imagePngUrl(word: Word, dark: boolean): string {
+  const theme = dark ? "dark" : "light";
+  return `/images/${word.level.toLowerCase()}/${theme}/${word.set}/png/${imageSlug(word.meaning)}.png`;
+}
+
+/** Turns a failed svg <img> src into its light or dark png fallback. */
+export function pngFallback(svgUrl: string, dark: boolean): string {
+  const theme = dark ? "dark" : "light";
+  return svgUrl.replace("/light/", `/${theme}/`).replace("/svg/", "/png/").replace(/\.svg$/, ".png");
 }
 
 function looksOf(word: Word, looks: LookIndex): string {
@@ -90,39 +109,48 @@ if (import.meta.vitest) {
   ]);
 
   describe("choosing what a hint shows", () => {
-    test("names one kind for each of the ten format and tier pairs", () => {
-      const pairs = (["beginner", "advanced"] as const).flatMap((difficulty) =>
-        (Object.keys(KINDS) as Format[]).map((format) => hintKind(format, difficulty))
-      );
-      expect(pairs).toEqual([
+    test("names one kind for each of the sixteen format and tier pairs", () => {
+      const formats = Object.keys(KINDS) as Format[];
+      expect(formats.map((format) => hintKind(format, "beginner"))).toEqual([
         "romaji",
         "look",
         "image",
-        "image",
         "look",
+        "image",
+        "romaji",
+        "look",
+        "romaji"
+      ]);
+      expect(formats.map((format) => hintKind(format, "advanced"))).toEqual([
         "clue",
         "image",
         "clue",
+        null,
         "clue",
+        null,
+        null,
         null
       ]);
     });
 
-    test("offers an advanced meaning-word learner no hint either", () => {
-      expect(hintKind("meaning-word", "advanced")).toBeNull();
-      expect(hintFor(word, "meaning-word", "advanced", looks)).toBeNull();
+    test("offers no hint where an advanced learner already has the answer's shape", () => {
+      expect(hintKind("meaning-kanji", "advanced")).toBeNull();
+      expect(hintFor(word, "meaning-kanji", "advanced", looks)).toBeNull();
+      expect(hintKind("meaning-kana", "advanced")).toBeNull();
+      expect(hintKind("image-kanji", "advanced")).toBeNull();
+      expect(hintKind("image-kana", "advanced")).toBeNull();
     });
 
     test("offers an expert no hint at all", () => {
       const formats = Object.keys(KINDS) as Format[];
       expect(formats.map((format) => hintKind(format, "expert"))).toEqual(formats.map(() => null));
-      expect(hintFor(word, "kanji-reading", "expert", looks)).toBeNull();
+      expect(hintFor(word, "kanji-kana", "expert", looks)).toBeNull();
     });
   });
 
   describe("filling a hint with content", () => {
     test("writes a reading in romaji", () => {
-      expect(hintFor(word, "kanji-reading", "beginner", looks)).toEqual({
+      expect(hintFor(word, "kanji-kana", "beginner", looks)).toEqual({
         kind: "romaji",
         text: "ga-k-ko-u"
       });
@@ -143,7 +171,7 @@ if (import.meta.vitest) {
     test("points at the picture the word's meaning names", () => {
       expect(hintFor(word, "kana-kanji", "advanced", looks)).toEqual({
         kind: "image",
-        text: "/images/school.png"
+        text: "/images/n5/light/places/svg/school.svg"
       });
     });
 
@@ -151,6 +179,14 @@ if (import.meta.vitest) {
       expect(imageSlug("10,000")).toBe("10-000");
       expect(imageSlug("20 years old")).toBe("20-years-old");
       expect(imageSlug("once more")).toBe("once-more");
+    });
+
+    test("falls back to the light or dark png next to the svg that failed to load", () => {
+      const svg = "/images/n5/light/places/svg/school.svg";
+      expect(pngFallback(svg, false)).toBe("/images/n5/light/places/png/school.png");
+      expect(pngFallback(svg, true)).toBe("/images/n5/dark/places/png/school.png");
+      expect(imagePngUrl(word, false)).toBe("/images/n5/light/places/png/school.png");
+      expect(imagePngUrl(word, true)).toBe("/images/n5/dark/places/png/school.png");
     });
 
     test("hides a hint the content cannot fill", () => {

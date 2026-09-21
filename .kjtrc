@@ -1,5 +1,6 @@
 # Local dev shell for Kanji Trainer: source this, then call the scripts in
-# scripts/ by name without the .sh, e.g. "generate_images --one clock".
+# scripts/ by name without the .sh, e.g. "generate_images --level=n5".
+# vectorize_images and invert_images take the same --level/--category flags.
 #
 #   source .kjtrc
 

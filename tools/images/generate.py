@@ -1,24 +1,26 @@
 """Generate the hint images in data/images/ with the Recraft API.
 
-One image per N5 word. Every prompt comes from tools/images/n5.json: the
-entry's own "prompt" plus the file's shared "style" line, and nothing else.
-Edit that file to change what gets drawn; this script adds no wording.
+One image per N5 word. Prompts live under tools/images/data/{level}/{category}/
+as a words.json (the entries) plus a skiplist.txt (files already judged good,
+skipped by default) and a shared tools/images/data/{level}/style.json. Edit
+those files to change what gets drawn; this script adds no wording.
 
-A plain run regenerates all 185 images except the ones listed in
-tools/images/n5_skiplist.txt, which are the ones already judged good. Add a
-file name there once you are happy with its image; delete the line to have it
-drawn again.
+Images are written to data/images/{level}/light/{category}/png/{file}: the
+light-theme picture, which is the one this API is asked to draw. The dark
+variant is a separate step, see invert.py.
 
     export RECRAFT_API_KEY=...
-    python3 tools/images/generate.py --one clock       # single image, to verify
-    python3 tools/images/generate.py                   # all but the skip list
-    python3 tools/images/generate.py --all             # ignore the skip list
-    python3 tools/images/generate.py --one clock --dry-run
+    python3 tools/images/generate.py                              # everything, minus skiplists
+    python3 tools/images/generate.py --level=n5                   # one level, every category
+    python3 tools/images/generate.py --level=n5 --category=numbers,nature
+    python3 tools/images/generate.py --category=numbers           # error: no level given
+    python3 tools/images/generate.py --all                        # ignore every skiplist
+    python3 tools/images/generate.py --dry-run
 
 Set RECRAFT_STYLE_ID to a style id copied from the Recraft web platform
 (Styles panel, three-dot menu, "copy style ID"). V4/V4.1 styles have no
 name-based lookup in the API. Without it the look comes from the "style" line
-in n5.json alone, which is close but not identical between images.
+in style.json alone, which is close but not identical between images.
 """
 
 import argparse
@@ -32,29 +34,77 @@ import time
 import requests
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-SPEC = pathlib.Path(__file__).resolve().parent / "n5.json"
-SKIP = pathlib.Path(__file__).resolve().parent / "n5_skiplist.txt"
+DATA = pathlib.Path(__file__).resolve().parent / "data"
 OUT = ROOT / "data" / "images"
 API = "https://external.api.recraft.ai/v1/images/generations"
 MODEL = os.environ.get("RECRAFT_MODEL", "recraftv4_1")
 SIZE = 1024  # smallest square the API offers; saved as-is, the UI scales it
 
 
-def spec():
-    return json.loads(SPEC.read_text())
+def levels():
+    return sorted(p.name for p in DATA.iterdir() if p.is_dir())
 
 
-def skiplist():
-    if not SKIP.exists():
+def categories(level):
+    level_dir = DATA / level
+    return sorted(p.name for p in level_dir.iterdir() if p.is_dir())
+
+
+def style(level):
+    return json.loads((DATA / level / "style.json").read_text())
+
+
+def words(level, category):
+    return json.loads((DATA / level / category / "words.json").read_text())["words"]
+
+
+def png_dir(level, category, theme="light"):
+    return OUT / level / theme / category / "png"
+
+
+def svg_dir(level, category):
+    # Only the light png gets vectorized; dark mode inverts that svg at
+    # runtime instead of shipping a second copy.
+    return OUT / level / "light" / category / "svg"
+
+
+def skiplist(level, category):
+    path = DATA / level / category / "skiplist.txt"
+    if not path.exists():
         return set()
-    lines = (l.split("#")[0].strip() for l in SKIP.read_text().splitlines())
+    lines = (l.split("#")[0].strip() for l in path.read_text().splitlines())
     return {l for l in lines if l}
 
 
-def prompt(word, data):
+def prompt(word, style_data):
     # Words that ask for text in the picture need the style line that permits it.
-    style = data["style_text"] if word.get("text") else data["style"]
-    return f"{word['prompt']}. {style}"
+    text = style_data["style_text"] if word.get("text") else style_data["style"]
+    return f"{word['prompt']}. {text}"
+
+
+def plan(args):
+    """Every (level, category) pair this run should touch."""
+    if args.category and not args.level:
+        sys.exit("--category needs --level: it is not clear which level's categories are meant")
+
+    wanted_levels = [args.level] if args.level else levels()
+    for level in wanted_levels:
+        if not (DATA / level).is_dir():
+            sys.exit(f"no such level: {level}")
+
+    pairs = []
+    for level in wanted_levels:
+        available = categories(level)
+        if args.category:
+            wanted = args.category.split(",")
+            unknown = [c for c in wanted if c not in available]
+            if unknown:
+                sys.exit(f"no such category in {level}: {', '.join(unknown)}")
+            wanted_categories = wanted
+        else:
+            wanted_categories = available
+        pairs += [(level, category) for category in wanted_categories]
+    return pairs
 
 
 def generate(text, session):
@@ -83,31 +133,29 @@ def generate(text, session):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--one", metavar="NAME", help="generate a single image, e.g. clock or clock.png")
-    ap.add_argument("--set", metavar="SET", help="only this topic set, e.g. numbers")
-    ap.add_argument("--all", action="store_true", help="regenerate every image, ignoring the skip list")
+    ap.add_argument("--level", metavar="LEVEL", help="only this level, e.g. n5")
+    ap.add_argument("--category", metavar="CAT[,CAT...]", help="only these categories; requires --level")
+    ap.add_argument("--all", action="store_true", help="regenerate every image, ignoring the skiplists")
     ap.add_argument("--dry-run", action="store_true", help="print the prompts, call nothing")
     ap.add_argument("--limit", type=int, help="stop after N images")
     args = ap.parse_args()
 
-    data = spec()
-    todo = data["words"]
-    if args.one:
-        name = args.one if args.one.endswith(".png") else args.one + ".png"
-        todo = [w for w in todo if w["file"] == name]
-        if not todo:
-            sys.exit(f"{name} is not in {SPEC.relative_to(ROOT)}")
-    if args.set:
-        todo = [w for w in todo if w["set"] == args.set]
-    if not args.all:
-        skip = skiplist()
-        todo = [w for w in todo if w["file"] not in skip]
+    todo = []
+    for level, category in plan(args):
+        style_data = style(level)
+        entries = words(level, category)
+        skip = set() if args.all else skiplist(level, category)
+        out_dir = png_dir(level, category)
+        for w in entries:
+            if w["file"] in skip:
+                continue
+            todo.append((level, category, w, prompt(w, style_data), out_dir / w["file"]))
     if args.limit:
         todo = todo[: args.limit]
 
     if args.dry_run:
-        for w in todo:
-            print(f"{w['file']}\n  {prompt(w, data)}\n")
+        for level, category, w, text, path in todo:
+            print(f"{level}/{category}/{w['file']}\n  {text}\n")
         return
     if not todo:
         print("nothing to do")
@@ -118,27 +166,28 @@ def main():
     session = requests.Session()
     session.headers["Authorization"] = f"Bearer {key}"
     print(f"{len(todo)} image(s), model {MODEL}, style_id {os.environ.get('RECRAFT_STYLE_ID', '(none, style line only)')}")
-    for i, w in enumerate(todo, 1):
-        (OUT / w["file"]).write_bytes(generate(prompt(w, data), session))
-        print(f"[{i}/{len(todo)}] {w['file']}")
+    for i, (level, category, w, text, path) in enumerate(todo, 1):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(generate(text, session))
+        print(f"[{i}/{len(todo)}] {level}/{category}/{w['file']}")
 
 
 def check():
-    data = spec()
-    rows = data["words"]
-    assert len(rows) == 185, len(rows)
-    assert len({w["file"] for w in rows}) == len(rows), "duplicate file name"
-    assert all(w["file"].endswith(".png") and (OUT / w["file"]).exists() for w in rows)
-    assert all(w["prompt"] and w["word"] and w["name"] for w in rows), "empty field"
-    clock = next(w for w in rows if w["file"] == "clock.png")
-    assert "wall clock" in prompt(clock, data)
-    assert "No letters" in prompt(clock, data)
-    monday = next(w for w in rows if w["file"] == "monday.png")
-    assert "No letters" not in prompt(monday, data), "text words must not get the no-letters style"
-    assert "exactly as written" in prompt(monday, data)
-    skip = skiplist()
-    assert skip <= {w["file"] for w in rows}, sorted(skip - {w["file"] for w in rows})
-    print(f"ok, {len(rows)} words parsed, {len(skip)} skipped, {len(rows) - len(skip)} would be drawn")
+    total = 0
+    for level in levels():
+        for category in categories(level):
+            style_data = style(level)
+            rows = words(level, category)
+            total += len(rows)
+            assert len({w["file"] for w in rows}) == len(rows), f"duplicate file name in {level}/{category}"
+            assert all(w["file"].endswith(".png") for w in rows)
+            assert all((png_dir(level, category) / w["file"]).exists() for w in rows)
+            assert all(w["prompt"] and w["word"] and w["name"] for w in rows), "empty field"
+            assert style_data["style"] and style_data["style_text"]
+            skip = skiplist(level, category)
+            assert skip <= {w["file"] for w in rows}, sorted(skip - {w["file"] for w in rows})
+    assert total == 185, total
+    print(f"ok, {total} words parsed across {len(levels())} level(s)")
 
 
 if __name__ == "__main__":

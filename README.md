@@ -16,6 +16,8 @@ instead. That app assumes you already know the vocabulary this one trains.
 No SRS and no review queue. You configure each run by hand. Past results get
 charts and reports, but the app never decides what you practise next.
 
+Typing a kanji answer needs a Japanese input method (IME) enabled on your device.
+
 ## Development
 
 ```sh

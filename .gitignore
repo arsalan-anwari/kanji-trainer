@@ -2,6 +2,7 @@
 .metadata_cache/
 .serena/
 .firecrawl/
+__pycache__
 
 # Build artifacts
 .cache
