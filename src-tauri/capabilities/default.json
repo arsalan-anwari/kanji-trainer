@@ -3,5 +3,10 @@
   "identifier": "default",
   "description": "Permissions used by the kanji trainer window",
   "windows": ["main"],
-  "permissions": ["core:default"]
+  "permissions": [
+    "core:default",
+    "dialog:allow-open",
+    "dialog:allow-save",
+    "dialog:allow-message"
+  ]
 }

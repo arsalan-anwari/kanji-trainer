@@ -1,13 +1,20 @@
 {
-  "title": "Past runs",
-  "description": "Every run kept on this device.",
   "none": "No run has been finished yet.",
   "entry": "{score} of {total} right",
-  "runs": "{count} runs",
   "window": {
     "all": "All",
     "today": "Today",
-    "week": "Last 7 days"
+    "week": "Last Week",
+    "custom": "Custom",
+    "range": "{from} – {to}"
+  },
+  "range": {
+    "pick": "Pick a date range",
+    "title": "Date range",
+    "close": "Close the date range",
+    "from": "From",
+    "to": "To",
+    "invalid": "Start on or before the end, and no earlier than {earliest}."
   },
   "filters": {
     "title": "Filters",
@@ -19,10 +26,21 @@
   "list": {
     "selectAll": "Select every run shown",
     "clearSelection": "Clear the selection",
-    "remove": "Delete"
+    "remove": "Delete",
+    "export": "Export",
+    "import": "Import",
+    "actions": "Run actions"
   },
-  "selected": "{count} selected",
+  "pages": {
+    "label": "Report pages",
+    "previous": "Previous page",
+    "next": "Next page",
+    "at": "Page {page} of {pages}"
+  },
   "deleted": "Deleted.",
+  "exported": "Exported.",
+  "imported": "Imported.",
+  "importedSome": "Imported. Some runs were already here.",
   "confirmTitle": "Delete these runs?",
   "confirmBody": "{count} runs will be removed from this device.",
   "stat": {
@@ -30,9 +48,53 @@
     "answers": "Answers",
     "accuracy": "Accuracy"
   },
-  "soon": {
-    "title": "Diagnosis",
-    "description": "What went wrong, per kanji, per set and per format.",
-    "empty": "Lands in a later phase."
+  "diagnosis": {
+    "kanji": {
+      "title": "Kanji",
+      "description": "Accuracy per kanji.",
+      "empty": "No answers in this selection yet."
+    },
+    "sets": {
+      "title": "Sets",
+      "description": "Accuracy per set.",
+      "empty": "No answers in this selection yet."
+    },
+    "formats": {
+      "title": "Formats",
+      "description": "Accuracy per format.",
+      "empty": "No answers in this selection yet.",
+      "columns": {
+        "group": "Format / variant",
+        "accuracy": "Accuracy",
+        "bar": "Progress",
+        "score": "Score"
+      }
+    },
+    "mistakes": {
+      "title": "Mistakes by word",
+      "description": "Wrong answers, by word.",
+      "empty": "No mistakes in this selection."
+    },
+    "time": {
+      "title": "Speed",
+      "description": "Time per question.",
+      "empty": "No answers in this selection yet."
+    }
+  },
+  "practise": {
+    "button": "Practise these mistakes",
+    "empty": "No mistakes to practise.",
+    "loaded": "Loaded the words you missed into setup."
+  },
+  "mastery": {
+    "new": "New",
+    "shaky": "Shaky",
+    "learning": "Learning",
+    "steady": "Steady",
+    "mastered": "Mastered"
+  },
+  "tip": {
+    "stat": "{correct} of {total} right, {mastery}",
+    "speed": "{label}: {averageMs}ms average"
   }
 }

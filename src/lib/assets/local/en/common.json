@@ -2,6 +2,7 @@
   "appName": "Kanji Trainer",
   "tagline": "Drill JLPT vocabulary.",
   "level": "Level",
+  "any": "Any",
   "apply": "Apply",
   "cancel": "Cancel",
   "close": "Close",
@@ -63,6 +64,12 @@
     "choice": "Multiple choice",
     "typing": "Typing"
   },
+  "surface": {
+    "written": "Kanji",
+    "reading": "Kana",
+    "meaning": "Romaji",
+    "image": "Image"
+  },
   "words": "{count} words",
   "show": "Show {label}",
   "hide": "Hide {label}",
@@ -88,5 +95,16 @@
   },
   "shortcuts": {
     "mode": "Keyboard mode"
+  },
+  "file": {
+    "filterName": "Kanji Trainer runs",
+    "writeFailed": "Could not write that file.",
+    "readFailed": "Could not read that file.",
+    "tooShort": "That file is too short to be a .kj-report file.",
+    "notReport": "That is not a .kj-report file.",
+    "newer": "That file was written by a newer version (format {version}).",
+    "incomplete": "That .kj-report file is incomplete.",
+    "damaged": "That .kj-report file is damaged.",
+    "badRun": "That .kj-report file holds a run that cannot be read."
   }
 }

@@ -1,11 +1,28 @@
 <script lang="ts">
-  import { Button, Card, EmptyState, Glyph, Icon, Stat } from "kaizen-ui";
+  import { Button, Card, EmptyState, Glyph, Icon, ResultSplash, Stat } from "kaizen-ui";
   import { app } from "../../state.svelte";
+  import { tierBlurb, tierEmoji, tierHeadline } from "../../quiz/score";
   import { n, t } from "../../i18n.svelte";
 
   const summary = $derived(app.lastSummary);
   const percent = $derived(summary === null ? 0 : Math.round(summary.accuracy * 100));
 </script>
+
+{#if app.splash !== null}
+  <ResultSplash
+    grade={app.splash}
+    headline={tierHeadline(app.splash)}
+    blurb={tierBlurb(app.splash)}
+    emoji={tierEmoji(app.splash)}
+    hint={t("result.skip")}
+    ondismiss={() => app.dismissSplash()}
+  >
+    {#if summary !== null}
+      {n(summary.score)} / {n(summary.total)}
+      <span class="text-muted-foreground">· {percent}%</span>
+    {/if}
+  </ResultSplash>
+{/if}
 
 {#if summary !== null}
   <div

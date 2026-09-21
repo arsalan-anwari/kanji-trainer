@@ -26,6 +26,9 @@ import {
 import { fallbackHint, hintFor, lookIndex, type Hint } from "./quiz/hints";
 import { componentIndex } from "./quiz/similarity";
 import { newReportId, summarize, type Report, type Summary } from "./quiz/report";
+import { settingsFromMistakes } from "./quiz/diagnosis";
+import { scoreTier } from "./quiz/score";
+import { sfx, type FanfareGrade } from "kaizen-ui";
 import {
   deletePreset,
   deleteReports,
@@ -74,6 +77,7 @@ class AppState {
 
   reports = $state<Report[]>([]);
   lastReport = $state<Report | null>(null);
+  splash = $state<FanfareGrade | null>(null);
 
   words = $derived<Word[]>(this.content?.words ?? []);
   components = $derived(componentIndex(this.content?.kanji ?? []));
@@ -150,14 +154,18 @@ class AppState {
 
   load(): void {
     this.settings = parseSettings(loadJson<unknown>(SETTINGS_KEY, null));
-    this.reports = listReports();
     this.presets = listPresets();
     const chosen = loadJson<unknown>(CHOSEN_PRESET_KEY, "");
     this.#chosenPreset =
       typeof chosen === "string" && this.presets.some((preset) => preset.name === chosen)
         ? chosen
         : "";
+    void this.refreshReports();
     void this.loadContent();
+  }
+
+  async refreshReports(): Promise<void> {
+    this.reports = await listReports();
   }
 
   async loadContent(): Promise<void> {
@@ -168,6 +176,7 @@ class AppState {
   }
 
   updateSettings(patch: Partial<RunSettings>): void {
+    sfx.select();
     const result = normalizeSettings({ ...this.settings, ...patch });
     this.settings = result.settings;
     this.notes = result.notes;
@@ -242,7 +251,11 @@ class AppState {
 
 
   storePreset(name: string): void {
-    this.presets = savePreset(name, this.settings);
+    this.presets = savePreset(name, {
+      sets: this.settings.sets,
+      kanji: this.settings.kanji,
+      excludedWords: this.settings.excludedWords
+    });
     this.chosenPreset = name;
     this.message = "setup.presets.saved";
   }
@@ -251,7 +264,7 @@ class AppState {
     const preset = this.presets.find((entry) => entry.name === name);
     if (preset === undefined) return;
     this.chosenPreset = name;
-    this.updateSettings({ ...preset.settings });
+    this.updateSettings(preset.selection);
   }
 
   removePreset(name: string): void {
@@ -274,6 +287,8 @@ class AppState {
     this.runStartedAt = Date.now();
     this.questionStartedAt = this.runStartedAt;
     this.route = "quiz";
+    this.splash = null;
+    sfx.start();
   }
 
   record(correct: boolean, given: string): void {
@@ -290,6 +305,8 @@ class AppState {
     ];
     this.lastCorrect = correct;
     this.phase = "feedback";
+    if (correct) sfx.correct();
+    else sfx.wrong();
   }
 
   answerChoice(choice: string): void {
@@ -328,17 +345,27 @@ class AppState {
       answers: [...this.answers]
     };
     this.lastReport = report;
-    this.reports = saveReport(report);
     this.phase = "done";
     this.route = "result";
+    const summary = summarize(report);
+    this.splash = scoreTier(summary.accuracy, summary.total);
+    sfx.score(this.splash);
+    void saveReport(report).then(() => this.refreshReports());
+  }
+
+  dismissSplash(): void {
+    this.splash = null;
   }
 
   askQuit(): void {
+    sfx.click();
     this.confirmQuit = true;
   }
 
   showHint(): void {
-    if (this.hint !== null) this.hintOpen = true;
+    if (this.hint === null) return;
+    sfx.hint();
+    this.hintOpen = true;
   }
 
   hideHint(): void {
@@ -346,21 +373,37 @@ class AppState {
   }
 
   quit(): void {
+    sfx.click();
     this.questions = [];
     this.answers = [];
     this.confirmQuit = false;
     this.hintOpen = false;
     this.route = "setup";
+    this.splash = null;
   }
 
-  removeReports(ids: readonly string[]): void {
-    this.reports = deleteReports(ids);
+  async removeReports(ids: readonly string[]): Promise<void> {
+    await deleteReports(ids);
+    await this.refreshReports();
     this.message = "reports.deleted";
   }
 
+  practiseMistakes(reports: readonly Report[]): void {
+    const patch = settingsFromMistakes(reports, this.words);
+    if (Object.keys(patch).length === 0) {
+      this.message = "reports.practise.empty";
+      return;
+    }
+    this.updateSettings(patch);
+    this.route = "setup";
+    this.message = "reports.practise.loaded";
+  }
+
   go(route: Route): void {
+    sfx.click();
     this.message = "";
     this.route = route;
+    if (route === "reports") void this.refreshReports();
   }
 }
 

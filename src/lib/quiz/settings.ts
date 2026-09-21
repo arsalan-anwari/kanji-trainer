@@ -151,7 +151,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function pickSets(value: unknown): SetId[] {
+export function pickSets(value: unknown): SetId[] {
   if (!Array.isArray(value)) return [];
   const out: SetId[] = [];
   for (const entry of value) {
@@ -169,11 +169,11 @@ function pickText(value: unknown, keep: (entry: string) => boolean): string[] {
   return out;
 }
 
-function pickKanji(value: unknown): string[] {
+export function pickKanji(value: unknown): string[] {
   return pickText(value, (entry) => [...entry].length === 1);
 }
 
-function pickWordIds(value: unknown): string[] {
+export function pickWordIds(value: unknown): string[] {
   return pickText(value, (entry) => entry !== "");
 }
 

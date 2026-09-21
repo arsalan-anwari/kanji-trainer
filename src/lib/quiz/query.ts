@@ -1,13 +1,28 @@
 import type { Report } from "./report";
 import type { AnswerStyle, Format } from "./settings";
 import { ANSWER_STYLES, FORMATS } from "./settings";
+import { t } from "../i18n.svelte";
 
 export const WINDOWS = ["all", "today", "week"] as const;
 
 export type Window = (typeof WINDOWS)[number];
 
+export type DateRange = { from: string; to: string };
+
+export function isDateRange(filter: Window | DateRange): filter is DateRange {
+  return typeof filter !== "string";
+}
+
+export const RANGE_DAYS = 365;
+
+export function dayKey(stamp: number): string {
+  const date = new Date(stamp);
+  const pad = (value: number): string => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
 export type ReportQuery = {
-  window: Window;
+  window: Window | DateRange;
   formats: Format[];
   answerStyles: AnswerStyle[];
   levels: string[];
@@ -20,7 +35,6 @@ export const ANY_QUERY: ReportQuery = {
   levels: []
 };
 
-export const FORMAT_TAGS = FORMATS;
 export const ANSWER_STYLE_TAGS = ANSWER_STYLES;
 
 const DAY_MS = 86_400_000;
@@ -31,12 +45,43 @@ function startOfDay(at: number): number {
   return date.getTime();
 }
 
-export function withinWindow(createdAt: string, window: Window, now: number): boolean {
-  if (window === "all") return true;
+function dayStart(key: string): number {
+  const parts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key);
+  if (parts === null) return Number.NaN;
+  return new Date(Number(parts[1]), Number(parts[2]) - 1, Number(parts[3])).getTime();
+}
+
+export function withinWindow(createdAt: string, window: Window | DateRange, now: number): boolean {
+  if (!isDateRange(window) && window === "all") return true;
   const at = Date.parse(createdAt);
   if (Number.isNaN(at)) return false;
+  if (isDateRange(window)) {
+    const from = dayStart(window.from);
+    const to = dayStart(window.to);
+    if (!Number.isFinite(from) || !Number.isFinite(to)) return false;
+    return at >= Math.min(from, to) && at < Math.max(from, to) + DAY_MS;
+  }
   const today = startOfDay(now);
   return window === "today" ? at >= today : at >= today - 6 * DAY_MS;
+}
+
+export function windowLabel(filter: Window | DateRange): string {
+  if (isDateRange(filter)) return t("reports.window.custom");
+  return t(`reports.window.${filter}`);
+}
+
+export function rangeLabel(range: DateRange): string {
+  return range.from === range.to
+    ? range.from
+    : t("reports.window.range", { from: range.from, to: range.to });
+}
+
+export function queryLabels(query: ReportQuery): string[] {
+  return [
+    ...query.formats.map((format) => t(`common.format.${format}`)),
+    ...query.answerStyles.map((style) => t(`common.answerStyle.${style}`)),
+    ...query.levels
+  ];
 }
 
 function matches<T>(chosen: readonly T[], value: T): boolean {
@@ -130,6 +175,47 @@ if (import.meta.vitest) {
       const broken = [report("not a date")];
       expect(queryReports(broken, { ...ANY_QUERY, window: "today" }, now)).toEqual([]);
       expect(queryReports(broken, ANY_QUERY, now)).toHaveLength(1);
+    });
+
+    test("keeps runs inside a custom date range", () => {
+      const range = { from: "2026-09-17", to: "2026-09-19" };
+      expect(queryReports(runs, { ...ANY_QUERY, window: range }, now)).toHaveLength(2);
+    });
+
+    test("keeps a single-day range to just that day", () => {
+      const range = { from: "2026-08-01", to: "2026-08-01" };
+      expect(queryReports(runs, { ...ANY_QUERY, window: range }, now)).toHaveLength(1);
+    });
+
+    test("swaps a backwards range so it still keeps what falls between", () => {
+      const range = { from: "2026-09-19", to: "2026-09-17" };
+      expect(queryReports(runs, { ...ANY_QUERY, window: range }, now)).toHaveLength(2);
+    });
+  });
+
+  describe("window and query labels", () => {
+    test("names every fixed window", () => {
+      expect(windowLabel("all")).toBe("All");
+      expect(windowLabel("today")).toBe("Today");
+      expect(windowLabel("week")).toBe("Last Week");
+    });
+
+    test("calls a date range custom", () => {
+      expect(windowLabel({ from: "2026-09-17", to: "2026-09-19" })).toBe("Custom");
+    });
+
+    test("lists the labels of every active filter", () => {
+      const query = {
+        ...ANY_QUERY,
+        formats: ["kanji-kana" as const],
+        answerStyles: ["typing" as const],
+        levels: ["N5"]
+      };
+      expect(queryLabels(query)).toEqual(["Kanji to kana", "Typing", "N5"]);
+    });
+
+    test("lists nothing for an unfiltered query", () => {
+      expect(queryLabels(ANY_QUERY)).toEqual([]);
     });
   });
 

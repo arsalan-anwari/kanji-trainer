@@ -3,3 +3,7 @@
 @import "kaizen-ui/fonts.css";
 
 @source "../vendor/kaizen-ui/src";
+
+:root {
+  --sunlight: none;
+}

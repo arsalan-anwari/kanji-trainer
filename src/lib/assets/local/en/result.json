@@ -9,5 +9,20 @@
     "count": "{count} words"
   },
   "again": "Set up another run",
-  "report": "See past runs"
+  "report": "See past runs",
+  "skip": "Tap anywhere to skip",
+  "tier": {
+    "perfect": "Perfect",
+    "great": "Nearly perfect",
+    "good": "Strong run",
+    "fair": "Getting there",
+    "poor": "Keep practising"
+  },
+  "blurb": {
+    "perfect": "Not one word missed.",
+    "great": "So close to a clean sheet.",
+    "good": "Most of them landed.",
+    "fair": "The shape of it is there.",
+    "poor": "Every run makes the next one easier."
+  }
 }
