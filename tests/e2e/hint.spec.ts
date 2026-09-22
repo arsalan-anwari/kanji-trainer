@@ -74,9 +74,11 @@ test("offers an expert no bulb at all", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Show a hint" })).toHaveCount(0);
 });
 
+// Kana to kanji is the format whose advanced hint is the picture; its beginner
+// hint is the shape of the kanji, which is what a broken picture falls back to.
 async function startPictureRun(page: Page, set: RegExp): Promise<void> {
   await page.goto("/");
-  await page.getByRole("button", { name: "Kanji to meaning" }).click();
+  await page.getByRole("button", { name: "Kana to kanji" }).click();
   await page
     .getByRole("group", { name: "Difficulty" })
     .getByRole("button", { name: "Advanced" })
@@ -98,12 +100,12 @@ test("shows the picture hint on the advanced tier", async ({ page }) => {
   );
 });
 
-test("falls back to the beginner hint where the picture is still a placeholder", async ({
-  page
-}) => {
+test("falls back to the beginner hint when the picture will not load", async ({ page }) => {
+  // Every word ships a picture, so the fallback only shows if one fails to load.
+  await page.route("**/images/**", (route) => route.abort());
   await startPictureRun(page, /^Nature/);
   const panel = page.getByRole("dialog");
   await expect(panel).toBeVisible();
-  await expect(panel.getByRole("img")).toHaveCount(0);
-  await expect(panel.getByText("A clue")).toBeVisible();
+  await expect(panel.getByText("A picture")).toHaveCount(0);
+  await expect(panel.getByText("How it is written")).toBeVisible();
 });

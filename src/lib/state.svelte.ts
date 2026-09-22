@@ -1,9 +1,11 @@
 import { loadContent } from "./content/load";
 import {
+  countBySubcategory,
   groupWordsByKanji,
   kanjiBySet,
   setsWithWords,
-  wordsPerKanji,
+  subcategoriesBySet,
+  subcategoryKey,
   SET_IDS,
   type SetId
 } from "./content/sets";
@@ -86,24 +88,30 @@ class AppState {
   availableSets = $derived<SetId[]>(setsWithWords(this.words));
   kanjiInSet = $derived(kanjiBySet(this.words));
   excludedWords = $derived<Set<string>>(new Set(this.settings.excludedWords));
-  wordCounts = $derived(
-    wordsPerKanji(this.words.filter((word) => !this.excludedWords.has(word.id)))
+  subcategoriesInSet = $derived(subcategoriesBySet(this.words));
+  /** How many words each (set, subcategory) pair still holds, for the badges. */
+  subcategoryCounts = $derived(
+    countBySubcategory(this.words.filter((word) => !this.excludedWords.has(word.id)))
   );
 
-  /** Every kanji the chosen sets teach — what an empty selection stands for. */
-  kanjiOfChosenSets = $derived<string[]>(
-    SET_IDS.filter((id) => this.settings.sets.includes(id)).flatMap((id) => this.kanjiInSet[id])
+  /** Every subcategory the chosen sets hold — what an empty selection stands for. */
+  subcategoriesOfChosenSets = $derived<string[]>(
+    SET_IDS.filter((id) => this.settings.sets.includes(id)).flatMap((id) =>
+      this.subcategoriesInSet[id].map((subcategory) => subcategoryKey(id, subcategory))
+    )
   );
-  selectedKanji = $derived<Set<string>>(
-    new Set(this.settings.kanji.length === 0 ? this.kanjiOfChosenSets : this.settings.kanji)
+  selectedSubcategories = $derived<Set<string>>(
+    new Set(
+      this.settings.subcategories.length === 0
+        ? this.subcategoriesOfChosenSets
+        : this.settings.subcategories
+    )
   );
 
   pickerOrder = $derived<string[]>(SET_IDS.flatMap((id) => this.kanjiInSet[id]));
   selectableWords = $derived<Word[]>(
     eligibleWords({ ...this.settings, excludedWords: [] }, this.words)
   );
-  wordGroups = $derived(groupWordsByKanji(this.selectableWords, this.pickerOrder));
-
   pool = $derived<Word[]>(eligibleWords(this.settings, this.words));
   eligibleCount = $derived(this.pool.length);
   questionTotal = $derived(
@@ -188,29 +196,30 @@ class AppState {
     const sets = on
       ? this.settings.sets.filter((entry) => entry !== id)
       : [...this.settings.sets, id];
-    // A kanji selection is held per character, so a set leaving takes its
-    // characters with it rather than leaving them orphaned in the list.
-    const kanji =
-      this.settings.kanji.length === 0
+    // A subcategory selection is held per pair, so a set leaving takes its
+    // pairs with it rather than leaving them orphaned in the list.
+    const subcategories =
+      this.settings.subcategories.length === 0
         ? []
-        : this.settings.kanji.filter((character) => !this.kanjiInSet[id].includes(character));
-    this.updateSettings({ sets, kanji });
+        : this.settings.subcategories.filter((key) => !key.startsWith(`${id}/`));
+    this.updateSettings({ sets, subcategories });
   }
 
   selectAllSets(): void {
-    this.updateSettings({ sets: [...this.availableSets], kanji: [] });
+    this.updateSettings({ sets: [...this.availableSets], subcategories: [] });
   }
 
   clearSets(): void {
-    this.updateSettings({ sets: [], kanji: [] });
+    this.updateSettings({ sets: [], subcategories: [] });
   }
 
-  toggleKanji(character: string): void {
-    const everything = this.kanjiOfChosenSets;
-    const current = this.settings.kanji.length === 0 ? everything : this.settings.kanji;
-    const next = current.includes(character)
-      ? current.filter((entry) => entry !== character)
-      : [...current, character];
+  toggleSubcategory(key: string): void {
+    const everything = this.subcategoriesOfChosenSets;
+    const current =
+      this.settings.subcategories.length === 0 ? everything : this.settings.subcategories;
+    const next = current.includes(key)
+      ? current.filter((entry) => entry !== key)
+      : [...current, key];
 
     // Unticking the last one leaves nothing to practise, which is what clearing
     // the sets means; holding none back is what an empty list means.
@@ -218,11 +227,23 @@ class AppState {
       this.clearSets();
       return;
     }
-    this.updateSettings({ kanji: next.length === everything.length ? [] : next });
+    this.updateSettings({ subcategories: next.length === everything.length ? [] : next });
   }
 
-  selectAllKanji(): void {
-    this.updateSettings({ kanji: [] });
+  /** Every subcategory of one set, on or off together. */
+  setSubcategoriesOf(id: SetId, on: boolean): void {
+    const everything = this.subcategoriesOfChosenSets;
+    const current =
+      this.settings.subcategories.length === 0 ? everything : this.settings.subcategories;
+    const mine = this.subcategoriesInSet[id].map((entry) => subcategoryKey(id, entry));
+    const next = on
+      ? [...current.filter((key) => !mine.includes(key)), ...mine]
+      : current.filter((key) => !mine.includes(key));
+    if (next.length === 0) {
+      this.clearSets();
+      return;
+    }
+    this.updateSettings({ subcategories: next.length === everything.length ? [] : next });
   }
 
   toggleWord(id: string): void {
@@ -253,7 +274,7 @@ class AppState {
   storePreset(name: string): void {
     this.presets = savePreset(name, {
       sets: this.settings.sets,
-      kanji: this.settings.kanji,
+      subcategories: this.settings.subcategories,
       excludedWords: this.settings.excludedWords
     });
     this.chosenPreset = name;

@@ -56,7 +56,7 @@ test("takes a typed reading and offers typing only where an answer can be typed"
   await page.getByRole("button", { name: /^Nature/ }).click();
   await page.getByRole("button", { name: "Start" }).click();
 
-  const field = page.getByRole("textbox", { name: "Reading" });
+  const field = page.getByRole("textbox", { name: "Answer" });
   await field.fill("zzz");
   await page.keyboard.press("Enter");
 
@@ -66,15 +66,19 @@ test("takes a typed reading and offers typing only where an answer can be typed"
   await expect(field).toBeFocused();
   await expect(field).toHaveValue("");
 
-  await page.getByRole("button", { name: "Quit", exact: true }).click();
-  await page.getByRole("button", { name: "Quit", exact: true }).click();
+  await page.getByRole("button", { name: "Quit", exact: true }).first().click();
+  await page.getByLabel("Quit this run?").getByRole("button", { name: "Quit", exact: true }).click();
+
+  // Typing the written form is offered, with the IME it needs spelled out.
   await page.getByRole("button", { name: "Kana to kanji" }).click();
-  await expect(page.getByRole("button", { name: /needs an IME/ })).toBeDisabled();
+  await expect(page.getByRole("button", { name: /input method \(IME\)/ })).toBeEnabled();
 });
 
-async function startMeaningRun(page: Page, format: string): Promise<void> {
+async function startMeaningRun(page: Page, direction: string): Promise<void> {
   await page.goto("/");
-  await page.getByRole("button", { name: format }).click();
+  // A format is a category and then a direction inside it.
+  await page.getByRole("button", { name: "Meaning", exact: false }).first().click();
+  await page.getByRole("button", { name: direction }).click();
   await page.getByRole("button", { name: /^Nature/ }).click();
   await page
     .getByRole("group", { name: "Number of questions" })
@@ -85,7 +89,7 @@ async function startMeaningRun(page: Page, format: string): Promise<void> {
 }
 
 test("asks a kanji in Japanese and answers it in English", async ({ page }) => {
-  await startMeaningRun(page, "Kanji to meaning");
+  await startMeaningRun(page, "Kanji to romaji");
   await expect(page.getByText("What does this word mean?")).toBeVisible();
 
   await expect(page.locator("[lang='ja']")).toHaveCount(1);
@@ -97,7 +101,7 @@ test("asks a kanji in Japanese and answers it in English", async ({ page }) => {
 });
 
 test("asks a meaning in English and answers it in Japanese", async ({ page }) => {
-  await startMeaningRun(page, "Meaning to word");
+  await startMeaningRun(page, "Romaji to kanji");
   await expect(page.getByText("Which word means this?")).toBeVisible();
 
   await expect(page.locator("[lang='ja']")).toHaveCount(4);

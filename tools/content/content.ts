@@ -1,5 +1,5 @@
 import type { Content, Kanji, ReadingClass, Source, Word } from "../../src/lib/content/types.ts";
-import { isSetId, isSingleKanji, isKana, wordId } from "./validate.ts";
+import { isSetId, isSingleKanji, isSubcategoryOf, isKana, wordId } from "./validate.ts";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -76,6 +76,10 @@ function parseWord(value: unknown, where: string): Word {
   if (!isSetId(set)) {
     throw new Error(`${where}: unknown set "${set}"`);
   }
+  const subcategory = text(value, "subcategory", where);
+  if (!isSubcategoryOf(set, subcategory)) {
+    throw new Error(`${where}: "${subcategory}" is not a subcategory of ${set}`);
+  }
   const reading = text(value, "reading", where);
   if (!isKana(reading)) {
     throw new Error(`${where}: reading "${reading}" is not kana`);
@@ -109,6 +113,7 @@ function parseWord(value: unknown, where: string): Word {
     kanjiCount,
     hasOkurigana,
     set,
+    subcategory,
     level: text(value, "level", where)
   };
 }

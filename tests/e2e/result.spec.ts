@@ -51,7 +51,10 @@ test("narrows past runs with the filters", async ({ page }) => {
   await page.getByRole("button", { name: "See past runs" }).click();
 
   await page.getByText("Filters").click();
-  await page.getByRole("button", { name: "Kana to kanji" }).click();
+  // The run was kanji to kana, so asking for the runs that start from kana
+  // leaves nothing. Format is picked as a prompt surface, then an answer one.
+  await page.getByRole("button", { name: "Format" }).first().click();
+  await page.getByRole("option", { name: "Kana", exact: true }).click();
   await expect(page.getByText(/of 10 right/)).toHaveCount(0);
 
   await page.getByRole("button", { name: "Clear filters" }).click();

@@ -12,11 +12,11 @@
   <div class="flex flex-wrap items-center gap-2">
     <Button size="sm" variant="outline" onclick={() => app.selectAllSets()}>
       <Icon name="select-all" />
-      {t("setup.kanji.selectAll")}
+      {t("setup.sets.selectAll")}
     </Button>
     <Button size="sm" variant="outline" onclick={() => app.clearSets()}>
       <Icon name="select-none" />
-      {t("setup.kanji.clear")}
+      {t("setup.sets.clear")}
     </Button>
     <Button
       size="sm"
@@ -31,9 +31,9 @@
 
   <div class="flex flex-col gap-2 sm:gap-3">
     {#each app.availableSets as id (id)}
-      <SetRow {id} kanji={app.kanjiInSet[id]} />
+      <SetRow {id} subcategories={app.subcategoriesInSet[id]} />
     {:else}
-      <EmptyState icon="target" title={t("setup.kanji.empty")} />
+      <EmptyState icon="target" title={t("setup.sets.empty")} />
     {/each}
   </div>
 </div>

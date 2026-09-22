@@ -35,7 +35,8 @@ export function imageSlug(meaning: string): string {
 }
 
 export function imageUrl(word: Word): string {
-  return `/images/${word.level.toLowerCase()}/light/${word.set}/${imageSlug(word.meaning)}.png`;
+  const { level, set, subcategory, meaning } = word;
+  return `/images/${level.toLowerCase()}/light/${set}/${subcategory}/${imageSlug(meaning)}.png`;
 }
 
 /** Swaps a light image url for its pre-rendered dark counterpart. */
@@ -88,6 +89,7 @@ if (import.meta.vitest) {
     kanjiCount: 2,
     hasOkurigana: false,
     set: "places",
+    subcategory: "buildings",
     level: "N5"
   };
 
@@ -159,7 +161,7 @@ if (import.meta.vitest) {
     test("points at the picture the word's meaning names", () => {
       expect(hintFor(word, "kana-kanji", "advanced", looks)).toEqual({
         kind: "image",
-        text: "/images/n5/light/places/school.png"
+        text: "/images/n5/light/places/buildings/school.png"
       });
     });
 
@@ -170,8 +172,8 @@ if (import.meta.vitest) {
     });
 
     test("swaps the light image url for its dark counterpart", () => {
-      expect(darkImageUrl("/images/n5/light/places/school.png")).toBe(
-        "/images/n5/dark/places/school.png"
+      expect(darkImageUrl("/images/n5/light/places/buildings/school.png")).toBe(
+        "/images/n5/dark/places/buildings/school.png"
       );
     });
 

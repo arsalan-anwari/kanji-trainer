@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Card, Icon } from "kaizen-ui";
-  import KanjiPicker from "./KanjiPicker.svelte";
+  import SetPicker from "./SetPicker.svelte";
   import RunPanel from "./RunPanel.svelte";
   import StartPanel from "./StartPanel.svelte";
   import { t } from "../../i18n.svelte";
@@ -12,9 +12,9 @@
   </div>
 
   <div class="flex flex-col gap-4">
-    <Card title={t("setup.kanji.title")} description={t("setup.kanji.description")}>
+    <Card title={t("setup.sets.title")} description={t("setup.sets.description")}>
       {#snippet icon()}<Icon name="filter" class="size-5" />{/snippet}
-      <KanjiPicker />
+      <SetPicker />
     </Card>
     <StartPanel />
   </div>

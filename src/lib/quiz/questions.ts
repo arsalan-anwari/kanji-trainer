@@ -1,3 +1,4 @@
+import { SUBCATEGORIES, subcategoryKey } from "../content/sets";
 import type { Word } from "../content/types";
 import { imageUrl } from "./hints";
 import { normalizeReading } from "./romaji";
@@ -54,19 +55,19 @@ export function wordShape(word: Word): WordShape {
 }
 
 /**
- * A word is in play when its set is chosen, every kanji in it is chosen, and
- * its reading belongs to the class being asked for. Requiring every kanji is
- * what keeps 学校 out of a run built from 学 alone.
+ * A word is in play when its set is chosen, its subcategory is chosen, and its
+ * shape is one of the shapes asked for.
  */
 export function eligibleWords(settings: RunSettings, words: readonly Word[]): Word[] {
   const sets = new Set(settings.sets);
-  const kanji = new Set(settings.kanji);
+  const subcategories = new Set(settings.subcategories);
   const shapes = new Set(settings.wordShapes);
   const excluded = new Set(settings.excludedWords);
   return atLevel(words, settings.level).filter((word) => {
     if (excluded.has(word.id)) return false;
     if (!sets.has(word.set)) return false;
-    if (kanji.size > 0 && !word.kanji.every((character) => kanji.has(character))) return false;
+    if (subcategories.size > 0 && !subcategories.has(subcategoryKey(word.set, word.subcategory)))
+      return false;
     if (shapes.size > 0 && !shapes.has(wordShape(word))) return false;
     return true;
   });
@@ -257,6 +258,7 @@ if (import.meta.vitest) {
       kanjiCount: 1,
       hasOkurigana: false,
       set,
+      subcategory: SUBCATEGORIES[set][0],
       level: "N5",
       ...extra
     };
@@ -278,15 +280,17 @@ if (import.meta.vitest) {
       expect(eligibleWords(settings, [other])).toHaveLength(0);
     });
 
-    test("keeps a word only when every kanji in it was picked", () => {
+    test("keeps a word only when its subcategory was picked", () => {
       const compound = word("学校", "places", { kanji: ["学", "校"] });
       const settings = {
         ...DEFAULT_SETTINGS,
         sets: ["places" as const],
-        kanji: ["学"]
+        subcategories: ["places/transport"]
       };
       expect(eligibleWords(settings, [compound])).toHaveLength(0);
-      expect(eligibleWords({ ...settings, kanji: ["学", "校"] }, [compound])).toHaveLength(1);
+      expect(
+        eligibleWords({ ...settings, subcategories: ["places/buildings"] }, [compound])
+      ).toHaveLength(1);
     });
 
     test("keeps the three shapes apart, so okurigana is not a single kanji", () => {
@@ -324,8 +328,8 @@ if (import.meta.vitest) {
       expect(eligibleWords(settings, all)).toHaveLength(6);
     });
 
-    test("draws on every kanji of the chosen sets when none was picked", () => {
-      const settings = { ...DEFAULT_SETTINGS, sets: ["numbers" as const], kanji: [] };
+    test("draws on every subcategory of the chosen sets when none was picked", () => {
+      const settings = { ...DEFAULT_SETTINGS, sets: ["numbers" as const], subcategories: [] };
       expect(eligibleWords(settings, all)).toHaveLength(6);
     });
   });
@@ -364,7 +368,7 @@ test("asks the written form and answers the reading on kanji to kana", () => {
     });
 
     test("asks the written form and answers the meaning on kanji to meaning", () => {
-      const pool = [word("水", "nature", { meaning: "water" })];
+      const pool = [word("水", "nature", { subcategory: "elements", meaning: "water" })];
       const [question] = buildQuestions(
         { ...settings, sets: ["nature"], format: "kanji-meaning" },
         pool,
@@ -387,7 +391,7 @@ test("asks the written form and answers the reading on kanji to kana", () => {
     });
 
     test("asks the meaning and answers the written form on meaning to kanji", () => {
-      const pool = [word("水", "nature", { meaning: "water" })];
+      const pool = [word("水", "nature", { subcategory: "elements", meaning: "water" })];
       const [question] = buildQuestions(
         { ...settings, sets: ["nature"], format: "meaning-kanji" },
         pool,
@@ -398,13 +402,13 @@ test("asks the written form and answers the reading on kanji to kana", () => {
     });
 
     test("asks a picture and answers the written form on image to kanji", () => {
-      const pool = [word("水", "nature", { meaning: "water" })];
+      const pool = [word("水", "nature", { subcategory: "elements", meaning: "water" })];
       const [question] = buildQuestions(
         { ...settings, sets: ["nature"], format: "image-kanji" },
         pool,
         seeded(3)
       );
-      expect(question.prompt).toBe("/images/n5/light/nature/water.png");
+      expect(question.prompt).toBe("/images/n5/light/nature/elements/water.png");
       expect(question.answer).toBe("水");
     });
 

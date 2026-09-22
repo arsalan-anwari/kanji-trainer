@@ -3,9 +3,15 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseTsv } from "./tsv.ts";
 import type { Kanji, Word } from "../../src/lib/content/types.ts";
-import { countBySet, isSetId, SET_IDS } from "../../src/lib/content/sets.ts";
+import {
+  countBySet,
+  isSetId,
+  isSubcategoryOf,
+  SET_IDS,
+  SUBCATEGORIES
+} from "../../src/lib/content/sets.ts";
 
-export { countBySet, isSetId, SET_IDS };
+export { countBySet, isSetId, isSubcategoryOf, SET_IDS, SUBCATEGORIES };
 
 export const CONTENT_DIR = fileURLToPath(new URL("../../content/", import.meta.url));
 
@@ -139,13 +145,14 @@ export const WORD_COLUMNS = [
   "written",
   "reading",
   "set",
+  "subcategory",
   "level",
   "meaning",
   "clue",
   "note"
 ] as const;
 
-export type WordRow = Pick<Word, "written" | "reading" | "set" | "level" | "clue"> & {
+export type WordRow = Pick<Word, "written" | "reading" | "set" | "subcategory" | "level" | "clue"> & {
   meaning: string;
   note: string;
 };
@@ -175,7 +182,7 @@ export function parseWordList(
   const seen = new Map<string, number>();
   const words: WordRow[] = [];
 
-  rows.forEach(([written, reading, set, level, meaning, clue, note], index) => {
+  rows.forEach(([written, reading, set, subcategory, level, meaning, clue, note], index) => {
     const line = index + 2;
     const say = (message: string) => problems.push(`${where} line ${line}: ${message}`);
 
@@ -197,6 +204,12 @@ export function parseWordList(
       say(`"${written}" names unknown set "${set}"`);
       return;
     }
+    if (!isSubcategoryOf(set, subcategory)) {
+      say(
+        `"${written}" names subcategory "${subcategory}", which is not one of ${set}: ${SUBCATEGORIES[set].join(", ")}`
+      );
+      return;
+    }
     if (level === "") {
       say(`"${written}" has no level`);
       return;
@@ -213,7 +226,7 @@ export function parseWordList(
       return;
     }
     seen.set(id, line);
-    words.push({ written, reading, set, level, meaning, clue, note });
+    words.push({ written, reading, set, subcategory, level, meaning, clue, note });
   });
 
   if (problems.length > 0) {
@@ -341,16 +354,17 @@ if (import.meta.vitest) {
   describe("parseWordList", () => {
     const levelKanji = new Set(["日", "本", "食"]);
     const list = (body: string) =>
-      `written\treading\tset\tlevel\tmeaning\tclue\tnote\n${body}`;
+      `written\treading\tset\tsubcategory\tlevel\tmeaning\tclue\tnote\n${body}`;
 
     test("returns one row per word, keeping the curator's note", () => {
       expect(
-        parseWordList(list("日本\tにほん\tplaces\tN5\t\t\tcountry\n"), "t", levelKanji)
+        parseWordList(list("日本\tにほん\tplaces\tbuildings\tN5\t\t\tcountry\n"), "t", levelKanji)
       ).toEqual([
         {
           written: "日本",
           reading: "にほん",
           set: "places",
+          subcategory: "buildings",
           level: "N5",
           meaning: "",
           clue: "",
@@ -360,61 +374,67 @@ if (import.meta.vitest) {
     });
 
     test("accepts a word whose other kanji is outside the level list", () => {
-      expect(parseWordList(list("食堂\tしょくどう\tplaces\tN5\t\t\t\n"), "t", levelKanji)).toHaveLength(1);
+      expect(parseWordList(list("食堂\tしょくどう\tplaces\tbuildings\tN5\t\t\t\n"), "t", levelKanji)).toHaveLength(1);
     });
 
     test("rejects a word built only from kanji outside the level list", () => {
-      expect(() => parseWordList(list("銀行\tぎんこう\tplaces\tN5\t\t\t\n"), "t", levelKanji)).toThrow(
+      expect(() => parseWordList(list("銀行\tぎんこう\tplaces\tbuildings\tN5\t\t\t\n"), "t", levelKanji)).toThrow(
         /"銀行" contains no kanji from the level list/
       );
     });
 
     test("rejects a kana-only word, which has no form to test", () => {
-      expect(() => parseWordList(list("とても\tとても\tdescribing\tN5\t\t\t\n"), "t", levelKanji)).toThrow(
+      expect(() => parseWordList(list("とても\tとても\tdescribing\tsize\tN5\t\t\t\n"), "t", levelKanji)).toThrow(
         /contains no kanji from the level list/
       );
     });
 
     test("rejects an unknown set id", () => {
-      expect(() => parseWordList(list("日本\tにほん\tcountries\tN5\t\t\t\n"), "t", levelKanji)).toThrow(
+      expect(() => parseWordList(list("日本\tにほん\tcountries\tbuildings\tN5\t\t\t\n"), "t", levelKanji)).toThrow(
         /names unknown set "countries"/
       );
     });
 
+    test("rejects a subcategory that belongs to another set", () => {
+      expect(() =>
+        parseWordList(list("日本\tにほん\tplaces\tweather\tN5\t\t\t\n"), "t", levelKanji)
+      ).toThrow(/names subcategory "weather", which is not one of places/);
+    });
+
     test("rejects a reading that is not kana", () => {
-      expect(() => parseWordList(list("日本\t日本\tplaces\tN5\t\t\t\n"), "t", levelKanji)).toThrow(
+      expect(() => parseWordList(list("日本\t日本\tplaces\tbuildings\tN5\t\t\t\n"), "t", levelKanji)).toThrow(
         /is not kana/
       );
     });
 
     test("rejects two rows that would collide on one id", () => {
       expect(() =>
-        parseWordList(list("日本\tにほん\tplaces\tN5\t\t\t\n日本\tにほん\tnature\tN5\t\t\t\n"), "t", levelKanji)
+        parseWordList(list("日本\tにほん\tplaces\tbuildings\tN5\t\t\t\n日本\tにほん\tnature\tlandscape\tN5\t\t\t\n"), "t", levelKanji)
       ).toThrow(/"日本\|にほん" already appears on line 2/);
     });
 
     test("carries the curator's meaning override when the column is filled", () => {
-      const [row] = parseWordList(list("日本\tにほん\tplaces\tN5\tJapan\t\t\n"), "t", levelKanji);
+      const [row] = parseWordList(list("日本\tにほん\tplaces\tbuildings\tN5\tJapan\t\t\n"), "t", levelKanji);
       expect(row.meaning).toBe("Japan");
     });
 
     test("accepts the same written form under a second reading", () => {
       expect(
-        parseWordList(list("日本\tにほん\tplaces\tN5\t\t\t\n日本\tにっぽん\tplaces\tN5\t\t\t\n"), "t", levelKanji)
+        parseWordList(list("日本\tにほん\tplaces\tbuildings\tN5\t\t\t\n日本\tにっぽん\tplaces\tbuildings\tN5\t\t\t\n"), "t", levelKanji)
       ).toHaveLength(2);
     });
 
     test("rejects a reading the curator marked bound, naming the reason", () => {
       const bound = [{ written: "本", reading: "ほん", why: "a counter, not a word" }];
       expect(() =>
-        parseWordList(list("本\tほん\tplaces\tN5\t\t\t\n"), "t", levelKanji, bound)
+        parseWordList(list("本\tほん\tplaces\tbuildings\tN5\t\t\t\n"), "t", levelKanji, bound)
       ).toThrow(/"本" \(ほん\) is a bound reading, not a word — a counter, not a word/);
     });
 
     test("leaves the same written form under another reading alone", () => {
       const bound = [{ written: "本", reading: "ほん", why: "a counter, not a word" }];
       expect(
-        parseWordList(list("本\tもと\tplaces\tN5\t\t\t\n"), "t", levelKanji, bound)
+        parseWordList(list("本\tもと\tplaces\tbuildings\tN5\t\t\t\n"), "t", levelKanji, bound)
       ).toHaveLength(1);
     });
   });
@@ -489,6 +509,10 @@ if (import.meta.vitest) {
         objects: 10,
         food: 2
       });
+    });
+
+    test("files every word under a subcategory of its own set", () => {
+      expect(words.filter((row) => !isSubcategoryOf(row.set, row.subcategory))).toEqual([]);
     });
 
     test("accounts for every word in exactly one set", () => {

@@ -1,4 +1,4 @@
-import { SET_IDS, type SetId } from "../content/sets";
+import { SET_IDS, SUBCATEGORIES, subcategoryKey, type SetId } from "../content/sets";
 import type { Word } from "../content/types";
 import type { Answer } from "./questions";
 import { eligibleWords } from "./questions";
@@ -164,11 +164,16 @@ export function settingsFromMistakes(
 
   const level = missedWords[0]!.level;
   const sets = [...new Set(missedWords.map((word) => word.set))];
-  const kanji = [...new Set(missedWords.flatMap((word) => word.kanji))];
-  const pool = eligibleWords({ ...DEFAULT_SETTINGS, level, sets, kanji, excludedWords: [] }, words);
+  const subcategories = [
+    ...new Set(missedWords.map((word) => subcategoryKey(word.set, word.subcategory)))
+  ];
+  const pool = eligibleWords(
+    { ...DEFAULT_SETTINGS, level, sets, subcategories, excludedWords: [] },
+    words
+  );
   const excludedWords = pool.filter((word) => !missedIds.has(word.id)).map((word) => word.id);
 
-  return { level, sets, kanji, excludedWords };
+  return { level, sets, subcategories, excludedWords };
 }
 
 if (import.meta.vitest) {
@@ -187,6 +192,7 @@ if (import.meta.vitest) {
       kanjiCount: kanji.length === 1 ? 1 : 2,
       hasOkurigana: false,
       set,
+      subcategory: SUBCATEGORIES[set][0],
       level: "N5"
     };
   }
@@ -349,12 +355,12 @@ if (import.meta.vitest) {
       expect(patch).toEqual({
         level: "N5",
         sets: ["numbers"],
-        kanji: ["一"],
+        subcategories: ["numbers/digits"],
         excludedWords: ["一つ"]
       });
     });
 
-    test("unions the sets and kanji of every missed word", () => {
+    test("unions the sets and subcategories of every missed word", () => {
       const reports = [
         report("2026-09-19T10:00:00.000Z", "kanji-kana", [
           answer("一", false, "に"),
@@ -363,7 +369,7 @@ if (import.meta.vitest) {
       ];
       const patch = settingsFromMistakes(reports, [one, school]);
       expect(patch.sets?.slice().sort()).toEqual(["numbers", "places"]);
-      expect(patch.kanji?.slice().sort()).toEqual(["一", "学", "校"]);
+      expect(patch.subcategories?.slice().sort()).toEqual(["numbers/digits", "places/buildings"]);
     });
 
     test("returns an empty patch when nothing was missed", () => {

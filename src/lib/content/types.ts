@@ -26,6 +26,8 @@ export type Word = {
   /** True if word has hiragana suffix after kanji (okurigana). */
   hasOkurigana: boolean;
   set: SetId;
+  /** What the word is about inside its set. One of SUBCATEGORIES[set]. */
+  subcategory: string;
   level: string;
 };
 

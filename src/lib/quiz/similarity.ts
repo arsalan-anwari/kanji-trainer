@@ -93,6 +93,7 @@ if (import.meta.vitest) {
       kanjiCount: kanji.length >= 2 ? 2 : 1,
       hasOkurigana: false,
       set: "places",
+    subcategory: "buildings",
       level: "N5"
     };
   }

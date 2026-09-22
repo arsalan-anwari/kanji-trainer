@@ -1,7 +1,7 @@
 """Derive the dark-theme png variant from each light-theme png.
 
-Converts data/images/{level}/light/{category}/{file}.png into
-data/images/{level}/dark/{category}/{file}.png with a hue-preserving
+Converts data/images/{level}/light/{category}/{subcategory}/{file}.png into
+data/images/{level}/dark/{category}/{subcategory}/{file}.png with a hue-preserving
 invert: RGB invert followed by a 180 degree hue rotation, the same
 "smart invert" a browser does for `filter: invert(1) hue-rotate(180deg)`.
 A pale background goes dark and dark linework goes light while each color
@@ -22,7 +22,7 @@ import argparse
 
 from PIL import Image, ImageOps
 
-from generate import plan, png_dir, words
+from generate import plan, png_dir, subcategories, words
 
 
 def smart_invert(image):
@@ -47,11 +47,11 @@ def main():
 
     todo = []
     for level, category in plan(args):
-        light_dir = png_dir(level, category, "light")
-        dark_dir = png_dir(level, category, "dark")
+        subs = subcategories(level)
         for w in words(level, category):
-            light_path = light_dir / w["file"]
-            dark_path = dark_dir / w["file"]
+            subcategory = subs[w["word"]]
+            light_path = png_dir(level, category, subcategory, "light") / w["file"]
+            dark_path = png_dir(level, category, subcategory, "dark") / w["file"]
             if not light_path.exists():
                 continue
             if dark_path.exists() and not args.all:

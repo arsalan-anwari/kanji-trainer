@@ -1,4 +1,4 @@
-import { isSetId } from "./sets";
+import { isSetId, isSubcategoryOf } from "./sets";
 import type { Content, Kanji, ReadingClass, Source, Word } from "./types";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -49,11 +49,13 @@ function parseWord(value: unknown): Word | null {
   const meaning = text(value.meaning);
   const kanji = textList(value.kanji);
   const set = text(value.set);
+  const subcategory = text(value.subcategory);
   const level = text(value.level);
   if (id === null || written === null || reading === null || meaning === null) return null;
   if (glosses === null || glosses.length === 0) return null;
   if (readings === null || !readings.includes(reading)) return null;
   if (kanji === null || set === null || level === null || !isSetId(set)) return null;
+  if (subcategory === null || !isSubcategoryOf(set, subcategory)) return null;
   const readingClass = parseReadingClass(value.readingClass);
   const kanjiCount = (kanji.length >= 2 ? 2 : 1) as 1 | 2;
   const hasOkurigana = written.length > kanji.length;
@@ -70,6 +72,7 @@ function parseWord(value: unknown): Word | null {
     kanjiCount,
     hasOkurigana,
     set,
+    subcategory,
     level
   };
 }
@@ -143,6 +146,7 @@ if (import.meta.vitest) {
     kanjiCount: 1 as const,
     hasOkurigana: false,
     set: "numbers",
+    subcategory: "digits",
     level: "N5"
   };
   const payload = {
@@ -173,6 +177,10 @@ if (import.meta.vitest) {
 
     test("rejects a word tagged with a set the app does not know", () => {
       expect(parseContent({ ...payload, words: [{ ...word, set: "kitchen" }] })).toBeNull();
+    });
+
+    test("rejects a word whose subcategory belongs to another set", () => {
+      expect(parseContent({ ...payload, words: [{ ...word, subcategory: "weather" }] })).toBeNull();
     });
 
     test("keeps every accepted reading and the class of the pinned one", () => {

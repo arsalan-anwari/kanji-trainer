@@ -12,7 +12,7 @@ instruction if you forget.
 |---|---|---|
 | `sources.json` | (none) | hand, when an upstream version is bumped |
 | `n5-kanji.tsv` | `character`, `level`, `look` | hand |
-| `n5-words.tsv` | `written`, `reading`, `set`, `level`, `meaning`, `clue`, `note` | hand |
+| `n5-words.tsv` | `written`, `reading`, `set`, `subcategory`, `level`, `meaning`, `clue`, `note` | hand |
 | `bound-readings.tsv` | `written`, `reading`, `why` | hand |
 | `components.tsv` | `character`, `name` | hand |
 
@@ -26,6 +26,15 @@ and clock times to `time`. The same kanji may appear in several sets when the
 words differ, but each word has exactly one set. `GUIDELINES.md` §7 is the rule;
 an in-source test in `tools/content/validate.ts` pins the size of every set, so
 moving words between sets means updating those numbers in the same commit.
+
+`subcategory` is the second axis: which group of its set the word belongs to.
+The allowed values per set are declared in `SUBCATEGORIES` in
+`src/lib/content/sets.ts` and the build rejects any other value, so adding a
+subcategory means adding it there, giving it a label under `common.subcategory`
+in `src/lib/assets/local/*/common.json`, and moving the word's pictures into
+`data/images/{level}/{theme}/{set}/{subcategory}/` — `tools/images/generate.py`
+reads the column straight from this file, so it is the only place the split is
+written down.
 
 `clue` is one or two English sentences describing the word without naming it;
 the build rejects a clue that contains its own `meaning`, since that clue would

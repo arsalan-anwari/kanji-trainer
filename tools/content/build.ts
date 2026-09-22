@@ -121,6 +121,7 @@ export function buildWords(
       kanjiCount,
       hasOkurigana,
       set: row.set,
+      subcategory: row.subcategory,
       level: row.level
     });
   });
@@ -297,6 +298,7 @@ if (import.meta.vitest) {
     written,
     reading,
     set: "places",
+    subcategory: "buildings",
     level: "N5",
     meaning,
     clue: "",

@@ -10,15 +10,8 @@
     "description": "Pick which words the run draws from.",
     "selectAll": "Select all",
     "clear": "Clear",
-    "count": "{count} words"
-  },
-  "kanji": {
-    "title": "Kanji in play",
-    "description": "Which kanji the run covers.",
-    "selectAll": "All",
-    "clear": "None",
-    "wordCount": "{count} words",
-    "empty": "Pick a set to see its kanji."
+    "count": "{count} words",
+    "empty": "No sets at this level."
   },
   "format": {
     "title": "Question format",
@@ -106,7 +99,15 @@
     "reset": "Reset",
     "selectAll": "All",
     "clear": "None",
-    "empty": "Pick a kanji to see its words.",
-    "group": "Words written with {character}"
+    "empty": "Pick a set to see its words.",
+    "group": "Words in {label}",
+    "filters": "Filters",
+    "filtersHint": "Narrow the list before picking words.",
+    "search": "Search words",
+    "shown": "Show",
+    "shown-all": "All",
+    "shown-kept": "Kept",
+    "shown-held": "Held back",
+    "noMatch": "No word matches this search."
   }
 }

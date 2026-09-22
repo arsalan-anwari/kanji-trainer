@@ -5,9 +5,11 @@ as a words.json (the entries) plus a skiplist.txt (files already judged good,
 skipped by default) and a shared tools/images/data/{level}/style.json. Edit
 those files to change what gets drawn; this script adds no wording.
 
-Images are written to data/images/{level}/light/{category}/{file}: the
-light-theme picture, which is the one this API is asked to draw. The dark
-variant is a separate step, see invert.py.
+Images are written to data/images/{level}/light/{category}/{subcategory}/{file}:
+the light-theme picture, which is the one this API is asked to draw. The dark
+variant is a separate step, see invert.py. The subcategory is not curated here —
+it is read from the "subcategory" column of content/{level}-words.tsv, keyed by
+the written form, so the pictures cannot drift from the word list.
 
     export RECRAFT_API_KEY=...
     python3 tools/images/generate.py                              # everything, minus skiplists
@@ -34,6 +36,7 @@ import time
 import requests
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+CONTENT = ROOT / "content"
 DATA = pathlib.Path(__file__).resolve().parent / "data"
 OUT = ROOT / "data" / "images"
 API = "https://external.api.recraft.ai/v1/images/generations"
@@ -58,8 +61,17 @@ def words(level, category):
     return json.loads((DATA / level / category / "words.json").read_text())["words"]
 
 
-def png_dir(level, category, theme="light"):
-    return OUT / level / theme / category
+def subcategories(level):
+    """{written form: subcategory} from the curated word list, the one source."""
+    lines = (CONTENT / f"{level}-words.tsv").read_text().splitlines()
+    header = lines[0].split("\t")
+    written, sub = header.index("written"), header.index("subcategory")
+    rows = (line.split("\t") for line in lines[1:] if line)
+    return {row[written]: row[sub] for row in rows}
+
+
+def png_dir(level, category, subcategory, theme="light"):
+    return OUT / level / theme / category / subcategory
 
 
 def skiplist(level, category):
@@ -139,10 +151,11 @@ def main():
         style_data = style(level)
         entries = words(level, category)
         skip = set() if args.all else skiplist(level, category)
-        out_dir = png_dir(level, category)
+        subs = subcategories(level)
         for w in entries:
             if w["file"] in skip:
                 continue
+            out_dir = png_dir(level, category, subs[w["word"]])
             todo.append((level, category, w, prompt(w, style_data), out_dir / w["file"]))
     if args.limit:
         todo = todo[: args.limit]
@@ -169,13 +182,22 @@ def main():
 def check():
     total = 0
     for level in levels():
+        subs = subcategories(level)
         for category in categories(level):
             style_data = style(level)
             rows = words(level, category)
             total += len(rows)
             assert len({w["file"] for w in rows}) == len(rows), f"duplicate file name in {level}/{category}"
             assert all(w["file"].endswith(".png") for w in rows)
-            assert all((png_dir(level, category) / w["file"]).exists() for w in rows)
+            missing = [w["word"] for w in rows if w["word"] not in subs]
+            assert not missing, f"{level}/{category}: not in the word list: {missing}"
+            for theme in ("light", "dark"):
+                absent = [
+                    w["file"]
+                    for w in rows
+                    if not (png_dir(level, category, subs[w["word"]], theme) / w["file"]).exists()
+                ]
+                assert not absent, f"{level}/{theme}/{category}: missing {absent}"
             assert all(w["prompt"] and w["word"] and w["name"] for w in rows), "empty field"
             assert style_data["style"] and style_data["style_text"]
             skip = skiplist(level, category)

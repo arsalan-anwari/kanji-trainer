@@ -1,6 +1,6 @@
 import { decodeReportFile, encodeReportFile, FILE_EXTENSION } from "./quiz/ktreport";
 import { parseReport, type Report } from "./quiz/report";
-import { pickKanji, pickSets, pickWordIds } from "./quiz/settings";
+import { pickSets, pickSubcategories, pickWordIds } from "./quiz/settings";
 import type { SetId } from "./content/sets";
 import { loadJson, storeJson } from "kaizen-ui";
 import { t } from "./i18n.svelte";
@@ -13,7 +13,7 @@ const REPORT_LIMIT = 50;
 
 export type PresetSelection = {
   sets: SetId[];
-  kanji: string[];
+  subcategories: string[];
   excludedWords: string[];
 };
 
@@ -26,7 +26,7 @@ function parseSelection(value: unknown): PresetSelection {
   const record = typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
   return {
     sets: pickSets(record.sets),
-    kanji: pickKanji(record.kanji),
+    subcategories: pickSubcategories(record.subcategories),
     excludedWords: pickWordIds(record.excludedWords)
   };
 }
@@ -259,11 +259,15 @@ if (import.meta.vitest) {
     });
 
     test("keeps a named preset and hands it back parsed", () => {
-      savePreset("numbers only", { sets: ["numbers"], kanji: ["一"], excludedWords: [] });
+      savePreset("numbers only", {
+        sets: ["numbers"],
+        subcategories: ["numbers/digits"],
+        excludedWords: []
+      });
       expect(listPresets()).toEqual([
         {
           name: "numbers only",
-          selection: { sets: ["numbers"], kanji: ["一"], excludedWords: [] }
+          selection: { sets: ["numbers"], subcategories: ["numbers/digits"], excludedWords: [] }
         }
       ]);
       expect(deletePreset("numbers only")).toEqual([]);

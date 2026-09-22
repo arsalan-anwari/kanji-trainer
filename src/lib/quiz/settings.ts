@@ -1,4 +1,4 @@
-import { isSetId } from "../content/sets";
+import { isSetId, isSubcategoryKey } from "../content/sets";
 import type { SetId } from "../content/sets";
 
 export type Format =
@@ -19,8 +19,11 @@ export type Difficulty = "beginner" | "advanced" | "expert";
 export type RunSettings = {
   level: string;
   sets: SetId[];
-  /** The kanji a run may draw on. Empty means every kanji of the chosen sets. */
-  kanji: string[];
+  /**
+   * The (set, subcategory) pairs a run may draw on, as `set/subcategory`.
+   * Empty means every subcategory of the chosen sets.
+   */
+  subcategories: string[];
   format: Format;
   answerStyle: AnswerStyle;
   choiceCount: number;
@@ -103,7 +106,7 @@ export const CUSTOM_COUNT_VALUES: readonly number[] = Array.from(
 export const DEFAULT_SETTINGS: RunSettings = {
   level: "N5",
   sets: [],
-  kanji: [],
+  subcategories: [],
   format: "kanji-kana",
   answerStyle: "choice",
   choiceCount: 4,
@@ -169,8 +172,8 @@ function pickText(value: unknown, keep: (entry: string) => boolean): string[] {
   return out;
 }
 
-export function pickKanji(value: unknown): string[] {
-  return pickText(value, (entry) => [...entry].length === 1);
+export function pickSubcategories(value: unknown): string[] {
+  return pickText(value, isSubcategoryKey);
 }
 
 export function pickWordIds(value: unknown): string[] {
@@ -202,7 +205,7 @@ export function parseSettings(stored: unknown): RunSettings {
         ? stored.level
         : DEFAULT_SETTINGS.level,
     sets: pickSets(stored.sets),
-    kanji: pickKanji(stored.kanji),
+    subcategories: pickSubcategories(stored.subcategories),
     format: pick(stored.format, FORMATS, DEFAULT_SETTINGS.format),
     answerStyle: pick(stored.answerStyle, ANSWER_STYLES, DEFAULT_SETTINGS.answerStyle),
     choiceCount: typeof choices === "number" ? choices : DEFAULT_SETTINGS.choiceCount,
@@ -257,7 +260,7 @@ if (import.meta.vitest) {
     const wanted: RunSettings = {
       level: "N5",
       sets: ["numbers", "actions"],
-      kanji: ["一", "二"],
+      subcategories: ["numbers/digits", "numbers/counters"],
       format: "kana-kanji",
       answerStyle: "choice",
       choiceCount: 4,
@@ -275,7 +278,7 @@ if (import.meta.vitest) {
     expect(
       parseSettings({
         sets: ["numbers", "kitchen", 4, "numbers"],
-        kanji: ["一", "学校", 7, "一"],
+        subcategories: ["numbers/digits", "numbers/weather", 7, "numbers/digits"],
         format: "sentence",
         excludedWords: ["一|いち", "", 9, "一|いち"],
         difficulty: "impossible"
@@ -283,7 +286,7 @@ if (import.meta.vitest) {
     ).toEqual({
       ...DEFAULT_SETTINGS,
       sets: ["numbers"],
-      kanji: ["一"],
+      subcategories: ["numbers/digits"],
       excludedWords: ["一|いち"]
     });
   });

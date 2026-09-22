@@ -10,6 +10,16 @@ async function presetAction(page: Page, label: string): Promise<void> {
   await action.click();
 }
 
+// Wide layouts show a set's subcategories beside it; a phone folds them into a
+// row that has to be opened first.
+async function subcategory(page: Page, set: string, label: string) {
+  const chip = page.getByRole("button", { name: new RegExp(`^${label}`) });
+  if (!(await chip.isVisible())) {
+    await page.getByRole("button", { name: `Show ${set}` }).click();
+  }
+  return chip;
+}
+
 test("cannot start a run before a set is picked", async ({ page }) => {
   await page.goto("/");
   const start = page.getByRole("button", { name: "Start" });
@@ -22,14 +32,14 @@ test("cannot start a run before a set is picked", async ({ page }) => {
 
 test("remembers the run it was set up with across a reload", async ({ page }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: /^Verbs/ }).click();
+  await page.getByRole("button", { name: /^Actions/ }).click();
   await page.getByRole("button", { name: "Kana to kanji" }).click();
   const counts = page.getByRole("group", { name: "Number of questions" });
   await counts.getByRole("button", { name: "50", exact: true }).click();
 
   await page.reload();
 
-  await expect(page.getByRole("button", { name: /^Verbs/ })).toHaveAttribute(
+  await expect(page.getByRole("button", { name: /^Actions/ })).toHaveAttribute(
     "aria-pressed",
     "true"
   );
@@ -60,6 +70,9 @@ test("switches to a single pass over the words in play", async ({ page }) => {
 
 test("shows the levels this build has no content for as switched off", async ({ page }) => {
   await page.goto("/");
+  // The level chips live on the advanced settings screen, which needs a set.
+  await page.getByRole("button", { name: /^Nature/ }).click();
+  await page.getByRole("button", { name: "Advanced settings" }).click();
   await expect(page.getByRole("button", { name: "N5", exact: true })).toBeEnabled();
   await expect(page.getByRole("button", { name: "N4", exact: true })).toBeDisabled();
 });
@@ -80,9 +93,9 @@ test("holds back hand-picked words, and keeps them held across a reload", async 
   const before = Number(((await inPlay.textContent()) ?? "").replace(/\D+/g, ""));
   expect(before).toBeGreaterThan(2);
 
-  await page.getByRole("button", { name: "Select words" }).click();
+  await page.getByRole("button", { name: "Advanced settings" }).click();
 
-  const groups = page.getByRole("group", { name: /^Words written with/ });
+  const groups = page.getByRole("group", { name: /^Words in / });
   const words = groups.getByRole("button");
   await expect(words.first()).toHaveAttribute("aria-pressed", "true");
 
@@ -96,8 +109,50 @@ test("holds back hand-picked words, and keeps them held across a reload", async 
   await page.reload();
   await expect(inPlay).toContainText(String(before - 2));
 
-  await page.getByRole("button", { name: "Select words" }).click();
+  await page.getByRole("button", { name: "Advanced settings" }).click();
   await expect(groups.locator("button[aria-pressed='false']")).toHaveCount(2);
+});
+
+test("lists the words of a set under one section per subcategory", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /^Nature/ }).click();
+  await page.getByRole("button", { name: "Advanced settings" }).click();
+
+  // Nature is landscape, weather, plants and elements, and nothing else.
+  const groups = page.getByRole("group", { name: /^Words in / });
+  await expect(groups).toHaveCount(4);
+  await expect(page.getByRole("group", { name: "Words in Weather" }).getByRole("button")).toHaveCount(2);
+  // The set row sums its subcategories up.
+  await expect(page.getByText("6 of 6 kept")).toBeVisible();
+});
+
+test("drops the subcategories of a set that were not picked", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /^Nature/ }).click();
+
+  const inPlay = page.getByText("Words in play").locator("..");
+  await expect(inPlay).toContainText("6");
+
+  // Nature holds two weather words; unticking them leaves the other four.
+  await (await subcategory(page, "Nature", "Weather")).click();
+  await expect(inPlay).toContainText("4");
+
+  await page.reload();
+  await expect(inPlay).toContainText("4");
+});
+
+test("searches the words of the sets in play by meaning", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /^Nature/ }).click();
+  await page.getByRole("button", { name: "Advanced settings" }).click();
+
+  await page.getByPlaceholder("Search words").fill("rain");
+  const groups = page.getByRole("group", { name: /^Words in / });
+  await expect(groups).toHaveCount(1);
+  await expect(groups.getByRole("button")).toHaveCount(1);
+
+  await page.getByPlaceholder("Search words").fill("zzz");
+  await expect(page.getByText("No word matches this search.")).toBeVisible();
 });
 
 test("keeps the loaded preset selected through the word picker, so it can be updated", async ({
@@ -113,8 +168,8 @@ test("keeps the loaded preset selected through the word picker, so it can be upd
   const picker = page.getByRole("button", { name: "Saved runs" });
   await expect(picker).toContainText("nature run");
 
-  await page.getByRole("button", { name: "Select words" }).click();
-  const groups = page.getByRole("group", { name: /^Words written with/ });
+  await page.getByRole("button", { name: "Advanced settings" }).click();
+  const groups = page.getByRole("group", { name: /^Words in / });
   await groups.getByRole("button").first().click();
   await page.getByRole("button", { name: "Back to setup" }).click();
 
@@ -133,7 +188,9 @@ test("keeps the loaded preset selected while the run is edited", async ({ page }
   const picker = page.getByRole("button", { name: "Saved runs" });
   await expect(picker).toContainText("editable");
 
+  await page.getByRole("button", { name: "Advanced settings" }).click();
   await page.getByRole("group", { name: "Word shapes" }).getByRole("button").first().click();
+  await page.getByRole("button", { name: "Back to setup" }).click();
   await expect(picker).toContainText("editable");
 
   await page.getByRole("button", { name: "Kana to kanji" }).click();
