@@ -7,9 +7,6 @@
 - Multiple choice or typing, adjustable difficulty, hints.
 - Save/reuse/reset practice presets.
 - Reports page: accuracy by kanji, set and format, speed, mistakes, export/import history.
-
-## Now
-
 - Polishing setup and reports: clearer filters, pagination, date range picking,
   a real result-screen animation, preset bug fixes.
 

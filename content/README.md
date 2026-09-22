@@ -20,7 +20,7 @@ Tab-separated, one header row, UTF-8, no quoting. A cell cannot contain a tab.
 
 The `set` column in `n5-words.tsv` is one of `numbers`, `calendar`, `time`,
 `people`, `position`, `body`, `actions`, `places`, `nature`, `describing`,
-`irregulars`. Put a word where its **meaning** belongs, not where the upstream
+`objects`, `food`. Put a word where its **meaning** belongs, not where the upstream
 level list grouped its kanji: `numbers` is quantity only, dates go to `calendar`
 and clock times to `time`. The same kanji may appear in several sets when the
 words differ, but each word has exactly one set. `GUIDELINES.md` §7 is the rule;

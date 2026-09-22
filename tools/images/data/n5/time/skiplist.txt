@@ -1,0 +1,14 @@
+# Images in time already judged good: generate.py skips these.
+# One file name per line; blank lines and # comments ignored.
+
+clock.png
+every-morning.png
+every-night.png
+morning.png
+now.png
+sometimes.png
+time.png
+tonight.png
+this-morning.png
+half-past.png
+a-half.png

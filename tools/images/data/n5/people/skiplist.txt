@@ -1,0 +1,21 @@
+# Images in people already judged good: generate.py skips these.
+# One file name per line; blank lines and # comments ignored.
+
+boy.png
+crowd-of-people.png
+father.png
+foreigner.png
+girl.png
+man.png
+mother.png
+person.png
+pupil.png
+student.png
+teacher.png
+woman.png
+adult.png
+name.png
+one-person.png
+two-persons.png
+child.png
+overseas-student.png

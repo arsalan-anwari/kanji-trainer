@@ -5,7 +5,7 @@ as a words.json (the entries) plus a skiplist.txt (files already judged good,
 skipped by default) and a shared tools/images/data/{level}/style.json. Edit
 those files to change what gets drawn; this script adds no wording.
 
-Images are written to data/images/{level}/light/{category}/png/{file}: the
+Images are written to data/images/{level}/light/{category}/{file}: the
 light-theme picture, which is the one this API is asked to draw. The dark
 variant is a separate step, see invert.py.
 
@@ -59,13 +59,7 @@ def words(level, category):
 
 
 def png_dir(level, category, theme="light"):
-    return OUT / level / theme / category / "png"
-
-
-def svg_dir(level, category):
-    # Only the light png gets vectorized; dark mode inverts that svg at
-    # runtime instead of shipping a second copy.
-    return OUT / level / "light" / category / "svg"
+    return OUT / level / theme / category
 
 
 def skiplist(level, category):
@@ -186,7 +180,7 @@ def check():
             assert style_data["style"] and style_data["style_text"]
             skip = skiplist(level, category)
             assert skip <= {w["file"] for w in rows}, sorted(skip - {w["file"] for w in rows})
-    assert total == 185, total
+    assert total == 184, total
     print(f"ok, {total} words parsed across {len(levels())} level(s)")
 
 

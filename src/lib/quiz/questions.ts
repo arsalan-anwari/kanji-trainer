@@ -404,7 +404,7 @@ test("asks the written form and answers the reading on kanji to kana", () => {
         pool,
         seeded(3)
       );
-      expect(question.prompt).toBe("/images/n5/light/nature/svg/water.svg");
+      expect(question.prompt).toBe("/images/n5/light/nature/water.png");
       expect(question.answer).toBe("水");
     });
 

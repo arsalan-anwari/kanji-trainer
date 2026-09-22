@@ -2,7 +2,7 @@
   import { Board, FitText, Projector, viewport } from "kaizen-ui";
   import { isJapanese, promptSurface } from "../../quiz/settings";
   import type { Question } from "../../quiz/questions";
-  import { pngFallback } from "../../quiz/hints";
+  import { darkImageUrl } from "../../quiz/hints";
   import { isDarkTheme } from "../../theme.svelte";
   import { app } from "../../state.svelte";
   import { t } from "../../i18n.svelte";
@@ -17,16 +17,7 @@
   // the other way round.
   const compact = $derived(!viewport.wide && viewport.short);
 
-  // Not every word has an svg yet; the picture that failed to load names its
-  // own fallback, so a stale failure from a previous question never matches
-  // the current one.
-  let failedSrc = $state<string | null>(null);
-  const usingPngFallback = $derived(failedSrc === question.prompt);
-  const imgSrc = $derived(usingPngFallback ? pngFallback(question.prompt, dark) : question.prompt);
-
-  function useSvgOrPng() {
-    failedSrc = question.prompt;
-  }
+  const imgSrc = $derived(dark ? darkImageUrl(question.prompt) : question.prompt);
 </script>
 
 <div class="flex w-full flex-col items-center gap-2 sm:gap-3">
@@ -38,10 +29,8 @@
     <Projector size="lg" {compact}>
       <img
         src={imgSrc}
-        onerror={useSvgOrPng}
         alt={t("quiz.prompt.imageAlt")}
         class="aspect-square w-full max-w-full rounded-xl object-contain p-2"
-        style={dark && !usingPngFallback ? "filter: invert(1) hue-rotate(180deg)" : undefined}
       />
     </Projector>
   {:else}

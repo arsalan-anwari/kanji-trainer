@@ -217,7 +217,7 @@ if (import.meta.vitest) {
       const raw = await readFile(new URL("../../../data/content/n5.json", import.meta.url), "utf8");
       const content = parseContent(JSON.parse(raw));
       expect(content?.level).toBe("N5");
-      expect(content?.words).toHaveLength(185);
+      expect(content?.words).toHaveLength(184);
       expect(content?.kanji).toHaveLength(79);
     });
   });

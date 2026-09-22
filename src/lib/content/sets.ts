@@ -9,7 +9,8 @@ const EMPTY_COUNTS = {
   places: 0,
   nature: 0,
   describing: 0,
-  irregulars: 0
+  objects: 0,
+  food: 0
 };
 
 export type SetId = keyof typeof EMPTY_COUNTS;
@@ -97,8 +98,8 @@ if (import.meta.vitest) {
 
   test("lists set ids in the order they are declared", () => {
     expect(SET_IDS[0]).toBe("numbers");
-    expect(SET_IDS.at(-1)).toBe("irregulars");
-    expect(SET_IDS).toHaveLength(11);
+    expect(SET_IDS.at(-1)).toBe("food");
+    expect(SET_IDS).toHaveLength(12);
   });
 
   test("rejects verbs as it was renamed to actions", () => {

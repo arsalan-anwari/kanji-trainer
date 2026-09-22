@@ -1,14 +1,14 @@
 """Derive the dark-theme png variant from each light-theme png.
 
-Converts data/images/{level}/light/{category}/png/{file}.png into
-data/images/{level}/dark/{category}/png/{file}.png with a hue-preserving
+Converts data/images/{level}/light/{category}/{file}.png into
+data/images/{level}/dark/{category}/{file}.png with a hue-preserving
 invert: RGB invert followed by a 180 degree hue rotation, the same
 "smart invert" a browser does for `filter: invert(1) hue-rotate(180deg)`.
 A pale background goes dark and dark linework goes light while each color
 keeps its hue, rather than the color-shifting mess a plain RGB invert gives
 you (red would come out cyan). Runs entirely locally: no API, no cost.
 
-Same --level/--category hierarchy as generate.py and vectorize.py.
+Same --level/--category hierarchy as generate.py.
 
     python3 tools/images/invert.py                              # every png
     python3 tools/images/invert.py --level=n5                   # one level

@@ -6,7 +6,7 @@ __pycache__
 
 # Build artifacts
 .cache
-data
+/data
 node_modules
 dist
 src-tauri/dist

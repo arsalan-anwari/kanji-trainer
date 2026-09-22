@@ -1,0 +1,165 @@
+{
+  "words": [
+    {
+      "name": "once more",
+      "file": "once-more.png",
+      "word": "もう一度",
+      "reading": "もういちど",
+      "prompt": "A bold circular repeat arrow forming a closed loop, with a hand pressing a round button inside the loop: doing the same thing one more time"
+    },
+    {
+      "name": "one",
+      "file": "one.png",
+      "word": "一",
+      "reading": "いち",
+      "prompt": "A single large thick digit 1, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "name": "one thing",
+      "file": "one-thing.png",
+      "word": "一つ",
+      "reading": "ひとつ",
+      "prompt": "Exactly one red apple, alone on a plain surface, counted as a single item"
+    },
+    {
+      "name": "10,000",
+      "file": "10-000.png",
+      "word": "一万",
+      "reading": "いちまん",
+      "prompt": "The number ten thousand written large as the digits 10,000 with a comma, standing alone and centred"
+    },
+    {
+      "name": "seven",
+      "file": "seven.png",
+      "word": "七",
+      "reading": "なな",
+      "prompt": "A single large thick digit 7, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "name": "seven things",
+      "file": "seven-things.png",
+      "word": "七つ",
+      "reading": "ななつ",
+      "prompt": "Seven identical red apples stacked: a bottom row of three apples and two rows of two apples above it"
+    },
+    {
+      "name": "three",
+      "file": "three.png",
+      "word": "三",
+      "reading": "さん",
+      "prompt": "A single large thick digit 3, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "name": "three things",
+      "file": "three-things.png",
+      "word": "三つ",
+      "reading": "みっつ",
+      "prompt": "Exactly three identical red apples arranged in a neat group, easy to count as three"
+    },
+    {
+      "name": "nine",
+      "file": "nine.png",
+      "word": "九",
+      "reading": "きゅう",
+      "prompt": "A single large thick digit 9, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "name": "nine things",
+      "file": "nine-things.png",
+      "word": "九つ",
+      "reading": "ここのつ",
+      "prompt": "Nine identical red apples stacked in a neat 3 by 3 grid, three rows of three"
+    },
+    {
+      "name": "two",
+      "file": "two.png",
+      "word": "二",
+      "reading": "に",
+      "prompt": "A single large thick digit 2, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "name": "two things",
+      "file": "two-things.png",
+      "word": "二つ",
+      "reading": "ふたつ",
+      "prompt": "Exactly two identical red apples side by side, easy to count as two"
+    },
+    {
+      "name": "five",
+      "file": "five.png",
+      "word": "五",
+      "reading": "ご",
+      "prompt": "A single large thick digit 5, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "name": "five things",
+      "file": "five-things.png",
+      "word": "五つ",
+      "reading": "いつつ",
+      "prompt": "Exactly five identical red apples arranged in a neat group, easy to count as five"
+    },
+    {
+      "name": "eight",
+      "file": "eight.png",
+      "word": "八",
+      "reading": "はち",
+      "prompt": "A single large thick digit 8, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "name": "eight things",
+      "file": "eight-things.png",
+      "word": "八つ",
+      "reading": "やっつ",
+      "prompt": "Exactly eight identical red apples arranged in a neat group, easy to count as eight"
+    },
+    {
+      "name": "six",
+      "file": "six.png",
+      "word": "六",
+      "reading": "ろく",
+      "prompt": "A single large thick digit 6, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "name": "six things",
+      "file": "six-things.png",
+      "word": "六つ",
+      "reading": "むっつ",
+      "prompt": "Exactly six identical red apples arranged in a neat group, easy to count as six"
+    },
+    {
+      "name": "ten",
+      "file": "ten.png",
+      "word": "十",
+      "reading": "じゅう",
+      "prompt": "A single large thick number 10 written with two digits, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "name": "thousand",
+      "file": "thousand.png",
+      "word": "千",
+      "reading": "せん",
+      "prompt": "The number one thousand written large as the digits 1,000 with a comma, standing alone and centred"
+    },
+    {
+      "name": "four",
+      "file": "four.png",
+      "word": "四",
+      "reading": "よん",
+      "prompt": "A single large thick digit 4, standing alone and centred, and nothing else in the picture"
+    },
+    {
+      "name": "four things",
+      "file": "four-things.png",
+      "word": "四つ",
+      "reading": "よっつ",
+      "prompt": "Exactly four identical red apples arranged in a neat group, easy to count as four"
+    },
+    {
+      "name": "hundred",
+      "file": "hundred.png",
+      "word": "百",
+      "reading": "ひゃく",
+      "prompt": "The number one hundred written large as the digits 100, standing alone and centred"
+    }
+  ]
+}

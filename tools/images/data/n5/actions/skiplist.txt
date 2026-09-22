@@ -1,0 +1,22 @@
+# Images in actions already judged good: generate.py skips these.
+# One file name per line; blank lines and # comments ignored.
+
+to-be-absent.png
+to-be-born.png
+to-come.png
+to-eat.png
+to-enter.png
+to-go-out.png
+to-go.png
+to-hear.png
+to-leave.png
+to-put-in.png
+to-raise.png
+to-read.png
+to-show.png
+to-take-out.png
+to-talk.png
+to-write.png
+rest.png
+talk.png
+telephone-call.png

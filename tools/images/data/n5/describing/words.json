@@ -1,0 +1,131 @@
+{
+  "words": [
+    {
+      "name": "English",
+      "file": "english.png",
+      "word": "英語",
+      "reading": "えいご",
+      "prompt": "A speech bubble containing the British Union Jack flag: speaking the English language"
+    },
+    {
+      "name": "together",
+      "file": "together.png",
+      "word": "一緒",
+      "reading": "いっしょ",
+      "prompt": "Two people walking side by side in step, enclosed together inside one circle"
+    },
+    {
+      "name": "lively",
+      "file": "lively.png",
+      "word": "元気",
+      "reading": "げんき",
+      "prompt": "A person jumping with both arms raised and energy lines radiating outwards, full of health and spirit"
+    },
+    {
+      "name": "big",
+      "file": "big.png",
+      "word": "大きい",
+      "reading": "おおきい",
+      "prompt": "A huge elephant beside a tiny mouse, the elephant filling most of the frame to show how big it is"
+    },
+    {
+      "name": "big, before a noun",
+      "file": "big-before-a-noun.png",
+      "word": "大きな",
+      "reading": "おおきな",
+      "prompt": "A very large ball next to a very small ball, the large one filling most of the frame"
+    },
+    {
+      "name": "safe",
+      "file": "safe.png",
+      "word": "大丈夫",
+      "reading": "だいじょうぶ",
+      "prompt": "A housewife standing safe and calm inside her house, the house drawn around her like a shelter"
+    },
+    {
+      "name": "important",
+      "file": "important.png",
+      "word": "大切",
+      "reading": "たいせつ",
+      "prompt": "Two cupped hands carefully holding a small treasured box with a heart floating above it"
+    },
+    {
+      "name": "liking very much",
+      "file": "liking-very-much.png",
+      "word": "大好き",
+      "reading": "だいすき",
+      "prompt": "A smiling person hugging a large heart shape to their chest"
+    },
+    {
+      "name": "small",
+      "file": "small.png",
+      "word": "小さい",
+      "reading": "ちいさい",
+      "prompt": "A single ant walking under a large magnifying glass that magnifies it"
+    },
+    {
+      "name": "small, before a noun",
+      "file": "small-before-a-noun.png",
+      "word": "小さな",
+      "reading": "ちいさな",
+      "prompt": "A very small ball next to a very large ball, the small one highlighted"
+    },
+    {
+      "name": "famous",
+      "file": "famous.png",
+      "word": "有名",
+      "reading": "ゆうめい",
+      "prompt": "A pop star singing into a handheld microphone on stage in front of a cheering crowd filling a stadium"
+    },
+    {
+      "name": "illness",
+      "file": "illness.png",
+      "word": "病気",
+      "reading": "びょうき",
+      "prompt": "A person lying sick in bed with a thermometer in their mouth and an ice pack on their forehead"
+    },
+    {
+      "name": "white",
+      "file": "white.png",
+      "word": "白",
+      "reading": "しろ",
+      "prompt": "An open tin of white paint with a white brush stroke swatch beside it, on a mid-grey background so the white reads clearly"
+    },
+    {
+      "name": "white, describing",
+      "file": "white-describing.png",
+      "word": "白い",
+      "reading": "しろい",
+      "prompt": "A color card with the text #FFFFFF on it with white color in a box. Like those color cards you get when buying paint at a shop",
+      "text": true
+    },
+    {
+      "name": "long",
+      "file": "long.png",
+      "word": "長い",
+      "reading": "ながい",
+      "prompt": "A very long measuring tape stretched right across the frame with a double-headed arrow underneath spanning its whole length"
+    },
+    {
+      "name": "high",
+      "file": "high.png",
+      "word": "高い",
+      "reading": "たかい",
+      "prompt": "A very tall skyscraper towering over a tiny house, with an upward arrow running up its full height"
+    },
+    {
+      "name": "skillful",
+      "file": "skillful.png",
+      "word": "上手",
+      "reading": "じょうず",
+      "prompt": "A hand holding a brush that has just painted a flawless perfect circle, with a thumbs-up beside it: doing something well"
+    },
+    {
+      "name": "unskillful",
+      "file": "unskillful.png",
+      "word": "下手",
+      "reading": "へた",
+      "prompt": "A hand holding a brush that has painted a wobbly messy lopsided circle, with a thumbs-down beside it: doing something badly"
+    }
+  ]
+}

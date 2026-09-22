@@ -471,22 +471,23 @@ if (import.meta.vitest) {
     const sizes = countBySet(words);
 
     test("parses every row against the committed kanji list", () => {
-      expect(words.length).toBe(185);
+      expect(words.length).toBe(184);
     });
 
     test("holds the set sizes the curator last agreed to", () => {
       expect(sizes).toEqual({
         numbers: 23,
-        calendar: 34,
-        time: 10,
-        people: 14,
+        calendar: 42,
+        time: 12,
+        people: 19,
         position: 14,
         body: 0,
-        actions: 16,
-        places: 21,
-        nature: 8,
-        describing: 24,
-        irregulars: 21
+        actions: 19,
+        places: 19,
+        nature: 6,
+        describing: 18,
+        objects: 10,
+        food: 2
       });
     });
 

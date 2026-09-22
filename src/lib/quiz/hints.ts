@@ -34,25 +34,13 @@ export function imageSlug(meaning: string): string {
     .replace(/^-|-$/g, "");
 }
 
-/**
- * The svg is a single light-theme drawing; dark and high-contrast invert it
- * in CSS (see theme.svelte.ts) rather than shipping a second copy. Only the
- * png fallback needs a theme, because it has no way to be inverted at
- * render time.
- */
 export function imageUrl(word: Word): string {
-  return `/images/${word.level.toLowerCase()}/light/${word.set}/svg/${imageSlug(word.meaning)}.svg`;
+  return `/images/${word.level.toLowerCase()}/light/${word.set}/${imageSlug(word.meaning)}.png`;
 }
 
-export function imagePngUrl(word: Word, dark: boolean): string {
-  const theme = dark ? "dark" : "light";
-  return `/images/${word.level.toLowerCase()}/${theme}/${word.set}/png/${imageSlug(word.meaning)}.png`;
-}
-
-/** Turns a failed svg <img> src into its light or dark png fallback. */
-export function pngFallback(svgUrl: string, dark: boolean): string {
-  const theme = dark ? "dark" : "light";
-  return svgUrl.replace("/light/", `/${theme}/`).replace("/svg/", "/png/").replace(/\.svg$/, ".png");
+/** Swaps a light image url for its pre-rendered dark counterpart. */
+export function darkImageUrl(url: string): string {
+  return url.replace("/light/", "/dark/");
 }
 
 function looksOf(word: Word, looks: LookIndex): string {
@@ -171,7 +159,7 @@ if (import.meta.vitest) {
     test("points at the picture the word's meaning names", () => {
       expect(hintFor(word, "kana-kanji", "advanced", looks)).toEqual({
         kind: "image",
-        text: "/images/n5/light/places/svg/school.svg"
+        text: "/images/n5/light/places/school.png"
       });
     });
 
@@ -181,12 +169,10 @@ if (import.meta.vitest) {
       expect(imageSlug("once more")).toBe("once-more");
     });
 
-    test("falls back to the light or dark png next to the svg that failed to load", () => {
-      const svg = "/images/n5/light/places/svg/school.svg";
-      expect(pngFallback(svg, false)).toBe("/images/n5/light/places/png/school.png");
-      expect(pngFallback(svg, true)).toBe("/images/n5/dark/places/png/school.png");
-      expect(imagePngUrl(word, false)).toBe("/images/n5/light/places/png/school.png");
-      expect(imagePngUrl(word, true)).toBe("/images/n5/dark/places/png/school.png");
+    test("swaps the light image url for its dark counterpart", () => {
+      expect(darkImageUrl("/images/n5/light/places/school.png")).toBe(
+        "/images/n5/dark/places/school.png"
+      );
     });
 
     test("hides a hint the content cannot fill", () => {

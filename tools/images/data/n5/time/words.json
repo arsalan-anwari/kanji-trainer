@@ -1,0 +1,91 @@
+{
+  "words": [
+    {
+      "name": "half past",
+      "file": "half-past.png",
+      "word": "半",
+      "reading": "はん",
+      "prompt": "A clock with one side colored in slightly on the vertical side. So color in from 0 to 6. Then put the hour pointer at 6 and the minute pointer at 12 indicating half an hour has passed"
+    },
+    {
+      "name": "a half",
+      "file": "a-half.png",
+      "word": "半分",
+      "reading": "はんぶん",
+      "prompt": "A simple circle with half of it colored, one half white, with label 50% on the colored side.",
+      "text": true
+    },
+    {
+      "name": "now",
+      "file": "now.png",
+      "word": "今",
+      "reading": "いま",
+      "prompt": "Note with text `Now`"
+    },
+    {
+      "name": "tonight",
+      "file": "tonight.png",
+      "word": "今晩",
+      "reading": "こんばん",
+      "prompt": "A square paper note with the single word `tonight` written on it, with a bold hand-drawn circle around that word",
+      "text": true
+    },
+    {
+      "name": "morning",
+      "file": "morning.png",
+      "word": "午前",
+      "reading": "ごぜん",
+      "prompt": "A round clock face showing nine o'clock with a sun rising over the horizon behind it: before noon, a.m."
+    },
+    {
+      "name": "afternoon",
+      "file": "afternoon.png",
+      "word": "午後",
+      "reading": "ごご",
+      "prompt": "First-person view looking out through a window at a late afternoon sunset, the sun low and sinking toward the horizon, long warm light across the landscape"
+    },
+    {
+      "name": "sometimes",
+      "file": "sometimes.png",
+      "word": "時々",
+      "reading": "ときどき",
+      "prompt": "A row of seven small circles of which only three, scattered at irregular intervals, are filled in: happening now and then"
+    },
+    {
+      "name": "clock",
+      "file": "clock.png",
+      "word": "時計",
+      "reading": "とけい",
+      "prompt": "A round wall clock with hour and minute hands and tick marks around the dial"
+    },
+    {
+      "name": "time",
+      "file": "time.png",
+      "word": "時間",
+      "reading": "じかん",
+      "prompt": "An hourglass with sand streaming from the top bulb into the bottom one"
+    },
+    {
+      "name": "every night",
+      "file": "every-night.png",
+      "word": "毎晩",
+      "reading": "まいばん",
+      "prompt": "A row of seven calendar day boxes, each and every one containing a crescent moon: it happens every night"
+    },
+    {
+      "name": "every morning",
+      "file": "every-morning.png",
+      "word": "毎朝",
+      "reading": "まいあさ",
+      "prompt": "A row of seven calendar day boxes, each and every one containing a rising sun: it happens every morning"
+    },
+    {
+      "name": "this morning",
+      "file": "this-morning.png",
+      "word": "今朝",
+      "reading": "けさ",
+      "prompt": "Note with text `this morning` circled",
+      "text": true
+    }
+  ]
+}

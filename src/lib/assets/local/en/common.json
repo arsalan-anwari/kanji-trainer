@@ -33,7 +33,8 @@
     "places": "Places",
     "nature": "Nature",
     "describing": "Describing",
-    "irregulars": "Irregulars"
+    "objects": "Objects",
+    "food": "Food"
   },
   "wordShapes": {
     "1-kanji": "Tanji",

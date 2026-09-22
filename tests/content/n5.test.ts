@@ -12,7 +12,7 @@ import {
   OUTPUT_DIR,
   readCached
 } from "../../tools/content/build.ts";
-import { imagePngUrl, imageUrl } from "../../src/lib/quiz/hints.ts";
+import { imageUrl } from "../../src/lib/quiz/hints.ts";
 import { CACHE_DIR } from "../../tools/content/fetch.ts";
 import { indexByWrittenForm, parseJmdict } from "../../tools/content/jmdict.ts";
 import { parseKradfile } from "../../tools/content/kradfile.ts";
@@ -142,12 +142,10 @@ describe("the shipped N5 content", () => {
   });
 
   test("names a picture file for every word", () => {
-    const svgPaths = content.words.map((word) => imageUrl(word));
-    expect(new Set(svgPaths).size).toBe(content.words.length);
-    // The svg and the dark png are both optional (vectorize.py and invert.py
-    // fill them in later); the light png behind them is not.
-    for (const word of content.words) {
-      expect(existsSync(join(IMAGE_DIR, imagePngUrl(word, false).replace("/images/", "")))).toBe(true);
+    const paths = content.words.map((word) => imageUrl(word));
+    expect(new Set(paths).size).toBe(content.words.length);
+    for (const path of paths) {
+      expect(existsSync(join(IMAGE_DIR, path.replace("/images/", "")))).toBe(true);
     }
   });
 

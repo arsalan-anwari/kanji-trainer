@@ -1,0 +1,74 @@
+{
+  "words": [
+    {
+      "name": "money",
+      "file": "money.png",
+      "word": "お金",
+      "reading": "おかね",
+      "prompt": "A stack of blank banknotes with a few coins piled beside it, no writing or numbers on the notes"
+    },
+    {
+      "name": "fountain pen",
+      "file": "fountain-pen.png",
+      "word": "万年筆",
+      "reading": "まんねんひつ",
+      "prompt": "A fountain pen with its cap off, the gold nib clearly visible"
+    },
+    {
+      "name": "coat",
+      "file": "coat.png",
+      "word": "上着",
+      "reading": "うわぎ",
+      "prompt": "A buttoned outdoor coat hanging on a coat hanger"
+    },
+    {
+      "name": "hat",
+      "file": "hat.png",
+      "word": "帽子",
+      "reading": "ぼうし",
+      "prompt": "A single brimmed hat resting on a flat surface, seen from a slight angle"
+    },
+    {
+      "name": "newspaper",
+      "file": "newspaper.png",
+      "word": "新聞",
+      "reading": "しんぶん",
+      "prompt": "A folded newspaper with blank grey columns and an empty photo box, no readable writing"
+    },
+    {
+      "name": "book",
+      "file": "book.png",
+      "word": "本",
+      "reading": "ほん",
+      "prompt": "A single open book lying flat with completely blank pages"
+    },
+    {
+      "name": "bookshelves",
+      "file": "bookshelves.png",
+      "word": "本棚",
+      "reading": "ほんだな",
+      "prompt": "A tall wooden bookshelf unit with several shelves packed with rows of upright books"
+    },
+    {
+      "name": "dictionary",
+      "file": "dictionary.png",
+      "word": "辞書",
+      "reading": "じしょ",
+      "prompt": "A thick closed reference book with a ribbon bookmark and a magnifying glass resting on its cover"
+    },
+    {
+      "name": "electricity",
+      "file": "electricity.png",
+      "word": "電気",
+      "reading": "でんき",
+      "prompt": "A lit light bulb glowing with a lightning bolt symbol beside it"
+    },
+    {
+      "name": "socks",
+      "file": "socks.png",
+      "word": "靴下",
+      "reading": "くつした",
+      "prompt": "A matching pair of socks lying side by side"
+    }
+  ]
+}

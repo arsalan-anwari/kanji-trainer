@@ -1,0 +1,325 @@
+{
+  "words": [
+    {
+      "name": "one day",
+      "file": "one-day.png",
+      "word": "一日",
+      "reading": "いちにち",
+      "prompt": "A single calendar day page with an arc above it running from a rising sun through midday to a moon: one whole day from start to end"
+    },
+    {
+      "name": "one month",
+      "file": "one-month.png",
+      "word": "一月",
+      "reading": "ひとつき",
+      "prompt": "Note with text `1 Month`",
+      "text": true
+    },
+    {
+      "name": "7th day of the month",
+      "file": "7th-day-of-the-month.png",
+      "word": "七日",
+      "reading": "なのか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `7th day of Month`",
+      "text": true
+    },
+    {
+      "name": "3rd day of the month",
+      "file": "3rd-day-of-the-month.png",
+      "word": "三日",
+      "reading": "みっか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `3rd day of Month`",
+      "text": true
+    },
+    {
+      "name": "9th day of the month",
+      "file": "9th-day-of-the-month.png",
+      "word": "九日",
+      "reading": "ここのか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `9th day of Month`",
+      "text": true
+    },
+    {
+      "name": "2nd day of the month",
+      "file": "2nd-day-of-the-month.png",
+      "word": "二日",
+      "reading": "ふつか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `2nd day of Month`",
+      "text": true
+    },
+    {
+      "name": "5th day of the month",
+      "file": "5th-day-of-the-month.png",
+      "word": "五日",
+      "reading": "いつか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `5th day of Month`",
+      "text": true
+    },
+    {
+      "name": "this month",
+      "file": "this-month.png",
+      "word": "今月",
+      "reading": "こんげつ",
+      "prompt": "Two square paper notes side by side, the left note showing the text `Month 1` and the right note showing the text `Month 2`, with a bold hand-drawn circle around the note showing `Month 1`",
+      "text": true
+    },
+    {
+      "name": "this week",
+      "file": "this-week.png",
+      "word": "今週",
+      "reading": "こんしゅう",
+      "prompt": "Two square paper notes side by side, the left note showing the text `Week 1` and the right note showing the text `Week 2`, with a bold hand-drawn circle around the note showing `Week 1`",
+      "text": true
+    },
+    {
+      "name": "last month",
+      "file": "last-month.png",
+      "word": "先月",
+      "reading": "せんげつ",
+      "prompt": "Three monthly calendar pages in a row; a small person stands at the middle page marking now, and the page to its left is circled and highlighted"
+    },
+    {
+      "name": "last week",
+      "file": "last-week.png",
+      "word": "先週",
+      "reading": "せんしゅう",
+      "prompt": "Two square paper notes side by side, the left note showing the text `Week 1` and the right note showing the text `Week 2`, with a bold hand-drawn circle around the note showing `Week 1`",
+      "text": true
+    },
+    {
+      "name": "8th day of the month",
+      "file": "8th-day-of-the-month.png",
+      "word": "八日",
+      "reading": "ようか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `8th day of Month`",
+      "text": true
+    },
+    {
+      "name": "6th day of the month",
+      "file": "6th-day-of-the-month.png",
+      "word": "六日",
+      "reading": "むいか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `6th day of Month`",
+      "text": true
+    },
+    {
+      "name": "year after next",
+      "file": "year-after-next.png",
+      "word": "再来年",
+      "reading": "さらいねん",
+      "prompt": "A horizontal timeline of five identical year calendar blocks; a small person stands at the middle block marking now, and the last block on the far right is circled and highlighted"
+    },
+    {
+      "name": "10th day of the month",
+      "file": "10th-day-of-the-month.png",
+      "word": "十日",
+      "reading": "とおか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `10th day of Month`",
+      "text": true
+    },
+    {
+      "name": "last year",
+      "file": "last-year.png",
+      "word": "去年",
+      "reading": "きょねん",
+      "prompt": "Two square paper notes side by side, the left note showing the text `2025` and the right note showing the text `2026`, with a bold hand-drawn circle around the note showing `2025`",
+      "text": true
+    },
+    {
+      "name": "4th day of the month",
+      "file": "4th-day-of-the-month.png",
+      "word": "四日",
+      "reading": "よっか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `4th day of Month`",
+      "text": true
+    },
+    {
+      "name": "Saturday",
+      "file": "saturday.png",
+      "word": "土曜日",
+      "reading": "どようび",
+      "prompt": "A row of seven equal squares drawn in a notebook, with the texts `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun` written above the squares, one label per square in that order, and the single square under the text `Sat` filled in solid while the other six stay empty. Saterday is the 6th block NOT the last block.",
+      "text": true
+    },
+    {
+      "name": "summer vacation",
+      "file": "summer-vacation.png",
+      "word": "夏休み",
+      "reading": "なつやすみ",
+      "prompt": "A beach deck chair under a parasol with a beach ball and sunglasses, a blazing summer sun above: the summer holidays"
+    },
+    {
+      "name": "year",
+      "file": "year.png",
+      "word": "年",
+      "reading": "とし",
+      "prompt": "The earth circling the sun with arrows for one cycle with images of the earth at each season, like simulate passing of a year"
+    },
+    {
+      "name": "Sunday",
+      "file": "sunday.png",
+      "word": "日曜日",
+      "reading": "にちようび",
+      "prompt": "A row of seven equal squares drawn in a notebook, with the texts `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun` written above the squares, one label per square in that order, and the single square under the text `Sun` filled in solid while the other six stay empty",
+      "text": true
+    },
+    {
+      "name": "Monday",
+      "file": "monday.png",
+      "word": "月曜日",
+      "reading": "げつようび",
+      "prompt": "A row of seven equal squares drawn in a notebook, with the texts `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun` written above the squares, one label per square in that order, and the single square under the text `Mon` filled in solid while the other six stay empty",
+      "text": true
+    },
+    {
+      "name": "Thursday",
+      "file": "thursday.png",
+      "word": "木曜日",
+      "reading": "もくようび",
+      "prompt": "A row of seven equal squares drawn in a notebook, with the texts `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun` written above the squares, one label per square in that order, and the single square under the text `Thu` filled in solid while the other six stay empty",
+      "text": true
+    },
+    {
+      "name": "next year",
+      "file": "next-year.png",
+      "word": "来年",
+      "reading": "らいねん",
+      "prompt": "Two square paper notes side by side, the left note showing the text `2026` and the right note showing the text `2027`, with a bold hand-drawn circle around the note showing `2027`",
+      "text": true
+    },
+    {
+      "name": "next month",
+      "file": "next-month.png",
+      "word": "来月",
+      "reading": "らいげつ",
+      "prompt": "Three monthly calendar pages in a row; a small person stands at the middle page marking now, and the page to its right is circled and highlighted"
+    },
+    {
+      "name": "next week",
+      "file": "next-week.png",
+      "word": "来週",
+      "reading": "らいしゅう",
+      "prompt": "Three weekly calendar strips stacked in a row; a small person stands at the middle strip marking now, and the strip below it, the following one, is circled and highlighted"
+    },
+    {
+      "name": "every year",
+      "file": "every-year.png",
+      "word": "毎年",
+      "reading": "まいとし",
+      "prompt": "A row of five identical year calendar blocks, every single one of them ticked with a check mark: it happens each year"
+    },
+    {
+      "name": "every day",
+      "file": "every-day.png",
+      "word": "毎日",
+      "reading": "まいにち",
+      "prompt": "A row of seven identical calendar day pages, every single one of them ticked with a check mark: it happens each day"
+    },
+    {
+      "name": "every month",
+      "file": "every-month.png",
+      "word": "毎月",
+      "reading": "まいつき",
+      "prompt": "A row of four identical monthly calendar pages, every single one of them ticked with a check mark: it happens each month"
+    },
+    {
+      "name": "every week",
+      "file": "every-week.png",
+      "word": "毎週",
+      "reading": "まいしゅう",
+      "prompt": "A minimal monthly calendar page. Instead of real numbers, each grid square contains a clean, generic placeholder symbol or placeholder text like `XX` or a simple solid bullet point representing a day. The layout is a perfect 7x5 grid. The headers clearly read `SUN, MON, TUE, WED, THU, FRI, SAT`. Crucially, every single day/placeholder in the first column under `SUN` is distinctly circled with a hand-drawn red marker loop. All other columns are left completely clean and uncircled. Flat design, stark white background, high contrast, crisp lines, geometric perfection, no gibberish text."
+    },
+    {
+      "name": "Wednesday",
+      "file": "wednesday.png",
+      "word": "水曜日",
+      "reading": "すいようび",
+      "prompt": "A row of seven equal squares drawn in a notebook, with the texts `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun` written above the squares, one label per square in that order, and the single square under the text `Wed` filled in solid while the other six stay empty",
+      "text": true
+    },
+    {
+      "name": "Tuesday",
+      "file": "tuesday.png",
+      "word": "火曜日",
+      "reading": "かようび",
+      "prompt": "A row of seven equal squares drawn in a notebook, with the texts `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun` written above the squares, one label per square in that order, and the single square under the text `Tue` filled in solid while the other six stay empty",
+      "text": true
+    },
+    {
+      "name": "birthday",
+      "file": "birthday.png",
+      "word": "誕生日",
+      "reading": "たんじょうび",
+      "prompt": "A birthday cake with lit candles and a party hat and streamers beside it"
+    },
+    {
+      "name": "Friday",
+      "file": "friday.png",
+      "word": "金曜日",
+      "reading": "きんようび",
+      "prompt": "A row of seven equal squares drawn in a notebook, with the texts `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`, `Sun` written above the squares, one label per square in that order, and the single square under the text `Fri` filled in solid while the other six stay empty",
+      "text": true
+    },
+    {
+      "name": "year before last",
+      "file": "year-before-last.png",
+      "word": "一昨年",
+      "reading": "おととし",
+      "prompt": "A horizontal timeline of five identical year calendar blocks; a small person stands at the middle block marking now, and the first block on the far left is circled and highlighted"
+    },
+    {
+      "name": "day before yesterday",
+      "file": "day-before-yesterday.png",
+      "word": "一昨日",
+      "reading": "おととい",
+      "prompt": "A horizontal row of five identical calendar day pages; a small person stands at the middle page marking today, and the first page on the far left is circled and highlighted"
+    },
+    {
+      "name": "20th day of the month",
+      "file": "20th-day-of-the-month.png",
+      "word": "二十日",
+      "reading": "はつか",
+      "prompt": "A daily tear-off calendar block on a stand, its top page showing the text `20th day of Month`",
+      "text": true
+    },
+    {
+      "name": "20 years old",
+      "file": "20-years-old.png",
+      "word": "二十歳",
+      "reading": "はたち",
+      "prompt": "A birthday cake topped with two large candle numerals reading 20"
+    },
+    {
+      "name": "this year",
+      "file": "this-year.png",
+      "word": "今年",
+      "reading": "ことし",
+      "prompt": "Two square paper notes side by side, the left note showing the text `Year 1` and the right note showing the text `Year 2`, with a bold hand-drawn circle around the note showing `Year 1`",
+      "text": true
+    },
+    {
+      "name": "today",
+      "file": "today.png",
+      "word": "今日",
+      "reading": "きょう",
+      "prompt": "A square paper note with the single word `today` written on it, with a bold hand-drawn circle around that word",
+      "text": true
+    },
+    {
+      "name": "tomorrow",
+      "file": "tomorrow.png",
+      "word": "明日",
+      "reading": "あした",
+      "prompt": "A square paper note with the single word `tomorrow` written on it, with a bold hand-drawn circle around that word",
+      "text": true
+    },
+    {
+      "name": "yesterday",
+      "file": "yesterday.png",
+      "word": "昨日",
+      "reading": "きのう",
+      "prompt": "A square paper note with the single word `yesterday` written on it, with a bold hand-drawn circle around that word",
+      "text": true
+    }
+  ]
+}

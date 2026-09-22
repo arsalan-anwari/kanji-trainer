@@ -1,0 +1,21 @@
+# Images in describing already judged good: generate.py skips these.
+# One file name per line; blank lines and # comments ignored.
+
+big-before-a-noun.png
+big.png
+english.png
+famous.png
+high.png
+illness.png
+important.png
+liking-very-much.png
+lively.png
+long.png
+safe.png
+small-before-a-noun.png
+small.png
+together.png
+white.png
+skillful.png
+unskillful.png
+white-describing.png

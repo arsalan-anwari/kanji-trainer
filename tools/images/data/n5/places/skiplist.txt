@@ -1,0 +1,22 @@
+# Images in places already judged good: generate.py skips these.
+# One file name per line; blank lines and # comments ignored.
+
+airplane.png
+bank.png
+bicycle.png
+car.png
+corridor.png
+embassy.png
+foreign-country.png
+library.png
+school.png
+subway.png
+train.png
+travel.png
+university.png
+greengrocer.png
+entrance.png
+exit.png
+country.png
+automobile.png
+dining-room.png

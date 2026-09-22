@@ -13,15 +13,14 @@ written	reading	set	level	meaning	clue	note
 二つ	ふたつ	numbers	N5	two things	Counting objects, the amount that makes a pair.	
 五	ご	numbers	N5	five	The number of fingers on a hand.	
 五つ	いつつ	numbers	N5	five things	Counting objects, the amount that matches the fingers of a hand.	
-何	なに	irregulars	N5		The question word you use when you cannot name the thing in front of you.	何 alone is なに; なん is the bound form before counters
 八	はち	numbers	N5	eight	The number of legs on a spider.	
 八つ	やっつ	numbers	N5	eight things	Counting objects, the amount that matches a spider's legs.	
 六	ろく	numbers	N5	six	The number of faces on a die.	
 六つ	むっつ	numbers	N5	six things	Counting objects, the amount that matches the faces of a die.	
 十	じゅう	numbers	N5		The number of fingers on both hands together.	OpenJLPT gives じゅう とお; one reading per row
 千	せん	numbers	N5		Ten hundreds.	
-半	はん	describing	N5	half past	On a clock, the moment thirty minutes into the hour.	
-半分	はんぶん	describing	N5	a half	What you get when something is cut into two equal parts.	
+半	はん	time	N5	half past	On a clock, the moment thirty minutes into the hour.	
+半分	はんぶん	time	N5	a half	What you get when something is cut into two equal parts.	
 四	よん	numbers	N5	four	The number of legs on a chair.	OpenJLPT gives し / よん; one reading per row
 四つ	よっつ	numbers	N5	four things	Counting objects, the amount that matches a chair's legs.	
 百	ひゃく	numbers	N5		Ten tens.	
@@ -61,7 +60,7 @@ written	reading	set	level	meaning	clue	note
 金曜日	きんようび	calendar	N5		The last working day before the weekend.	
 今	いま	time	N5		This very moment, neither earlier nor later.	
 今晩	こんばん	time	N5		The dark hours of the day you are living through.	
-休み	やすみ	time	N5		A pause from work or from school.	
+休み	やすみ	actions	N5		A pause from work or from school.	
 午前	ごぜん	time	N5		The half of the day that ends at noon.	
 午後	ごご	time	N5		The half of the day that starts at noon.	
 時々	ときどき	time	N5		Neither always nor never: every so often.	
@@ -113,13 +112,13 @@ written	reading	set	level	meaning	clue	note
 話す	はなす	actions	N5		To use your voice to say things to another person.	
 読む	よむ	actions	N5		To take the sense off a printed page with your eyes.	
 食べる	たべる	actions	N5		To put something in your mouth, chew it and swallow.	
-お菓子	おかし	nature	N5		Small sweet things eaten between meals.	
-お金	おかね	places	N5		Coins and notes you hand over to buy things.	
-万年筆	まんねんひつ	describing	N5		A writing tool with a metal nib fed from an ink reservoir.	
-上着	うわぎ	describing	N5		The outer garment you pull on before stepping into the cold.	
+お菓子	おかし	food	N5		Small sweet things eaten between meals.	
+お金	おかね	objects	N5		Coins and notes you hand over to buy things.	
+万年筆	まんねんひつ	objects	N5		A writing tool with a metal nib fed from an ink reservoir.	
+上着	うわぎ	objects	N5		The outer garment you pull on before stepping into the cold.	
 入口	いりぐち	places	N5		The opening in a building that you come in through.	
 出口	でぐち	places	N5		The opening in a building that you go out through.	
-名前	なまえ	places	N5		What you are called, written at the top of a form.	
+名前	なまえ	people	N5		What you are called, written at the top of a form.	
 図書館	としょかん	places	N5		A quiet building full of shelves, where reading is borrowed.	
 国	くに	places	N5		A land with its own borders, flag and government.	
 地下鉄	ちかてつ	places	N5		The railway that runs through tunnels under a city.	
@@ -127,25 +126,25 @@ written	reading	set	level	meaning	clue	note
 大使館	たいしかん	places	N5		The building in a capital where another nation's officials work.	
 大学	だいがく	places	N5		The school you attend after eighteen, to earn a degree.	
 学校	がっこう	places	N5		The building where children are taught on weekday mornings.	
-帽子	ぼうし	describing	N5		What you wear on your head against the sun.	
+帽子	ぼうし	objects	N5		What you wear on your head against the sun.	
 廊下	ろうか	places	N5		The long narrow passage that rooms open onto.	
-新聞	しんぶん	describing	N5		Folded sheets of cheap paper carrying the day's events.	
+新聞	しんぶん	objects	N5		Folded sheets of cheap paper carrying the day's events.	
 旅行	りょこう	places	N5		Going far from home for pleasure, suitcase in hand.	
-本	ほん	irregulars	N5		Bound pages you work through from cover to cover.	
-本棚	ほんだな	irregulars	N5		The furniture of flat boards where your reading stands upright.	
+本	ほん	objects	N5		Bound pages you work through from cover to cover.	
+本棚	ほんだな	objects	N5		The furniture of flat boards where your reading stands upright.	
 自動車	じどうしゃ	places	N5	automobile	The formal name for a four-wheeled machine with an engine.	
 自転車	じてんしゃ	places	N5		Two wheels, a saddle and pedals you push with your feet.	
 英語	えいご	describing	N5		The language spoken in London and in New York.	
-話	はなし	irregulars	N5		A story, or the thing somebody is saying to you.	
+話	はなし	actions	N5		A story, or the thing somebody is saying to you.	
 車	くるま	places	N5	car	The everyday word for what you drive along a road.	
-辞書	じしょ	irregulars	N5		The volume you open to find out what a word means.	
+辞書	じしょ	objects	N5		The volume you open to find out what a word means.	
 銀行	ぎんこう	places	N5		Where you keep your money and draw it out again.	
-電気	でんき	places	N5		What runs along a wire and makes a lamp glow.	
-電話	でんわ	describing	N5		What you make when you dial a number and somebody answers.	
+電気	でんき	objects	N5		What runs along a wire and makes a lamp glow.	
+電話	でんわ	actions	N5		What you make when you dial a number and somebody answers.	
 電車	でんしゃ	places	N5		Carriages running on rails, powered from an overhead wire.	
-靴下	くつした	describing	N5		What you pull onto your feet before your shoes.	
+靴下	くつした	objects	N5		What you pull onto your feet before your shoes.	
 飛行機	ひこうき	places	N5		A machine with wings that carries people through the sky.	
-食べ物	たべもの	nature	N5		Anything you put in your mouth to stay alive.	
+食べ物	たべもの	food	N5		Anything you put in your mouth to stay alive.	
 食堂	しょくどう	places	N5		The room with a table where meals are taken.	
 天気	てんき	nature	N5		Whether it is sunny, cloudy or pouring outside.	
 山	やま	nature	N5		A great mass of rock rising high above the land.	
@@ -168,19 +167,19 @@ written	reading	set	level	meaning	clue	note
 白い	しろい	describing	N5	white, describing	The colour of fresh snow, used to describe a thing.	
 長い	ながい	describing	N5		Stretching a great distance from end to end.	
 高い	たかい	describing	N5		Reaching far up, or else costing a great deal.	
-一人	ひとり	irregulars	N5		By yourself, with nobody else there.	
-一昨年	おととし	irregulars	N5		Two new year's celebrations back.	
-一昨日	おととい	irregulars	N5		Two sunrises back.	
-上手	じょうず	irregulars	N5		Good at something, through practice.	
-下手	へた	irregulars	N5		Bad at something, clumsy with it.	
-二人	ふたり	irregulars	N5		A pair of human beings, the smallest group there is.	
-二十日	はつか	irregulars	N5		The date nineteen days after the first of the calendar.	
-二十歳	はたち	irregulars	N5		The age at which a Japanese person is reckoned grown.	
-今年	ことし	irregulars	N5		The twelve months you are living through right now.	
-今日	きょう	irregulars	N5		The day you are living through, between yesterday and tomorrow.	
-今朝	けさ	irregulars	N5		The early hours of the day you are living through.	
-八百屋	やおや	irregulars	N5		The shop that sells vegetables and fruit.	
-友達	ともだち	irregulars	N5		Somebody you like and choose to spend your time with.	
-大人	おとな	irregulars	N5		A grown human, no longer a child.	
-明日	あした	irregulars	N5		The day that follows the one you are living through.	
-昨日	きのう	irregulars	N5		The day before the one you are living through.	
+一人	ひとり	people	N5		By yourself, with nobody else there.	
+一昨年	おととし	calendar	N5		Two new year's celebrations back.	
+一昨日	おととい	calendar	N5		Two sunrises back.	
+上手	じょうず	describing	N5		Good at something, through practice.	
+下手	へた	describing	N5		Bad at something, clumsy with it.	
+二人	ふたり	people	N5		A pair of human beings, the smallest group there is.	
+二十日	はつか	calendar	N5		The date nineteen days after the first of the calendar.	
+二十歳	はたち	calendar	N5		The age at which a Japanese person is reckoned grown.	
+今年	ことし	calendar	N5		The twelve months you are living through right now.	
+今日	きょう	calendar	N5		The day you are living through, between yesterday and tomorrow.	
+今朝	けさ	time	N5		The early hours of the day you are living through.	
+八百屋	やおや	places	N5		The shop that sells vegetables and fruit.	
+友達	ともだち	people	N5		Somebody you like and choose to spend your time with.	
+大人	おとな	people	N5		A grown human, no longer a child.	
+明日	あした	calendar	N5		The day that follows the one you are living through.	
+昨日	きのう	calendar	N5		The day before the one you are living through.	
