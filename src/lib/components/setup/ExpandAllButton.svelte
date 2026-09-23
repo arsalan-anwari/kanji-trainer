@@ -1,3 +1,19 @@
+<script lang="ts" module>
+  /**
+   * Opens or closes a section only when `open` itself changes. A plain
+   * `open={...}` shares its update with the counts beside it, so every toggle
+   * snapped the learner's expanded sections back shut.
+   */
+  export function openWhen(node: HTMLDetailsElement, open: boolean) {
+    node.open = open;
+    return {
+      update(next: boolean) {
+        node.open = next;
+      }
+    };
+  }
+</script>
+
 <script lang="ts">
   import { Button } from "kaizen-ui";
   import ChevronsDownUp from "@lucide/svelte/icons/chevrons-down-up";

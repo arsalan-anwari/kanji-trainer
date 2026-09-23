@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Button, Glyph, Icon, roving } from "kaizen-ui";
   import SetIcon from "./SetIcon.svelte";
+  import { openWhen } from "./ExpandAllButton.svelte";
   import type { SetGroup } from "../../content/sets";
   import type { Word } from "../../content/types";
   import { n, t } from "../../i18n.svelte";
@@ -24,7 +25,7 @@
   {@const ids = branch.groups.flatMap((group) => group.words.map((word) => word.id))}
   {@const taken = ids.filter(isOn).length}
   {@const label = t(`common.set.${branch.set}`)}
-  <details data-section open={openByDefault} class="rounded-2xl border-2 border-border bg-surface">
+  <details data-section use:openWhen={openByDefault} class="rounded-2xl border-2 border-border bg-surface">
     <summary
       class="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-bold [&::-webkit-details-marker]:hidden"
     >
@@ -40,7 +41,7 @@
       {#each branch.groups as group (group.subcategory)}
         {@const groupIds = group.words.map((word) => word.id)}
         {@const groupLabel = t(`common.subcategory.${group.subcategory}`)}
-        <details open={openByDefault} class="rounded-xl border-2 border-border bg-surface">
+        <details use:openWhen={openByDefault} class="rounded-xl border-2 border-border bg-surface">
           <summary
             class="flex cursor-pointer list-none flex-wrap items-center gap-2 px-3 py-2 font-bold [&::-webkit-details-marker]:hidden"
           >

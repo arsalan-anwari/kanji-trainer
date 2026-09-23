@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ExpandAllButton from "./ExpandAllButton.svelte";
+  import ExpandAllButton, { openWhen } from "./ExpandAllButton.svelte";
   import { Button, EmptyState, Glyph, Icon } from "kaizen-ui";
   import { app } from "../../state.svelte";
   import { groupWordsByKanji, SET_IDS, type SetId } from "../../content/sets";
@@ -38,7 +38,7 @@
   </div>
 
   {#each grouped as group (group.id)}
-    <details data-section open={openByDefault} class="rounded-2xl border-2 border-border bg-surface">
+    <details data-section use:openWhen={openByDefault} class="rounded-2xl border-2 border-border bg-surface">
       <summary
         class="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-bold [&::-webkit-details-marker]:hidden"
       >
