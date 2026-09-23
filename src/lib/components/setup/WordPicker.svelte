@@ -1,12 +1,13 @@
 <script lang="ts">
-  import { Button, Chip, EmptyState, Glyph, Icon, roving } from "kaizen-ui";
+  import ExpandAllButton from "./ExpandAllButton.svelte";
+  import { Button, Chip, EmptyState, Icon } from "kaizen-ui";
+  import WordToggleTree from "./WordToggleTree.svelte";
   import { app } from "../../state.svelte";
   import {
     countBySet,
-    countBySubcategory,
     groupWordsBySet,
     SET_IDS,
-    subcategoryKey,
+    subcategoriesBySet,
     SUBCATEGORIES,
     type SetId
   } from "../../content/sets";
@@ -36,7 +37,7 @@
   );
 
   const categoryCounts = $derived(countBySet(app.selectableWords));
-  const subcategoryCounts = $derived(countBySubcategory(categoryScoped));
+  const offered = $derived(subcategoriesBySet(categoryScoped));
 
   const visible = $derived(
     categoryScoped.filter((word) => {
@@ -51,6 +52,7 @@
 
   // One collapsed row per set instead of one card per subcategory: the long
   // list is what makes this page crawl on WebKitGTK.
+  const visibleIds = $derived(visible.map((word) => word.id));
   const tree = $derived(groupWordsBySet(visible));
 
   // Nothing to hunt through when a search is on or a single set is in play.
@@ -96,33 +98,16 @@
       </span>
     </div>
     <div class="flex shrink-0 flex-wrap gap-2">
+      <ExpandAllButton />
       <Button variant="outline" onclick={() => app.go("setup")}>
         <Icon name="chevron-left" />
         {t("setup.words.back")}
       </Button>
-      <Button
-        variant="outline"
-        disabled={app.eligibleCount === 0}
-        onclick={() => app.clearWords(app.selectableWords.map((word) => word.id))}
-      >
-        <Icon name="select-none" />
-        {t("setup.words.unselectAll")}
-      </Button>
-      <Button
-        variant="outline"
-        disabled={app.settings.excludedWords.length === 0}
-        onclick={() => app.resetWords()}
-      >
-        <Icon name="restore" />
-        {t("setup.words.reset")}
-      </Button>
     </div>
   </div>
 
-  <details data-section class="rounded-2xl border-2 border-border bg-surface">
-    <summary
-      class="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-bold [&::-webkit-details-marker]:hidden"
-    >
+  <section data-section class="rounded-2xl border-2 border-border bg-surface">
+    <div class="flex flex-wrap items-center gap-2 px-4 py-3 font-bold">
       <Icon name="filter" class="size-4" />
       <span>{t("setup.words.filters")}</span>
       {#if activeFilters > 0}
@@ -132,8 +117,27 @@
           {activeFilters}
         </span>
       {/if}
-      <Icon name="chevron-down" class="ml-auto size-4 text-muted-foreground" />
-    </summary>
+      <div class="ml-auto flex flex-wrap gap-2 font-normal">
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={visibleIds.every((id) => !app.excludedWords.has(id))}
+          onclick={() => app.selectWords(visibleIds)}
+        >
+          <Icon name="select-all" />
+          {t("setup.words.selectAll")}
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          disabled={visibleIds.every((id) => app.excludedWords.has(id))}
+          onclick={() => app.clearWords(visibleIds)}
+        >
+          <Icon name="select-none" />
+          {t("setup.words.unselectAll")}
+        </Button>
+      </div>
+    </div>
     <div class="flex flex-col gap-3 border-t-2 border-border px-4 py-4">
       <input
         type="text"
@@ -181,10 +185,9 @@
       <div class="flex flex-wrap items-center gap-2">
         <span class="text-xs font-bold text-muted-foreground">{t("setup.words.category")}</span>
         <div role="group" aria-label={t("setup.words.category")} class="flex flex-wrap gap-2">
-          {#each SET_IDS as id (id)}
+          {#each SET_IDS.filter((id) => categoryCounts[id] > 0) as id (id)}
             <Chip
               size="sm"
-              disabled={(categoryCounts[id] ?? 0) === 0}
               active={categoryFilter.includes(id)}
               onclick={() => toggleCategory(id)}
             >
@@ -203,10 +206,9 @@
             aria-label={t(`common.set.${category}`)}
             class="flex flex-wrap gap-2"
           >
-            {#each SUBCATEGORIES[category] as sub (sub)}
+            {#each offered[category] as sub (sub)}
               <Chip
                 size="sm"
-                disabled={(subcategoryCounts[subcategoryKey(category, sub)] ?? 0) === 0}
                 active={subcategoryFilter.includes(sub)}
                 onclick={() => toggleSubcategory(sub)}
               >
@@ -217,87 +219,16 @@
         </div>
       {/each}
     </div>
-  </details>
+  </section>
 
-  {#each tree as branch (branch.set)}
-    {@const ids = branch.groups.flatMap((group) => group.words.map((word) => word.id))}
-    {@const taken = ids.filter((id) => !app.excludedWords.has(id)).length}
-    {@const label = t(`common.set.${branch.set}`)}
-    <details
-      data-section
-      open={openByDefault}
-      class="rounded-2xl border-2 border-border bg-surface"
-    >
-      <summary
-        class="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-bold [&::-webkit-details-marker]:hidden"
-      >
-        <span>{label}</span>
-        <span class="text-sm font-normal tabular-nums text-muted-foreground">
-          {t("setup.words.taken", { taken: n(taken), total: n(ids.length) })}
-        </span>
-        <Icon name="chevron-down" class="ml-auto size-4 text-muted-foreground" />
-      </summary>
-
-      <div class="flex flex-col gap-4 border-t-2 border-border px-4 py-4">
-        {#each branch.groups as group (group.subcategory)}
-          {@const groupIds = group.words.map((word) => word.id)}
-          {@const groupLabel = t(`common.subcategory.${group.subcategory}`)}
-          <details open={openByDefault} class="rounded-xl border-2 border-border bg-surface">
-            <summary
-              class="flex cursor-pointer list-none flex-wrap items-center gap-2 px-3 py-2 font-bold [&::-webkit-details-marker]:hidden"
-            >
-              <span>{groupLabel}</span>
-              <span class="text-xs font-normal tabular-nums text-muted-foreground">
-                {t("setup.words.taken", {
-                  taken: n(groupIds.filter((id) => !app.excludedWords.has(id)).length),
-                  total: n(groupIds.length)
-                })}
-              </span>
-              <span
-                role="presentation"
-                class="ml-auto flex gap-2"
-                onclick={(event) => event.stopPropagation()}
-              >
-                <Button size="sm" variant="outline" onclick={() => app.selectWords(groupIds)}>
-                  <Icon name="select-all" />
-                  {t("setup.words.selectAll")}
-                </Button>
-                <Button size="sm" variant="outline" onclick={() => app.clearWords(groupIds)}>
-                  <Icon name="select-none" />
-                  {t("setup.words.clear")}
-                </Button>
-              </span>
-              <Icon name="chevron-down" class="size-4 text-muted-foreground" />
-            </summary>
-            <div
-              use:roving
-              role="group"
-              aria-label={t("setup.words.group", { label: groupLabel })}
-              class="grid grid-cols-[repeat(auto-fill,minmax(7.5rem,1fr))] gap-2 border-t border-wire p-3"
-            >
-              {#each group.words as word (word.id)}
-                {@const on = !app.excludedWords.has(word.id)}
-                <button
-                  type="button"
-                  aria-pressed={on}
-                  class="flex cursor-pointer flex-col gap-0.5 rounded-lg border px-3 py-2 text-left transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none {on
-                    ? 'border-selected bg-selected-soft'
-                    : 'border-wire bg-surface opacity-50 hover:bg-accent'}"
-                  onclick={() => app.toggleWord(word.id)}
-                >
-                  <span class="flex flex-col">
-                    <Glyph text={word.written} class="text-lg font-bold" />
-                    <Glyph text={word.reading} class="text-sm text-muted-foreground" />
-                  </span>
-                  <span class="text-xs leading-snug text-muted-foreground">{word.meaning}</span>
-                </button>
-              {/each}
-            </div>
-          </details>
-        {/each}
-      </div>
-    </details>
-  {:else}
+  <WordToggleTree
+    {tree}
+    {openByDefault}
+    isOn={(id) => !app.excludedWords.has(id)}
+    ontoggle={(id) => app.toggleWord(id)}
+    onset={(ids, on) => (on ? app.selectWords(ids) : app.clearWords(ids))}
+  />
+  {#if tree.length === 0}
     <EmptyState icon="target" title={t(needle === "" ? "setup.words.empty" : "setup.words.noMatch")} />
-  {/each}
+  {/if}
 </div>

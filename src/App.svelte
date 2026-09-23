@@ -16,6 +16,8 @@
   import QuizScreen from "./lib/components/quiz/QuizScreen.svelte";
   import ResultScreen from "./lib/components/result/ResultScreen.svelte";
   import ReportsScreen from "./lib/components/reports/ReportsScreen.svelte";
+  import ChartScreen from "./lib/components/chart/ChartScreen.svelte";
+  import PrintPicker from "./lib/components/chart/PrintPicker.svelte";
   import { t } from "./lib/i18n.svelte";
 
   app.load();
@@ -51,7 +53,9 @@
       : TAB_ROUTES.map((route) => ({ value: route, label: t(`common.nav.${route}`) }))
   );
 
-  const tab = $derived<TabRoute>(app.route === "reports" ? "reports" : "setup");
+  const tab = $derived<TabRoute>(
+    app.route === "reports" ? "reports" : app.route === "chart" || app.route === "print" ? "chart" : "setup"
+  );
 
   $effect(() => focusMain(app.route));
 </script>
@@ -111,6 +115,10 @@
       <ResultScreen />
     {:else if app.route === "reports"}
       <ReportsScreen />
+    {:else if app.route === "chart"}
+      <ChartScreen />
+    {:else if app.route === "print"}
+      <PrintPicker />
     {/if}
   </main>
 </div>

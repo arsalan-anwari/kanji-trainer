@@ -29,6 +29,7 @@ import { fallbackHint, hintFor, lookIndex, type Hint } from "./quiz/hints";
 import { componentIndex } from "./quiz/similarity";
 import { newReportId, summarize, type Report, type Summary } from "./quiz/report";
 import { settingsFromMistakes } from "./quiz/diagnosis";
+import { emptyFilter, filterWords, kanjiIndex, type WordFilter } from "./browse/cards";
 import { scoreTier } from "./quiz/score";
 import { sfx, type FanfareGrade } from "kaizen-ui";
 import {
@@ -43,11 +44,11 @@ import {
   type Preset
 } from "./storage";
 
-export type Route = "setup" | "study" | "words" | "quiz" | "result" | "reports";
+export type Route = "setup" | "study" | "words" | "quiz" | "result" | "reports" | "chart" | "print";
 export type Phase = "answering" | "feedback" | "done";
 
 /** The tabs the header pages between. Study and the run are sub-screens. */
-export const TAB_ROUTES = ["setup", "reports"] as const;
+export const TAB_ROUTES = ["setup", "reports", "chart"] as const;
 
 export type TabRoute = (typeof TAB_ROUTES)[number];
 
@@ -78,6 +79,8 @@ class AppState {
   runStartedAt = 0;
 
   reports = $state<Report[]>([]);
+  chartFilter = $state<WordFilter>(emptyFilter(DEFAULT_SETTINGS.level));
+  printExcluded = $state<Set<string>>(new Set());
   lastReport = $state<Report | null>(null);
   splash = $state<FanfareGrade | null>(null);
 
@@ -107,6 +110,10 @@ class AppState {
         : this.settings.subcategories
     )
   );
+
+  kanjiByCharacter = $derived(kanjiIndex(this.content?.kanji ?? []));
+  charted = $derived<Word[]>(filterWords(this.words, this.chartFilter));
+  printWords = $derived<Word[]>(this.charted.filter((word) => !this.printExcluded.has(word.id)));
 
   pickerOrder = $derived<string[]>(SET_IDS.flatMap((id) => this.kanjiInSet[id]));
   selectableWords = $derived<Word[]>(
@@ -162,6 +169,7 @@ class AppState {
 
   load(): void {
     this.settings = parseSettings(loadJson<unknown>(SETTINGS_KEY, null));
+    this.chartFilter = emptyFilter(this.settings.level);
     this.presets = listPresets();
     const chosen = loadJson<unknown>(CHOSEN_PRESET_KEY, "");
     this.#chosenPreset =
@@ -264,10 +272,6 @@ class AppState {
     const held = new Set(this.settings.excludedWords);
     for (const id of ids) held.add(id);
     this.updateSettings({ excludedWords: [...held] });
-  }
-
-  resetWords(): void {
-    this.updateSettings({ excludedWords: [] });
   }
 
 
@@ -418,6 +422,21 @@ class AppState {
     this.updateSettings(patch);
     this.route = "setup";
     this.message = "reports.practise.loaded";
+  }
+
+  togglePrintWord(id: string): void {
+    const next = new Set(this.printExcluded);
+    if (!next.delete(id)) next.add(id);
+    this.printExcluded = next;
+  }
+
+  setPrintWords(ids: readonly string[], on: boolean): void {
+    const next = new Set(this.printExcluded);
+    for (const id of ids) {
+      if (on) next.delete(id);
+      else next.add(id);
+    }
+    this.printExcluded = next;
   }
 
   go(route: Route): void {

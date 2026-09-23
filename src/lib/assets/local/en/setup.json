@@ -85,7 +85,6 @@
     "title": "Study pass",
     "description": "Read through before drilling.",
     "back": "Back to setup",
-    "start": "Start the run",
     "empty": "Pick a set to study."
   },
   "words": {
@@ -94,9 +93,9 @@
     "inPlay": "{count} words selected.",
     "taken": "{taken} of {total} kept",
     "back": "Back to setup",
-    "reset": "Reset",
     "unselectAll": "Unselect all",
-    "selectAll": "All",
+    "selectAll": "Select all",
+    "all": "All",
     "clear": "None",
     "empty": "Pick a set to see its words.",
     "group": "Words in {label}",

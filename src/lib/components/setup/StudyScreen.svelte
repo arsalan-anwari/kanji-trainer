@@ -1,8 +1,10 @@
 <script lang="ts">
+  import ExpandAllButton from "./ExpandAllButton.svelte";
   import { Button, EmptyState, Glyph, Icon } from "kaizen-ui";
   import { app } from "../../state.svelte";
   import { groupWordsByKanji, SET_IDS, type SetId } from "../../content/sets";
   import { n, t } from "../../i18n.svelte";
+  import SetIcon from "./SetIcon.svelte";
 
   // Grouped the way the picker groups them, so a study pass reads like the set
   // it was built from, and by kanji under that, so a long set stays scannable.
@@ -27,12 +29,10 @@
       <span class="text-sm text-muted-foreground">{t("setup.study.description")}</span>
     </div>
     <div class="flex shrink-0 flex-wrap gap-2">
+      <ExpandAllButton />
       <Button variant="outline" onclick={() => app.go("setup")}>
         <Icon name="chevron-left" />
         {t("setup.study.back")}
-      </Button>
-      <Button variant="brand" disabled={!app.canStart} onclick={() => app.start()}>
-        {t("setup.study.start")}
       </Button>
     </div>
   </div>
@@ -42,7 +42,7 @@
       <summary
         class="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-bold [&::-webkit-details-marker]:hidden"
       >
-        <Icon name="sprout" class="size-4" />
+        <SetIcon set={group.id} />
         <span>{t(`common.set.${group.id}`)}</span>
         <span class="text-sm font-normal tabular-nums text-muted-foreground">
           {t("common.words", { count: n(group.words.length) })}

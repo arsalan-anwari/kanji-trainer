@@ -13,6 +13,10 @@ Anything that needs you to understand a sentence, grammar, sentence structure,
 reading passages, conversation audio will be added in the planned `jlpt-trainer`
 instead. That app assumes you already know the vocabulary this one trains.
 
+The Chart tab doubles as a vocabulary reference: every word as a flip card with
+its picture, reading, meaning and the on/kun readings of its kanji. The same
+selection exports as a double-sided A4 PDF of flashcards to print and cut out.
+
 No SRS and no review queue. You configure each run by hand. Past results get
 charts and reports, but the app never decides what you practise next.
 

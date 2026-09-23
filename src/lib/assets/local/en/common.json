@@ -6,6 +6,8 @@
   "apply": "Apply",
   "cancel": "Cancel",
   "close": "Close",
+  "expandAll": "Expand all",
+  "collapseAll": "Collapse all",
   "custom": "Custom",
   "delete": "Delete",
   "keep": "Keep",
@@ -15,6 +17,7 @@
   "navLabel": "Screens",
   "nav": {
     "setup": "Practice",
+    "chart": "Chart",
     "reports": "Report"
   },
   "content": {
@@ -159,6 +162,7 @@
   },
   "file": {
     "filterName": "Kanji Trainer runs",
+    "pdfFilterName": "PDF document",
     "writeFailed": "Could not write that file.",
     "readFailed": "Could not read that file.",
     "tooShort": "That file is too short to be a .kj-report file.",

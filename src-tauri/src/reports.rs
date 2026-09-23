@@ -1,9 +1,13 @@
+use std::borrow::Cow;
 use std::fs;
 use std::io::{Read, Write};
 use std::path::PathBuf;
 use std::str::FromStr;
 
+use percent_encoding::percent_decode_str;
+use serde::Deserialize;
 use serde_json::Value;
+use tauri::ipc::{InvokeBody, Request};
 use tauri::{AppHandle, Manager, Runtime};
 use tauri_plugin_fs::{FilePath, FsExt, OpenOptions};
 
@@ -86,20 +90,60 @@ fn picked_file(path: String) -> FilePath {
     FilePath::from_str(&path).unwrap_or_else(|_| FilePath::Path(PathBuf::from(path)))
 }
 
-#[tauri::command]
-pub fn write_report_file<R: Runtime>(
-    app: AppHandle<R>,
-    path: String,
-    data: Vec<u8>,
-) -> Result<(), String> {
+fn write_bytes<R: Runtime>(app: &AppHandle<R>, path: String, data: &[u8]) -> Result<(), String> {
     let mut options = OpenOptions::new();
     options.write(true).create(true).truncate(true);
     let mut file = app
         .fs()
         .open(picked_file(path), options)
         .map_err(|error| error.to_string())?;
-    file.write_all(&data).map_err(|error| error.to_string())?;
+    file.write_all(data).map_err(|error| error.to_string())?;
     file.flush().map_err(|error| error.to_string())
+}
+
+#[tauri::command]
+pub fn write_report_file<R: Runtime>(
+    app: AppHandle<R>,
+    path: String,
+    data: Vec<u8>,
+) -> Result<(), String> {
+    write_bytes(&app, path, &data)
+}
+
+fn header_path(value: Option<&str>) -> Result<String, String> {
+    let encoded = value.ok_or_else(|| "the file path is missing".to_string())?;
+    let path = percent_decode_str(encoded)
+        .decode_utf8()
+        .map_err(|error| error.to_string())?
+        .into_owned();
+    if path.is_empty() {
+        return Err("the file path is empty".to_string());
+    }
+    Ok(path)
+}
+
+fn body_bytes(body: &InvokeBody) -> Result<Cow<'_, [u8]>, String> {
+    match body {
+        InvokeBody::Raw(data) => Ok(Cow::Borrowed(data)),
+        InvokeBody::Json(value) => Vec::<u8>::deserialize(value)
+            .map(Cow::Owned)
+            .map_err(|error| error.to_string()),
+    }
+}
+
+#[tauri::command]
+pub fn write_binary_file<R: Runtime>(
+    app: AppHandle<R>,
+    request: Request<'_>,
+) -> Result<(), String> {
+    let data = body_bytes(request.body())?;
+    let path = header_path(
+        request
+            .headers()
+            .get("path")
+            .and_then(|value| value.to_str().ok()),
+    )?;
+    write_bytes(&app, path, &data)
 }
 
 #[tauri::command]
@@ -121,7 +165,7 @@ mod tests {
     use std::fs;
     use std::path::Path;
 
-    use super::{picked_file, read_report_file, write_report_file};
+    use super::{body_bytes, header_path, picked_file, read_report_file, write_report_file};
     use tauri_plugin_fs::FilePath;
 
     #[test]
@@ -172,6 +216,26 @@ mod tests {
         );
 
         let _ = fs::remove_file(&target);
+    }
+
+    #[test]
+    fn a_percent_encoded_header_path_decodes_to_unicode() {
+        assert_eq!(
+            header_path(Some("%2Fhome%2F%E5%AD%A6%E6%A0%A1%2Fcards.pdf")),
+            Ok("/home/学校/cards.pdf".to_string())
+        );
+        assert!(header_path(None).is_err());
+        assert!(header_path(Some("")).is_err());
+        assert!(header_path(Some("%FF")).is_err());
+    }
+
+    #[test]
+    fn a_body_sent_as_raw_bytes_or_as_a_json_array_reads_the_same() {
+        let raw = tauri::ipc::InvokeBody::Raw(vec![37, 80, 68, 70]);
+        let json = tauri::ipc::InvokeBody::Json(serde_json::json!([37, 80, 68, 70]));
+        assert_eq!(body_bytes(&raw).as_deref(), Ok(&b"%PDF"[..]));
+        assert_eq!(body_bytes(&json).as_deref(), Ok(&b"%PDF"[..]));
+        assert!(body_bytes(&tauri::ipc::InvokeBody::Json(serde_json::json!({}))).is_err());
     }
 
     #[test]

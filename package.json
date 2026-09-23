@@ -20,6 +20,7 @@
     "sync:ui": "git -C vendor/kaizen-ui push origin HEAD:main && git add vendor/kaizen-ui"
   },
   "dependencies": {
+    "@lucide/svelte": "1.47.0",
     "@tauri-apps/api": "2.11.1",
     "@tauri-apps/plugin-dialog": "2.7.2",
     "kaizen-ui": "file:vendor/kaizen-ui"

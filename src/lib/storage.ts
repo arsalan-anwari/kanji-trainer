@@ -132,13 +132,35 @@ export async function exportReports(reports: readonly Report[]): Promise<boolean
     await call<null>("write_report_file", { path, data: [...bytes] });
     return true;
   }
-  const blob = new Blob([bytes as BlobPart], { type: "application/octet-stream" });
+  downloadInBrowser(bytes, name, "application/octet-stream");
+  return true;
+}
+
+function downloadInBrowser(bytes: Uint8Array, name: string, type: string): void {
+  const blob = new Blob([bytes as BlobPart], { type });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
   link.download = name;
   link.click();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+}
+
+export async function savePdf(bytes: Uint8Array, name: string): Promise<boolean> {
+  if (inTauri()) {
+    const { save } = await import("@tauri-apps/plugin-dialog");
+    const path = await save({
+      defaultPath: name,
+      filters: [{ name: t("common.file.pdfFilterName"), extensions: ["pdf"] }]
+    });
+    if (path === null) return false;
+    const { invoke } = await import("@tauri-apps/api/core");
+    await invoke<null>("write_binary_file", bytes, {
+      headers: { path: encodeURIComponent(path) }
+    });
+    return true;
+  }
+  downloadInBrowser(bytes, name, "application/pdf");
   return true;
 }
 

@@ -28,6 +28,7 @@ pub fn run() {
             reports::save_report,
             reports::delete_report,
             reports::write_report_file,
+            reports::write_binary_file,
             reports::read_report_file
         ])
         .run(tauri::generate_context!())
