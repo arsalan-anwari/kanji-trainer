@@ -1,5 +1,5 @@
 import type { Kanji, Word } from "../content/types";
-import { toRomajiHint } from "./romaji";
+import { toRomajiHint } from "./romaji.ts";
 import type { Difficulty, Format } from "./settings";
 
 export type HintKind = "romaji" | "clue" | "look" | "image";
@@ -7,7 +7,7 @@ export type Hint = { kind: HintKind; text: string };
 
 export type LookIndex = ReadonlyMap<string, string>;
 
-const KINDS: Record<Format, { beginner: HintKind; advanced: HintKind | null }> = {
+const KINDS: Record<Format, { beginner: HintKind | null; advanced: HintKind | null }> = {
   "kanji-kana": { beginner: "romaji", advanced: "clue" },
   "kana-kanji": { beginner: "look", advanced: "image" },
   "kanji-meaning": { beginner: "image", advanced: "clue" },
@@ -15,7 +15,10 @@ const KINDS: Record<Format, { beginner: HintKind; advanced: HintKind | null }> =
   "kana-meaning": { beginner: "image", advanced: "clue" },
   "meaning-kana": { beginner: "romaji", advanced: null },
   "image-kanji": { beginner: "look", advanced: null },
-  "image-kana": { beginner: "romaji", advanced: null }
+  "image-kana": { beginner: "romaji", advanced: null },
+  "audio-kana": { beginner: "romaji", advanced: null },
+  "audio-kanji": { beginner: "look", advanced: null },
+  "kanji-audio": { beginner: null, advanced: null }
 };
 
 export function hintKind(format: Format, difficulty: Difficulty): HintKind | null {
@@ -36,7 +39,12 @@ export function imageSlug(meaning: string): string {
 
 export function imageUrl(word: Word): string {
   const { level, set, subcategory, meaning } = word;
-  return `/images/${level.toLowerCase()}/light/${set}/${subcategory}/${imageSlug(meaning)}.png`;
+  return `/images/base/${level.toLowerCase()}/light/${set}/${subcategory}/${imageSlug(meaning)}.png`;
+}
+
+export function audioUrl(word: Word): string {
+  const { level, set, subcategory, meaning } = word;
+  return `/audio/base/${level.toLowerCase()}/${set}/${subcategory}/${imageSlug(meaning)}.mp3`;
 }
 
 /** Swaps a light image url for its pre-rendered dark counterpart. */
@@ -88,6 +96,7 @@ if (import.meta.vitest) {
     kanji: ["学", "校"],
     kanjiCount: 2,
     hasOkurigana: false,
+    hasAudio: true,
     set: "places",
     subcategory: "buildings",
     level: "N5"
@@ -99,7 +108,7 @@ if (import.meta.vitest) {
   ]);
 
   describe("choosing what a hint shows", () => {
-    test("names one kind for each of the sixteen format and tier pairs", () => {
+    test("names one kind for every format and tier pair", () => {
       const formats = Object.keys(KINDS) as Format[];
       expect(formats.map((format) => hintKind(format, "beginner"))).toEqual([
         "romaji",
@@ -109,7 +118,10 @@ if (import.meta.vitest) {
         "image",
         "romaji",
         "look",
-        "romaji"
+        "romaji",
+        "romaji",
+        "look",
+        null
       ]);
       expect(formats.map((format) => hintKind(format, "advanced"))).toEqual([
         "clue",
@@ -117,6 +129,9 @@ if (import.meta.vitest) {
         "clue",
         null,
         "clue",
+        null,
+        null,
+        null,
         null,
         null,
         null
@@ -129,6 +144,14 @@ if (import.meta.vitest) {
       expect(hintKind("meaning-kana", "advanced")).toBeNull();
       expect(hintKind("image-kanji", "advanced")).toBeNull();
       expect(hintKind("image-kana", "advanced")).toBeNull();
+    });
+
+    test("spells a heard word out on beginner only, and never hints which recording is right", () => {
+      expect(hintFor(word, "audio-kana", "beginner", looks)).toEqual({ kind: "romaji", text: "ga-k-ko-u" });
+      expect(hintFor(word, "audio-kanji", "beginner", looks)?.kind).toBe("look");
+      expect(hintKind("audio-kana", "advanced")).toBeNull();
+      expect(hintKind("audio-kanji", "advanced")).toBeNull();
+      expect(hintKind("kanji-audio", "beginner")).toBeNull();
     });
 
     test("offers an expert no hint at all", () => {
@@ -161,7 +184,7 @@ if (import.meta.vitest) {
     test("points at the picture the word's meaning names", () => {
       expect(hintFor(word, "kana-kanji", "advanced", looks)).toEqual({
         kind: "image",
-        text: "/images/n5/light/places/buildings/school.png"
+        text: "/images/base/n5/light/places/buildings/school.png"
       });
     });
 
@@ -171,9 +194,13 @@ if (import.meta.vitest) {
       expect(imageSlug("once more")).toBe("once-more");
     });
 
+    test("names a clip after the same slug as the picture", () => {
+      expect(audioUrl(word)).toBe("/audio/base/n5/places/buildings/school.mp3");
+    });
+
     test("swaps the light image url for its dark counterpart", () => {
-      expect(darkImageUrl("/images/n5/light/places/buildings/school.png")).toBe(
-        "/images/n5/dark/places/buildings/school.png"
+      expect(darkImageUrl("/images/base/n5/light/places/buildings/school.png")).toBe(
+        "/images/base/n5/dark/places/buildings/school.png"
       );
     });
 

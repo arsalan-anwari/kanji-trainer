@@ -1,14 +1,14 @@
 """Generate the hint images in data/images/ with the Recraft API.
 
-One image per N5 word. Prompts live under tools/images/data/{level}/{category}/
+One image per N5 word. Prompts live under tools/images/data/base/{level}/{category}/
 as a words.json (the entries) plus a skiplist.txt (files already judged good,
-skipped by default) and a shared tools/images/data/{level}/style.json. Edit
+skipped by default) and a shared tools/images/data/base/{level}/style.json. Edit
 those files to change what gets drawn; this script adds no wording.
 
-Images are written to data/images/{level}/light/{category}/{subcategory}/{file}:
+Images are written to data/images/base/{level}/light/{category}/{subcategory}/{file}:
 the light-theme picture, which is the one this API is asked to draw. The dark
 variant is a separate step, see invert.py. The subcategory is not curated here —
-it is read from the "subcategory" column of content/{level}-words.tsv, keyed by
+it is read from the "subcategory" column of content/base/{level}/{level}-words.tsv, keyed by
 the written form, so the pictures cannot drift from the word list.
 
     export RECRAFT_API_KEY=...
@@ -36,9 +36,10 @@ import time
 import requests
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-CONTENT = ROOT / "content"
-DATA = pathlib.Path(__file__).resolve().parent / "data"
-OUT = ROOT / "data" / "images"
+# ponytail: base only; expansions (content/extra/{name}/{level}/) need a flag here
+CONTENT = ROOT / "content" / "base"
+DATA = pathlib.Path(__file__).resolve().parent / "data" / "base"
+OUT = ROOT / "data" / "images" / "base"
 API = "https://external.api.recraft.ai/v1/images/generations"
 MODEL = os.environ.get("RECRAFT_MODEL", "recraftv4_1")
 SIZE = 1024  # smallest square the API offers; saved as-is, the UI scales it
@@ -63,7 +64,7 @@ def words(level, category):
 
 def subcategories(level):
     """{written form: subcategory} from the curated word list, the one source."""
-    lines = (CONTENT / f"{level}-words.tsv").read_text().splitlines()
+    lines = (CONTENT / level / f"{level}-words.tsv").read_text().splitlines()
     header = lines[0].split("\t")
     written, sub = header.index("written"), header.index("subcategory")
     rows = (line.split("\t") for line in lines[1:] if line)

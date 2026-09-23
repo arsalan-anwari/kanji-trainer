@@ -1,6 +1,7 @@
 {
   "title": "Chart",
-  "description": "Every word as a flashcard. Tap a card to see its reading, meaning and the readings of its kanji.",
+  "play": "Play {word}",
+  "flip": "Turn {word} over",
   "empty": "No word matches these filters.",
   "export": {
     "open": "Export flashcards",

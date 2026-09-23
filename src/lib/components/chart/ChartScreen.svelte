@@ -4,7 +4,7 @@
   import { app } from "../../state.svelte";
   import { groupWordsBySet } from "../../content/sets";
   import { cardFace } from "../../browse/cards";
-  import { darkImageUrl, imageUrl } from "../../quiz/hints";
+  import { audioUrl, darkImageUrl, imageUrl } from "../../quiz/hints";
   import { isDarkTheme } from "../../theme.svelte";
   import { printJob } from "../../print/job.svelte";
   import { savePdf } from "../../storage";
@@ -44,7 +44,6 @@
   >
     <div class="flex min-w-0 flex-col gap-1">
       <span class="text-h2 leading-tight font-bold">{t("chart.title")}</span>
-      <span class="text-sm text-muted-foreground">{t("chart.description")}</span>
     </div>
     <div class="flex shrink-0 flex-wrap gap-2">
       <ExpandAllButton />
@@ -162,6 +161,7 @@
                   <FlashCard
                     face={cardFace(word, app.kanjiByCharacter)}
                     image={dark ? darkImageUrl(image) : image}
+                    audio={word.hasAudio ? audioUrl(word) : null}
                   />
                 {/each}
               </div>

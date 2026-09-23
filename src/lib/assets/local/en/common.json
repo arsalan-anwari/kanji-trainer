@@ -112,7 +112,8 @@
   "category": {
     "reading": "Reading",
     "meaning": "Meaning",
-    "visualize": "Visualize"
+    "visualize": "Visualize",
+    "listening": "Listening"
   },
   "format": {
     "kanji-kana": "Kanji to kana",
@@ -122,7 +123,10 @@
     "kana-meaning": "Kana to romaji",
     "meaning-kana": "Romaji to kana",
     "image-kanji": "Image to kanji",
-    "image-kana": "Image to kana"
+    "image-kana": "Image to kana",
+    "audio-kana": "Sound to kana",
+    "audio-kanji": "Sound to kanji",
+    "kanji-audio": "Kanji to sound"
   },
   "answerStyle": {
     "choice": "Multiple choice",
@@ -132,7 +136,8 @@
     "written": "Kanji",
     "reading": "Kana",
     "meaning": "Romaji",
-    "image": "Image"
+    "image": "Image",
+    "audio": "Sound"
   },
   "words": "{count} words",
   "show": "Show {label}",

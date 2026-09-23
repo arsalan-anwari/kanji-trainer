@@ -1,7 +1,7 @@
 """Derive the dark-theme png variant from each light-theme png.
 
-Converts data/images/{level}/light/{category}/{subcategory}/{file}.png into
-data/images/{level}/dark/{category}/{subcategory}/{file}.png with a hue-preserving
+Converts data/images/base/{level}/light/{category}/{subcategory}/{file}.png into
+data/images/base/{level}/dark/{category}/{subcategory}/{file}.png with a hue-preserving
 invert: RGB invert followed by a 180 degree hue rotation, the same
 "smart invert" a browser does for `filter: invert(1) hue-rotate(180deg)`.
 A pale background goes dark and dark linework goes light while each color

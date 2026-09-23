@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Board, FitText, Projector, viewport } from "kaizen-ui";
+  import { Board, FitText, Projector, RecordPlayer, viewport } from "kaizen-ui";
+  import { clips } from "../../audio/clips.svelte";
   import { isJapanese, promptSurface } from "../../quiz/settings";
   import type { Question } from "../../quiz/questions";
   import { darkImageUrl } from "../../quiz/hints";
@@ -18,6 +19,7 @@
   const compact = $derived(!viewport.wide && viewport.short);
 
   const imgSrc = $derived(dark ? darkImageUrl(question.prompt) : question.prompt);
+  const playing = $derived(clips.playing === question.prompt);
 </script>
 
 <div class="flex w-full flex-col items-center gap-2 sm:gap-3">
@@ -25,7 +27,18 @@
     {t(`quiz.prompt.${app.settings.format}`)}
   </span>
 
-  {#if surface === "image"}
+  {#if surface === "audio"}
+    <div class="w-full {compact ? 'h-[min(6.5rem,14dvh)] max-w-sm' : 'max-w-[13rem] sm:max-w-[15rem]'}">
+      <RecordPlayer
+        {compact}
+        {playing}
+        peaks={clips.peaks(question.prompt)}
+        progress={clips.current === question.prompt ? clips.progress : 0}
+        label={t("quiz.prompt.replay")}
+        onplay={() => app.replayPrompt()}
+      />
+    </div>
+  {:else if surface === "image"}
     <Projector size="lg" {compact}>
       <img
         src={imgSrc}

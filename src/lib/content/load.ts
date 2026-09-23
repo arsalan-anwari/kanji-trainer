@@ -71,6 +71,7 @@ function parseWord(value: unknown): Word | null {
     kanji,
     kanjiCount,
     hasOkurigana,
+    hasAudio: value.hasAudio === true,
     set,
     subcategory,
     level
@@ -117,7 +118,7 @@ export function parseContent(value: unknown): Content | null {
 }
 
 export function contentUrl(level: string): string {
-  return `/content/${level.toLowerCase()}.json`;
+  return `/content/base/${level.toLowerCase()}/${level.toLowerCase()}.json`;
 }
 
 export async function loadContent(level: string): Promise<Content | null> {
@@ -145,6 +146,7 @@ if (import.meta.vitest) {
     kanji: ["一"],
     kanjiCount: 1 as const,
     hasOkurigana: false,
+    hasAudio: true,
     set: "numbers",
     subcategory: "digits",
     level: "N5"
@@ -222,7 +224,7 @@ if (import.meta.vitest) {
   describe("the committed N5 content file", () => {
     test("parses as content the app can run on", async () => {
       const { readFile } = await import("node:fs/promises");
-      const raw = await readFile(new URL("../../../data/content/n5.json", import.meta.url), "utf8");
+      const raw = await readFile(new URL("../../../data/content/base/n5/n5.json", import.meta.url), "utf8");
       const content = parseContent(JSON.parse(raw));
       expect(content?.level).toBe("N5");
       expect(content?.words).toHaveLength(184);

@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderAttribution, renderLicence } from "./attribution.ts";
@@ -21,12 +21,29 @@ import type { Kanjidic } from "./kanjidic.ts";
 import type { Kradfile } from "./kradfile.ts";
 import type { ComponentRow, KanjiRow, WordRow } from "./validate.ts";
 import type { Content, Kanji, Source, Word } from "../../src/lib/content/types.ts";
+import { audioUrl } from "../../src/lib/quiz/hints.ts";
 
 export function byCodePoint(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
 export const OUTPUT_DIR = fileURLToPath(new URL("../../data/content/", import.meta.url));
+
+export const DATA_DIR = fileURLToPath(new URL("../../data/", import.meta.url));
+
+export function clipExists(word: Word): boolean {
+  return existsSync(join(DATA_DIR, audioUrl(word)));
+}
+
+/** Hand-curated media under content/ that is laid over data/ on every build. */
+export const OVERRIDE_DIRS = ["audio", "images"];
+
+export function applyOverrides(): void {
+  const content = fileURLToPath(new URL("../../content/", import.meta.url));
+  for (const dir of OVERRIDE_DIRS) {
+    if (existsSync(join(content, dir))) cpSync(join(content, dir), join(DATA_DIR, dir), { recursive: true });
+  }
+}
 
 const LEVEL = "n5";
 
@@ -58,14 +75,15 @@ export function buildWords(
   rows: readonly WordRow[],
   index: Lookup,
   levelKanji: ReadonlySet<string>,
-  kanjidic: Kanjidic = new Map()
+  kanjidic: Kanjidic = new Map(),
+  hasClip: (word: Word) => boolean = () => false
 ): Word[] {
   const problems: string[] = [];
   const words: Word[] = [];
   const labelled = new Map<string, string>();
 
   rows.forEach((row, position) => {
-    const where = `content/${row.level.toLowerCase()}-words.tsv row ${position + 1}`;
+    const where = `content/base/${row.level.toLowerCase()}/${row.level.toLowerCase()}-words.tsv row ${position + 1}`;
     const result = lookupWord(index, row.written, row.reading);
     if (!isMatch(result)) {
       problems.push(`${where}: ${row.written} (${row.reading}) — ${result.detail}`);
@@ -108,7 +126,7 @@ export function buildWords(
     }
     labelled.set(label, `${row.written} (${row.reading})`);
 
-    words.push({
+    const word: Word = {
       id: wordId(row.written, row.reading),
       written: row.written,
       reading: row.reading,
@@ -120,10 +138,12 @@ export function buildWords(
       kanji,
       kanjiCount,
       hasOkurigana,
+      hasAudio: false,
       set: row.set,
       subcategory: row.subcategory,
       level: row.level
-    });
+    };
+    words.push({ ...word, hasAudio: hasClip(word) });
   });
 
   if (problems.length > 0) {
@@ -229,6 +249,7 @@ export function today(): string {
 }
 
 function main(): void {
+  applyOverrides();
   const manifest = loadManifest();
   const kanjiRows = loadKanjiList(LEVEL);
   const levelKanji = new Set(kanjiRows.map((row) => row.character));
@@ -242,13 +263,13 @@ function main(): void {
     LEVEL.toUpperCase(),
     manifest.sources,
     buildKanji(kanjiRows, kradfile, kanjidic),
-    buildWords(wordRows, index, levelKanji, kanjidic),
+    buildWords(wordRows, index, levelKanji, kanjidic, clipExists),
     buildTaughtComponents(loadComponentList(), kradfile, characters),
     today()
   );
 
-  mkdirSync(OUTPUT_DIR, { recursive: true });
-  writeFileSync(join(OUTPUT_DIR, `${LEVEL}.json`), `${JSON.stringify(content, null, 2)}\n`);
+  mkdirSync(join(OUTPUT_DIR, "base", LEVEL), { recursive: true });
+  writeFileSync(join(OUTPUT_DIR, "base", LEVEL, `${LEVEL}.json`), `${JSON.stringify(content, null, 2)}\n`);
   writeFileSync(join(OUTPUT_DIR, "ATTRIBUTION.md"), renderAttribution(content.sources));
   writeFileSync(join(OUTPUT_DIR, "LICENSE"), renderLicence(content.sources));
 
@@ -297,6 +318,7 @@ if (import.meta.vitest) {
   const row = (written: string, reading: string, meaning = ""): WordRow => ({
     written,
     reading,
+    expansion: "base",
     set: "places",
     subcategory: "buildings",
     level: "N5",

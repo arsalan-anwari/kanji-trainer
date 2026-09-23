@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, test } from "vitest";
@@ -8,11 +8,13 @@ import {
   buildKanji,
   buildTaughtComponents,
   buildWords,
+  clipExists,
   clueNames,
+  DATA_DIR,
   OUTPUT_DIR,
   readCached
 } from "../../tools/content/build.ts";
-import { imageUrl } from "../../src/lib/quiz/hints.ts";
+import { audioUrl, imageUrl } from "../../src/lib/quiz/hints.ts";
 import { CACHE_DIR } from "../../tools/content/fetch.ts";
 import { indexByWrittenForm, parseJmdict } from "../../tools/content/jmdict.ts";
 import { parseKradfile } from "../../tools/content/kradfile.ts";
@@ -26,9 +28,11 @@ import {
   SET_IDS
 } from "../../tools/content/validate.ts";
 
-const WHERE = "data/content/n5.json";
+const WHERE = "data/content/base/n5/n5.json";
 
 const IMAGE_DIR = fileURLToPath(new URL("../../data/images/", import.meta.url));
+
+const AUDIO_DIR = fileURLToPath(new URL("../../data/audio/base/n5/", import.meta.url));
 
 const read = (name: string) => readFileSync(join(OUTPUT_DIR, name), "utf8");
 
@@ -46,12 +50,12 @@ function countFiles(dir: string, matches: (path: string) => boolean): number {
 }
 
 function loadContent() {
-  if (!existsSync(join(OUTPUT_DIR, "n5.json"))) {
+  if (!existsSync(join(OUTPUT_DIR, "base/n5/n5.json"))) {
     throw new Error(
       "data/content/ is generated and is not in git. Run \"npm run content:build\" to regenerate it, or \"scripts/sync_data.sh --download\" to fetch the published copy."
     );
   }
-  return parseContent(JSON.parse(read("n5.json")), WHERE);
+  return parseContent(JSON.parse(read("base/n5/n5.json")), WHERE);
 }
 
 const content = loadContent();
@@ -149,16 +153,45 @@ describe("the shipped N5 content", () => {
     }
   });
 
+  test("flags a clip on exactly the words whose file exists", () => {
+    for (const word of content.words) {
+      expect([word.id, existsSync(join(DATA_DIR, audioUrl(word)))]).toEqual([word.id, word.hasAudio]);
+    }
+  });
+
+  test("records where every clip came from, and a gap only where no source had one", () => {
+    const rows = readFileSync(join(AUDIO_DIR, "sources.tsv"), "utf8")
+      .trimEnd()
+      .split("\n")
+      .slice(1)
+      .map((line) => line.split("\t"));
+    const bySource = new Map(rows.map(([path, source]) => [path, source]));
+    for (const word of content.words) {
+      const source = bySource.get(audioUrl(word).replace("/audio/base/n5/", ""));
+      expect([word.id, source === "none"]).toEqual([word.id, !word.hasAudio]);
+    }
+  });
+
+  test("keeps the clips of the level under 5 MB for Android", () => {
+    const size = (dir: string): number =>
+      readdirSync(dir, { withFileTypes: true }).reduce(
+        (total, entry) =>
+          total + (entry.isDirectory() ? size(join(dir, entry.name)) : statSync(join(dir, entry.name)).size),
+        0
+      );
+    expect(size(AUDIO_DIR)).toBeLessThan(5 * 1024 * 1024);
+  });
+
   test("writes only its own folder, so a rebuild leaves the pictures alone", () => {
     expect(OUTPUT_DIR.endsWith("/data/content/")).toBe(true);
     expect(IMAGE_DIR.startsWith(OUTPUT_DIR)).toBe(false);
-    expect(readdirSync(OUTPUT_DIR).sort()).toEqual(["ATTRIBUTION.md", "LICENSE", "n5.json"]);
+    expect(readdirSync(OUTPUT_DIR).sort()).toEqual(["ATTRIBUTION.md", "LICENSE", "base"]);
     const isLightPng = (path: string) => path.includes(`${sep}light${sep}`) && path.endsWith(".png");
     expect(countFiles(IMAGE_DIR, isLightPng)).toBe(content.words.length);
   });
 
   test("stays small enough to parse instantly on WebKitGTK and low-end Android", () => {
-    expect(Buffer.byteLength(read("n5.json"))).toBeLessThan(200 * 1024);
+    expect(Buffer.byteLength(read("base/n5/n5.json"))).toBeLessThan(200 * 1024);
   });
 });
 
@@ -197,7 +230,7 @@ describe.skipIf(!cacheIsPopulated)("rebuilding from the pinned sources", () => {
       "N5",
       loadManifest().sources,
       buildKanji(kanjiRows, kradfile, kanjidic),
-      buildWords(wordRows, index, levelKanji, kanjidic),
+      buildWords(wordRows, index, levelKanji, kanjidic, clipExists),
       buildTaughtComponents(
         loadComponentList(),
         kradfile,
@@ -205,6 +238,6 @@ describe.skipIf(!cacheIsPopulated)("rebuilding from the pinned sources", () => {
       ),
       content.generated
     );
-    expect(`${JSON.stringify(rebuilt, null, 2)}\n`).toBe(read("n5.json"));
+    expect(`${JSON.stringify(rebuilt, null, 2)}\n`).toBe(read("base/n5/n5.json"));
   });
 });

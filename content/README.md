@@ -11,12 +11,17 @@ instruction if you forget.
 | File | Columns | Edited by |
 |---|---|---|
 | `sources.json` | (none) | hand, when an upstream version is bumped |
-| `n5-kanji.tsv` | `character`, `level`, `look` | hand |
-| `n5-words.tsv` | `written`, `reading`, `set`, `subcategory`, `level`, `meaning`, `clue`, `note` | hand |
+| `base/n5/n5-kanji.tsv` | `character`, `level`, `look` | hand |
+| `base/n5/n5-words.tsv` | `written`, `reading`, `expansion`, `set`, `subcategory`, `level`, `meaning`, `clue`, `note` | hand |
 | `bound-readings.tsv` | `written`, `reading`, `why` | hand |
 | `components.tsv` | `character`, `name` | hand |
 
 Tab-separated, one header row, UTF-8, no quoting. A cell cannot contain a tab.
+
+Level files live under `base/{level}/` for the base kanji of a level, and under
+`extra/{expansion_name}/{level}/` for an expansion pack. The `expansion` column
+of a words file names which one the word comes from: `base`, or the expansion's
+name. `sources.json`, `bound-readings.tsv` and `components.tsv` are shared by all.
 
 The `set` column in `n5-words.tsv` is one of `numbers`, `calendar`, `time`,
 `people`, `position`, `body`, `actions`, `places`, `nature`, `describing`,
@@ -32,7 +37,7 @@ The allowed values per set are declared in `SUBCATEGORIES` in
 `src/lib/content/sets.ts` and the build rejects any other value, so adding a
 subcategory means adding it there, giving it a label under `common.subcategory`
 in `src/lib/assets/local/*/common.json`, and moving the word's pictures into
-`data/images/{level}/{theme}/{set}/{subcategory}/` — `tools/images/generate.py`
+`data/images/base/{level}/{theme}/{set}/{subcategory}/` — `tools/images/generate.py`
 reads the column straight from this file, so it is the only place the split is
 written down.
 
@@ -55,12 +60,33 @@ from a kanji deck cannot quietly reintroduce it.
 ```sh
 npm run content:fetch            # download pinned upstream releases into .cache/content
 npm run content:build            # regenerate data/content/ (runs content:fetch first)
+npm run audio:fetch              # regenerate data/audio/ from data/content/ (needs ffmpeg)
 npm test                         # validate curated and generated files
 scripts/sync_data.sh --upload    # publish data/ to the Hugging Face dataset
 scripts/sync_data.sh --download  # fetch data/ from the Hugging Face dataset
 ```
 
 The cache is gitignored. Delete it and rebuild to reproduce the same bytes.
+
+Clips are named after the picture of the same word, so `audio:fetch` reads the
+built `n5.json`, and `content:build` then marks each word `hasAudio` by whether
+its clip exists. On a fresh checkout run `content:build`, `audio:fetch`, and
+`content:build` again. `audio:fetch` tries a hand-curated clip in `content/audio/`
+first, then Kanji alive, JapanesePod101, Lingua Libre and the pinned Commons
+files in `COMMONS_FILES`, and writes `data/audio/base/{level}/sources.tsv` with the
+source, licence and original url of every clip. A word no source has is
+recorded with source `none`; it stays out of Listening runs and its Chart card
+has no play button.
+
+## Manual overrides
+
+`content/audio/` and `content/images/` mirror `data/audio/` and `data/images/`.
+Every `content:build` copies them over `data/` byte for byte, adding new files
+and replacing generated ones, so a hand-curated clip or picture survives any
+regeneration. Put a clip at `content/audio/base/{level}/{set}/{subcategory}/{slug}.mp3`
+and a picture at `content/images/base/{level}/{light,dark}/{set}/{subcategory}/{slug}.png`,
+then run `npm run content:build`. `invert.py` skips darks that already exist, so
+an overridden light picture needs its dark twin next to it, or `invert.py --all`.
 
 ## Updating the upstream data
 

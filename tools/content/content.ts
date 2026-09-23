@@ -112,6 +112,7 @@ function parseWord(value: unknown, where: string): Word {
     kanji,
     kanjiCount,
     hasOkurigana,
+    hasAudio: value.hasAudio === true,
     set,
     subcategory,
     level: text(value, "level", where)

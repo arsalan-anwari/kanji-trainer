@@ -92,6 +92,7 @@ if (import.meta.vitest) {
       kanji,
       kanjiCount: kanji.length >= 2 ? 2 : 1,
       hasOkurigana: false,
+      hasAudio: true,
       set: "places",
     subcategory: "buildings",
       level: "N5"

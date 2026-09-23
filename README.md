@@ -6,8 +6,9 @@ local, no account and no network sync.
 ## Scope
 
 The app trains words: how they are written, how they sound, and what they mean.
-Word to reading, kana to kanji, word to meaning, hear a word and pick its kanji,
-build a kanji from its components. Every answer is a property of a single word.
+Word to reading, kana to kanji, word to meaning, picture to word, and Listening —
+hear a word and answer its reading or written form, or see a word and pick which
+recording says it. Every answer is a property of a single word.
 
 Anything that needs you to understand a sentence, grammar, sentence structure,
 reading passages, conversation audio will be added in the planned `jlpt-trainer`
@@ -27,7 +28,8 @@ Typing a kanji answer needs a Japanese input method (IME) enabled on your device
 ```sh
 git submodule update --init   # vendor/kaizen-ui
 npm ci
-npm run content:build         # generate data/ (needed before the app runs)
+npm run content:build         # generate data/content and data/images (needed before the app runs)
+npm run audio:fetch           # generate data/audio from data/content (needs ffmpeg)
 npm run tauri:dev             # app against the vite dev server
 npm run tauri:build           # release binary for this platform
 npm run dev                   # vite only, browser mode
@@ -38,8 +40,8 @@ npm test                      # vitest
 
 ## Getting `data/`
 
-`data/` holds the generated content the app loads at runtime. It is not in git.
-After a clone download it:
+`data/` holds the generated content, pictures, audio and flashcard PDFs the app
+loads at runtime. It is not in git. After a clone download it:
 
 ```sh
 scripts/sync_data.sh --download  # download it from Hugging Face

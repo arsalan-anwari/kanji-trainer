@@ -19,6 +19,7 @@
     "reading": "Train the word's kanji against its kana.",
     "meaning": "Train the word against its meaning.",
     "visualize": "Recognise the word from a picture.",
+    "listening": "Hear a single word, or pick how one sounds.",
     "kanji-kana": "See the word, answer its reading",
     "kana-kanji": "See the reading, pick the written word",
     "kanji-meaning": "See the word, pick what it means",
@@ -26,7 +27,10 @@
     "kana-meaning": "See the reading, pick what it means",
     "meaning-kana": "See a meaning, pick the reading",
     "image-kanji": "See a picture, pick the word",
-    "image-kana": "See a picture, pick the reading"
+    "image-kana": "See a picture, pick the reading",
+    "audio-kana": "Hear the word, answer its reading",
+    "audio-kanji": "Hear the word, answer the written word",
+    "kanji-audio": "See the word, pick the right recording"
   },
   "direction": {
     "title": "Direction",

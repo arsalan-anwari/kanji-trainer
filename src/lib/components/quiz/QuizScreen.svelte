@@ -7,12 +7,17 @@
   import QuestionPrompt from "./QuestionPrompt.svelte";
   import QuitConfirm from "./QuitConfirm.svelte";
   import QuizStatusBar from "./QuizStatusBar.svelte";
+  import SoundChoices from "./SoundChoices.svelte";
+  import { answerSurface, promptSurface } from "../../quiz/settings";
   import TypingAnswer from "./TypingAnswer.svelte";
   import { n, t } from "../../i18n.svelte";
+  import { clips } from "../../audio/clips.svelte";
 
   const question = $derived(app.current);
   const word = $derived(app.currentWord);
   const last = $derived(app.questions.length - 1 === app.index);
+  const heard = $derived(promptSurface(app.settings.format) === "audio");
+  const picksSound = $derived(answerSurface(app.settings.format) === "audio");
 
   // Two columns only when the window is wide *and* actually wider than it is
   // tall. A tall desktop window clears the wide breakpoint but splitting it
@@ -27,7 +32,7 @@
           total: n(app.questions.length),
           // The reading is the answer on this format, so only the prompt is read
           // out.
-          prompt: question.prompt
+          prompt: heard ? t(`quiz.prompt.${app.settings.format}`) : question.prompt
         })
   );
 
@@ -35,7 +40,7 @@
     question === null || app.phase !== "feedback"
       ? ""
       : `${t(app.lastCorrect ? "quiz.correct" : "quiz.wrong")}. ${t("quiz.answerWas", {
-          answer: question.answer
+          answer: picksSound ? (word?.reading ?? "") : question.answer
         })}`
   );
 
@@ -49,20 +54,36 @@
 
     if (event.target instanceof HTMLInputElement) return;
 
+    if (keynav.active && heard && event.key === "r") {
+      app.replayPrompt();
+      return;
+    }
+
+    const slot = Number(event.key);
+    const inRange = keynav.active && slot >= 1 && slot <= question.choices.length;
+
     if (app.phase === "feedback") {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         app.next();
+      } else if (inRange && picksSound) {
+        void clips.play(question.choices[slot - 1]);
       }
       return;
     }
 
     if (app.settings.answerStyle !== "choice") return;
 
-    const slot = Number(event.key);
-    if (keynav.active && slot >= 1 && slot <= question.choices.length) {
-      app.answerChoice(question.choices[slot - 1]);
+    if (picksSound) {
+      if (inRange) app.stageChoice(question.choices[slot - 1]);
+      else if (event.key === "Enter" && app.staged !== null) {
+        event.preventDefault();
+        app.submitStaged();
+      }
+      return;
     }
+
+    if (inRange) app.answerChoice(question.choices[slot - 1]);
   }
 </script>
 
@@ -92,6 +113,8 @@
         <div class="flex w-full flex-1 justify-center">
           {#if app.settings.answerStyle === "typing"}
             <TypingAnswer />
+          {:else if picksSound}
+            <SoundChoices {question} />
           {:else}
             <ChoiceGrid {question} />
           {/if}

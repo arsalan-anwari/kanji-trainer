@@ -82,6 +82,33 @@
       "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
       "version": "0.1.0",
       "files": []
+    },
+    {
+      "id": "kanjialive",
+      "title": "Kanji alive example word audio",
+      "url": "https://github.com/kanjialive/kanji-data-media",
+      "licence": "CC BY 4.0",
+      "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "version": "examples-audio audio-mp3.zip",
+      "files": []
+    },
+    {
+      "id": "jpod101",
+      "title": "JapanesePod101 dictionary audio",
+      "url": "https://www.japanesepod101.com/japanese-dictionary/",
+      "licence": "All rights reserved",
+      "licenceUrl": "https://www.japanesepod101.com/terms-of-use",
+      "version": "fetched per word, see data/audio/base/n5/sources.tsv",
+      "files": []
+    },
+    {
+      "id": "lingualibre",
+      "title": "Lingua Libre recordings on Wikimedia Commons",
+      "url": "https://lingualibre.org",
+      "licence": "per clip, see data/audio/base/n5/sources.tsv",
+      "licenceUrl": "https://commons.wikimedia.org/wiki/Commons:Licensing",
+      "version": "fetched per word, see data/audio/base/n5/sources.tsv",
+      "files": []
     }
   ]
 }

@@ -3,10 +3,10 @@ import { describe, expect, test } from "vitest";
 import { parseContent } from "../../src/lib/content/load.ts";
 import type { Word } from "../../src/lib/content/types.ts";
 import { answerOf, buildQuestions } from "../../src/lib/quiz/questions.ts";
-import { answerSurface, DEFAULT_SETTINGS, FORMATS } from "../../src/lib/quiz/settings.ts";
+import { answerSurface, DEFAULT_SETTINGS, FORMATS, usesAudio } from "../../src/lib/quiz/settings.ts";
 import { componentIndex, similarity, SHARED_KANJI } from "../../src/lib/quiz/similarity.ts";
 
-const raw = readFileSync(new URL("../../data/content/n5.json", import.meta.url), "utf8");
+const raw = readFileSync(new URL("../../data/content/base/n5/n5.json", import.meta.url), "utf8");
 const content = parseContent(JSON.parse(raw));
 
 if (content === null) {
@@ -50,7 +50,7 @@ function distractorScores(
   questions: ReturnType<typeof run>,
   format: (typeof FORMATS)[number]
 ): number[] {
-  const surface = answerSurface(format);
+  const surface = usesAudio(format) ? "reading" : answerSurface(format);
   const scores: number[] = [];
   for (const question of questions) {
     const target = words.find((word) => word.id === question.wordId) as Word;

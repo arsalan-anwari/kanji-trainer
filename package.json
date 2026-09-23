@@ -11,6 +11,7 @@
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "content:fetch": "node tools/content/fetch.ts",
     "content:build": "npm run content:fetch && node tools/content/build.ts",
+    "audio:fetch": "python3 tools/audio/fetch.py",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "tauri": "tauri",

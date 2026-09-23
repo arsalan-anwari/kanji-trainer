@@ -16,11 +16,11 @@
   double-sided A4 PDF in the background with progress and cancel.
 - Icons for every category and subcategory, and expand/collapse all on the
   word lists.
+- Audio questions.
 
 ## Next
 
 - Harder, exam-realistic wrong answers.
-- Audio questions.
 - Downloadable content packs instead of everything bundled.
 - Timed runs.
 - A kanji component-building quiz mode.

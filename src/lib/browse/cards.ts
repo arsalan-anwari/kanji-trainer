@@ -118,6 +118,7 @@ if (import.meta.vitest) {
       kanji: [id[0] ?? ""],
       kanjiCount: 1,
       hasOkurigana: false,
+      hasAudio: true,
       set,
       subcategory,
       level: "N5",

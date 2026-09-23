@@ -21,6 +21,8 @@ import {
 import {
   normalizeSettings,
   parseSettings,
+  promptSurface,
+  usesAudio,
   DEFAULT_SETTINGS,
   ONE_PASS,
   type RunSettings
@@ -32,6 +34,7 @@ import { settingsFromMistakes } from "./quiz/diagnosis";
 import { emptyFilter, filterWords, kanjiIndex, type WordFilter } from "./browse/cards";
 import { scoreTier } from "./quiz/score";
 import { sfx, type FanfareGrade } from "kaizen-ui";
+import { clips } from "./audio/clips.svelte";
 import {
   deletePreset,
   deleteReports,
@@ -72,6 +75,7 @@ class AppState {
   phase = $state<Phase>("answering");
   typed = $state("");
   picked = $state<string | null>(null);
+  staged = $state<string | null>(null);
   lastCorrect = $state(false);
   confirmQuit = $state(false);
   hintOpen = $state(false);
@@ -306,6 +310,7 @@ class AppState {
     this.phase = "answering";
     this.typed = "";
     this.picked = null;
+    this.staged = null;
     this.lastCorrect = false;
     this.confirmQuit = false;
     this.hintOpen = false;
@@ -314,6 +319,36 @@ class AppState {
     this.route = "quiz";
     this.splash = null;
     sfx.start();
+    this.#cue();
+  }
+
+  #cue(): void {
+    const question = this.current;
+    if (question === null || !usesAudio(this.settings.format)) return;
+    if (promptSurface(this.settings.format) !== "audio") {
+      clips.preload(question.choices);
+      return;
+    }
+    void clips.play(question.prompt);
+    const next = this.questions[this.index + 1];
+    if (next !== undefined) clips.preload([next.prompt]);
+  }
+
+  replayPrompt(): void {
+    const question = this.current;
+    if (question === null || promptSurface(this.settings.format) !== "audio") return;
+    void clips.play(question.prompt);
+  }
+
+  stageChoice(choice: string): void {
+    if (this.phase !== "answering") return;
+    this.staged = choice;
+    void clips.play(choice);
+  }
+
+  submitStaged(): void {
+    if (this.staged === null) return;
+    this.answerChoice(this.staged);
   }
 
   record(correct: boolean, given: string): void {
@@ -353,12 +388,15 @@ class AppState {
       this.finish();
       return;
     }
+    clips.stop();
     this.index += 1;
     this.phase = "answering";
     this.typed = "";
     this.picked = null;
+    this.staged = null;
     this.hintOpen = false;
     this.questionStartedAt = Date.now();
+    this.#cue();
   }
 
   finish(): void {
@@ -370,6 +408,7 @@ class AppState {
       answers: [...this.answers]
     };
     this.lastReport = report;
+    clips.stop();
     this.phase = "done";
     this.route = "result";
     const summary = summarize(report);
@@ -399,6 +438,7 @@ class AppState {
 
   quit(): void {
     sfx.click();
+    clips.stop();
     this.questions = [];
     this.answers = [];
     this.confirmQuit = false;
@@ -441,6 +481,7 @@ class AppState {
 
   go(route: Route): void {
     sfx.click();
+    clips.stop();
     this.message = "";
     this.route = route;
     if (route === "reports") void this.refreshReports();

@@ -58,6 +58,12 @@
   );
 
   $effect(() => focusMain(app.route));
+  // A route change lands on a fresh screen; carrying over scroll from a
+  // long previous screen leaves its top slipped under the sticky header.
+  $effect(() => {
+    app.route;
+    window.scrollTo(0, 0);
+  });
 </script>
 
 <svelte:window onkeydown={(event) => keynav.handle(event)} />

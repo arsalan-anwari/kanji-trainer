@@ -1,9 +1,9 @@
 import { SUBCATEGORIES, subcategoryKey } from "../content/sets";
 import type { Word } from "../content/types";
-import { imageUrl } from "./hints";
+import { audioUrl, imageUrl } from "./hints";
 import { normalizeReading } from "./romaji";
-import { answerSurface, DEFAULT_SETTINGS, DIFFICULTIES, promptSurface } from "./settings";
-import type { Difficulty, Format, RunSettings, WordShape } from "./settings";
+import { answerSurface, DEFAULT_SETTINGS, DIFFICULTIES, promptSurface, usesAudio } from "./settings";
+import type { Difficulty, Format, RunSettings, Surface, WordShape } from "./settings";
 import { similarity, type ComponentIndex } from "./similarity";
 
 export type Question = {
@@ -23,14 +23,19 @@ export type Answer = {
   given: string;
 };
 
+function surfaceOf(word: Word, surface: Surface): string {
+  if (surface === "image") return imageUrl(word);
+  if (surface === "audio") return audioUrl(word);
+  return word[surface];
+}
+
 export function promptOf(word: Word, format: Format): string {
-  const surface = promptSurface(format);
-  return surface === "image" ? imageUrl(word) : word[surface];
+  return surfaceOf(word, promptSurface(format));
 }
 
 export function answerOf(word: Word, format: Format): string {
   const surface = answerSurface(format);
-  return surface === "image" ? "" : word[surface];
+  return surface === "image" ? "" : surfaceOf(word, surface);
 }
 
 export function acceptedOf(word: Word, format: Format): string[] {
@@ -69,7 +74,7 @@ export function eligibleWords(settings: RunSettings, words: readonly Word[]): Wo
     if (subcategories.size > 0 && !subcategories.has(subcategoryKey(word.set, word.subcategory)))
       return false;
     if (shapes.size > 0 && !shapes.has(wordShape(word))) return false;
-    return true;
+    return word.hasAudio || !usesAudio(settings.format);
   });
 }
 
@@ -87,13 +92,21 @@ export function similarCount(difficulty: Difficulty): number {
   return difficulty === "advanced" ? 1 : 0;
 }
 
+function scoredSurface(format: Format): Surface {
+  return usesAudio(format) ? "reading" : answerSurface(format);
+}
+
+export function soundsAlike(target: Word, candidate: Word): boolean {
+  return target.readings.some((reading) => candidate.readings.includes(reading));
+}
+
 function byScore(
   target: Word,
   candidates: readonly Word[],
   format: Format,
   components: ComponentIndex
 ): Word[] {
-  const surface = answerSurface(format);
+  const surface = scoredSurface(format);
   return candidates
     .map((candidate) => ({ candidate, score: similarity(target, candidate, surface, components) }))
     .filter((entry) => entry.score > 0)
@@ -156,17 +169,28 @@ function buildChoices(
   const surfaces = (candidates: readonly Word[]) =>
     candidates.map((candidate) => answerOf(candidate, format));
 
+  const listening = usesAudio(format);
+  const fair = (candidates: readonly Word[]) =>
+    listening ? candidates.filter((candidate) => !soundsAlike(target, candidate)) : candidates;
+  const drawn = fair(pool);
+  const spare = fair(reserve);
+
   const similar = similarCount(difficulty);
   if (similar > 0) {
-    const scored = [...shuffle(pool, rng), ...shuffle(reserve, rng)];
-    if (difficulty === "expert" && answerSurface(format) === "written") {
+    const scored = [...shuffle(drawn, rng), ...shuffle(spare, rng)];
+    if (difficulty === "expert" && !listening && answerSurface(format) === "written") {
       const real = new Set(reserve.map((word) => word.written));
       take(crossings(target, scored, real), choices.length + CROSSING_SLOTS);
     }
     take(surfaces(byScore(target, scored, format, components)), Math.min(count, similar + 1));
   }
 
-  take(surfaces([...shuffle(pool, rng), ...shuffle(reserve, rng)]), count);
+  const rest = [...shuffle(drawn, rng), ...shuffle(spare, rng)];
+  if (listening && difficulty === "beginner") {
+    const heardApart = (candidate: Word) => similarity(target, candidate, "reading") === 0;
+    take(surfaces(rest.filter(heardApart)), count);
+  }
+  take(surfaces(rest), count);
 
   return shuffle(choices, rng);
 }
@@ -184,7 +208,9 @@ export function buildQuestions(
   const pool = eligibleWords(settings, words);
   if (pool.length === 0) return [];
 
-  const everything = atLevel(words, settings.level);
+  const everything = atLevel(words, settings.level).filter(
+    (word) => word.hasAudio || !usesAudio(settings.format)
+  );
   const distractors =
     distinctSurfaces(pool, settings.format) >= settings.choiceCount ? pool : everything;
 
@@ -257,6 +283,7 @@ if (import.meta.vitest) {
       kanji: [id],
       kanjiCount: 1,
       hasOkurigana: false,
+      hasAudio: true,
       set,
       subcategory: SUBCATEGORIES[set][0],
       level: "N5",
@@ -408,7 +435,7 @@ test("asks the written form and answers the reading on kanji to kana", () => {
         pool,
         seeded(3)
       );
-      expect(question.prompt).toBe("/images/n5/light/nature/elements/water.png");
+      expect(question.prompt).toBe("/images/base/n5/light/nature/elements/water.png");
       expect(question.answer).toBe("水");
     });
 
@@ -514,6 +541,105 @@ test("asks the written form and answers the reading on kanji to kana", () => {
 
     test("fills one slot on advanced and none on beginner", () => {
       expect(DIFFICULTIES.map(similarCount)).toEqual([0, 1, 3]);
+    });
+  });
+
+  describe("choosing distractors for a word that is heard", () => {
+    const heard = (written: string, reading: string, meaning: string) =>
+      word(written, "nature", { reading, readings: [reading], meaning, id: `${written}|${reading}` });
+    const persimmon = heard("柿", "かき", "persimmon");
+    const key = heard("鍵", "かぎ", "key");
+    const oyster = heard("牡蠣", "かき", "oyster");
+    const summer = heard("夏期", "かきごおり", "shaved ice");
+    const hedge = heard("垣", "かきね", "hedge");
+    const apart = [
+      heard("山", "やま", "mountain"),
+      heard("川", "かわ", "river"),
+      heard("水", "みず", "water"),
+      heard("空", "そら", "sky"),
+      heard("森", "もり", "forest")
+    ];
+    const words = [persimmon, key, oyster, summer, ...apart];
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      sets: ["nature" as const],
+      questionCount: 1,
+      excludedWords: words.filter((entry) => entry !== persimmon).map((entry) => entry.id)
+    };
+    const picked = (question: Question) =>
+      question.choices
+        .filter((choice) => choice !== question.answer)
+        .flatMap((choice) =>
+          [...words, hedge].filter((entry) =>
+            [audioUrl(entry), entry.written, entry.reading].includes(choice)
+          )
+        );
+
+    test("asks a recording and answers the reading or the written word", () => {
+      const [kana] = buildQuestions({ ...settings, format: "audio-kana" }, words, seeded(1));
+      expect(kana.prompt).toBe(`/audio/base/n5/nature/${SUBCATEGORIES.nature[0]}/persimmon.mp3`);
+      expect(kana.answer).toBe("かき");
+      const [recording] = buildQuestions({ ...settings, format: "kanji-audio" }, words, seeded(1));
+      expect(recording.prompt).toBe("柿");
+      expect(recording.answer).toBe(audioUrl(persimmon));
+      expect(recording.accepted).toEqual([audioUrl(persimmon)]);
+    });
+
+    test("leaves a word with no recording out of every listening run", () => {
+      const silent = [{ ...persimmon, hasAudio: false }, ...apart];
+      const open = { ...settings, excludedWords: [] };
+      expect(eligibleWords({ ...open, format: "audio-kana" }, silent)).toHaveLength(apart.length);
+      expect(eligibleWords({ ...open, format: "kanji-kana" }, silent)).toHaveLength(silent.length);
+      const [question] = buildQuestions(
+        { ...open, format: "kanji-audio", excludedWords: apart.slice(1).map((entry) => entry.id) },
+        silent,
+        seeded(2)
+      );
+      expect(question.choices).toHaveLength(4);
+      expect(question.choices).not.toContain(audioUrl(persimmon));
+    });
+
+    test("never offers a homophone, which would be a second right answer", () => {
+      for (const format of ["audio-kanji", "kanji-audio"] as const) {
+        for (const difficulty of DIFFICULTIES) {
+          for (let seed = 1; seed <= 20; seed += 1) {
+            const [question] = buildQuestions({ ...settings, format, difficulty }, words, seeded(seed));
+            expect(picked(question)).not.toContain(oyster);
+            expect(question.choices).toHaveLength(4);
+          }
+        }
+      }
+    });
+
+    test("keeps a beginner's distractors clear of anything that sounds close", () => {
+      for (const format of ["audio-kana", "audio-kanji", "kanji-audio"] as const) {
+        for (let seed = 1; seed <= 20; seed += 1) {
+          const [question] = buildQuestions({ ...settings, format }, words, seeded(seed));
+          const close = picked(question).filter(
+            (entry) => entry !== persimmon && similarity(persimmon, entry, "reading") > 0
+          );
+          expect(close).toEqual([]);
+        }
+      }
+    });
+
+    test("falls back to close sounds when nothing far enough is left", () => {
+      const [question] = buildQuestions(
+        { ...settings, format: "audio-kana" },
+        [persimmon, key, summer, hedge, apart[0]],
+        seeded(3)
+      );
+      expect(question.choices).toHaveLength(4);
+    });
+
+    test("gives an expert minimal pairs scored on the sound, not the writing", () => {
+      const [question] = buildQuestions(
+        { ...settings, format: "audio-kanji", difficulty: "expert" },
+        [...words, hedge],
+        seeded(4)
+      );
+      const distractors = picked(question).filter((entry) => entry !== persimmon);
+      expect(distractors.every((entry) => similarity(persimmon, entry, "reading") > 0)).toBe(true);
     });
   });
 

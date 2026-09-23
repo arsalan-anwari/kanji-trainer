@@ -11,9 +11,17 @@
     "meaning-kana": "How is this word read?",
     "image-kanji": "Which word is this?",
     "image-kana": "How is this word read?",
+    "audio-kana": "How is the word you heard read?",
+    "audio-kanji": "Which word did you hear?",
+    "kanji-audio": "Which recording is this word?",
+    "replay": "Play the word again",
     "imageAlt": "A picture illustrating the word"
   },
   "choices": "Answers",
+  "soundTile": "Recording {slot}",
+  "check": "Check",
+  "soundHint": "Tap a recording to hear it, then check.",
+  "soundCompare": "Tap a recording to hear it again.",
   "typed": {
     "label": "Answer",
     "placeholder": "Type your answer",

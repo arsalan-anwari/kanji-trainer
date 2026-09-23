@@ -3,7 +3,7 @@
   import { app } from "../../state.svelte";
   import QuestionCountPicker from "./QuestionCountPicker.svelte";
   import {
-    ANSWER_STYLES,
+    answerStylesFor,
     CATEGORIES,
     categoryOf,
     DIFFICULTIES,
@@ -49,7 +49,7 @@
 <Card title={t("setup.answerStyle.title")} description={t("setup.answerStyle.description")}>
   {#snippet icon()}<Icon name="keyboard" class="size-5" />{/snippet}
   <div role="group" aria-label={t("setup.answerStyle.title")} class="grid gap-3 sm:grid-cols-2">
-    {#each ANSWER_STYLES as style (style)}
+    {#each answerStylesFor(app.settings.format) as style (style)}
       <OptionCard
         active={app.settings.answerStyle === style}
         label={t(`common.answerStyle.${style}`)}

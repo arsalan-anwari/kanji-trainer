@@ -9,9 +9,12 @@ export type Format =
   | "kana-meaning"
   | "meaning-kana"
   | "image-kanji"
-  | "image-kana";
-export type Surface = "written" | "reading" | "meaning" | "image";
-export type Category = "reading" | "meaning" | "visualize";
+  | "image-kana"
+  | "audio-kana"
+  | "audio-kanji"
+  | "kanji-audio";
+export type Surface = "written" | "reading" | "meaning" | "image" | "audio";
+export type Category = "reading" | "meaning" | "visualize" | "listening";
 export type AnswerStyle = "choice" | "typing";
 export type WordShape = "1-kanji" | "2-kanji" | "okurigana";
 export type Difficulty = "beginner" | "advanced" | "expert";
@@ -39,12 +42,13 @@ export type RunSettings = {
 
 export const DIFFICULTIES: readonly Difficulty[] = ["beginner", "advanced", "expert"];
 
-export const CATEGORIES: readonly Category[] = ["reading", "meaning", "visualize"];
+export const CATEGORIES: readonly Category[] = ["reading", "meaning", "visualize", "listening"];
 
 export const DIRECTIONS_BY_CATEGORY: Record<Category, readonly Format[]> = {
   reading: ["kanji-kana", "kana-kanji"],
   meaning: ["kanji-meaning", "meaning-kanji", "kana-meaning", "meaning-kana"],
-  visualize: ["image-kanji", "image-kana"]
+  visualize: ["image-kanji", "image-kana"],
+  listening: ["audio-kana", "audio-kanji", "kanji-audio"]
 };
 
 export const FORMATS: readonly Format[] = CATEGORIES.flatMap(
@@ -67,7 +71,10 @@ const SIDES: Record<Format, { prompt: Surface; answer: Surface }> = {
   "kana-meaning": { prompt: "reading", answer: "meaning" },
   "meaning-kana": { prompt: "meaning", answer: "reading" },
   "image-kanji": { prompt: "image", answer: "written" },
-  "image-kana": { prompt: "image", answer: "reading" }
+  "image-kana": { prompt: "image", answer: "reading" },
+  "audio-kana": { prompt: "audio", answer: "reading" },
+  "audio-kanji": { prompt: "audio", answer: "written" },
+  "kanji-audio": { prompt: "written", answer: "audio" }
 };
 
 export function promptSurface(format: Format): Surface {
@@ -78,11 +85,19 @@ export function answerSurface(format: Format): Surface {
   return SIDES[format].answer;
 }
 
+export function usesAudio(format: Format): boolean {
+  return categoryOf(format) === "listening";
+}
+
 export function isJapanese(surface: Surface): boolean {
   return surface === "written" || surface === "reading";
 }
 
 export const ANSWER_STYLES: readonly AnswerStyle[] = ["choice", "typing"];
+
+export function answerStylesFor(format: Format): readonly AnswerStyle[] {
+  return answerSurface(format) === "audio" ? ["choice"] : ANSWER_STYLES;
+}
 export const CHOICE_COUNTS: readonly number[] = [4];
 
 export const QUESTION_COUNT_ROWS: readonly (readonly number[])[] = [
@@ -146,6 +161,7 @@ export function normalizeSettings(settings: RunSettings): {
   }
 
   next.questionCount = normalizeCount(next.questionCount);
+  if (!answerStylesFor(next.format).includes(next.answerStyle)) next.answerStyle = "choice";
 
   return { settings: next, notes };
 }
@@ -228,6 +244,19 @@ if (import.meta.vitest) {
     expect(normalizeSettings(wanted).settings.answerStyle).toBe("typing");
   });
 
+  test("answers a recording by picking it, since a sound cannot be typed", () => {
+    const wanted: RunSettings = { ...DEFAULT_SETTINGS, format: "kanji-audio", answerStyle: "typing" };
+    expect(normalizeSettings(wanted).settings.answerStyle).toBe("choice");
+    expect(answerStylesFor("kanji-audio")).toEqual(["choice"]);
+  });
+
+  test("lets a heard word be typed, as its kana or its kanji", () => {
+    for (const format of ["audio-kana", "audio-kanji"] as const) {
+      const wanted: RunSettings = { ...DEFAULT_SETTINGS, format, answerStyle: "typing" };
+      expect(normalizeSettings(wanted).settings.answerStyle).toBe("typing");
+    }
+  });
+
   test("leaves a typed reading run alone", () => {
     const wanted: RunSettings = { ...DEFAULT_SETTINGS, answerStyle: "typing" };
     expect(normalizeSettings(wanted).settings.answerStyle).toBe("typing");
@@ -300,7 +329,10 @@ if (import.meta.vitest) {
       "reading",
       "meaning",
       "image",
-      "image"
+      "image",
+      "audio",
+      "audio",
+      "written"
     ]);
     expect(FORMATS.map(answerSurface)).toEqual([
       "reading",
@@ -310,7 +342,10 @@ if (import.meta.vitest) {
       "meaning",
       "reading",
       "written",
-      "reading"
+      "reading",
+      "reading",
+      "written",
+      "audio"
     ]);
   });
 
@@ -323,8 +358,12 @@ if (import.meta.vitest) {
       "meaning",
       "meaning",
       "visualize",
-      "visualize"
+      "visualize",
+      "listening",
+      "listening",
+      "listening"
     ]);
+    expect(FORMATS.filter(usesAudio)).toEqual(["audio-kana", "audio-kanji", "kanji-audio"]);
   });
 
   test("calls only a meaning or a picture latin, so the quiz screen knows what to tag", () => {
@@ -332,6 +371,7 @@ if (import.meta.vitest) {
     expect(isJapanese("reading")).toBe(true);
     expect(isJapanese("meaning")).toBe(false);
     expect(isJapanese("image")).toBe(false);
+    expect(isJapanese("audio")).toBe(false);
   });
 
   test("offers a custom length ladder the roller can step through", () => {
