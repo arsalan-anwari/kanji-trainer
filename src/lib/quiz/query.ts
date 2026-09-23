@@ -3,7 +3,7 @@ import type { AnswerStyle, Format } from "./settings";
 import { ANSWER_STYLES, FORMATS } from "./settings";
 import { t } from "../i18n.svelte";
 
-export const WINDOWS = ["all", "today", "week"] as const;
+export const WINDOWS = ["all", "today", "yesterday"] as const;
 
 export type Window = (typeof WINDOWS)[number];
 
@@ -62,7 +62,8 @@ export function withinWindow(createdAt: string, window: Window | DateRange, now:
     return at >= Math.min(from, to) && at < Math.max(from, to) + DAY_MS;
   }
   const today = startOfDay(now);
-  return window === "today" ? at >= today : at >= today - 6 * DAY_MS;
+  if (window === "today") return at >= today;
+  return at >= today - DAY_MS && at < today;
 }
 
 export function windowLabel(filter: Window | DateRange): string {
@@ -129,13 +130,14 @@ if (import.meta.vitest) {
 
   const runs = [
     report("2026-09-19T09:00:00.000Z"),
+    report("2026-09-18T09:00:00.000Z"),
     report("2026-09-17T09:00:00.000Z", { format: "kana-kanji" }),
     report("2026-08-01T09:00:00.000Z", { answerStyle: "typing" })
   ];
 
   describe("filtering past runs", () => {
     test("keeps everything when nothing is chosen", () => {
-      expect(queryReports(runs, ANY_QUERY, now)).toHaveLength(3);
+      expect(queryReports(runs, ANY_QUERY, now)).toHaveLength(4);
       expect(activeFilters(ANY_QUERY)).toBe(0);
     });
 
@@ -143,8 +145,11 @@ if (import.meta.vitest) {
       expect(queryReports(runs, { ...ANY_QUERY, window: "today" }, now)).toHaveLength(1);
     });
 
-    test("keeps the last seven days", () => {
-      expect(queryReports(runs, { ...ANY_QUERY, window: "week" }, now)).toHaveLength(2);
+    test("keeps only yesterday's runs", () => {
+      expect(queryReports(runs, { ...ANY_QUERY, window: "yesterday" }, now)).toHaveLength(1);
+      expect(
+        queryReports(runs, { ...ANY_QUERY, window: "yesterday" }, now)[0]!.createdAt
+      ).toBe("2026-09-18T09:00:00.000Z");
     });
 
     test("keeps only the chosen format", () => {
@@ -179,7 +184,7 @@ if (import.meta.vitest) {
 
     test("keeps runs inside a custom date range", () => {
       const range = { from: "2026-09-17", to: "2026-09-19" };
-      expect(queryReports(runs, { ...ANY_QUERY, window: range }, now)).toHaveLength(2);
+      expect(queryReports(runs, { ...ANY_QUERY, window: range }, now)).toHaveLength(3);
     });
 
     test("keeps a single-day range to just that day", () => {
@@ -189,7 +194,7 @@ if (import.meta.vitest) {
 
     test("swaps a backwards range so it still keeps what falls between", () => {
       const range = { from: "2026-09-19", to: "2026-09-17" };
-      expect(queryReports(runs, { ...ANY_QUERY, window: range }, now)).toHaveLength(2);
+      expect(queryReports(runs, { ...ANY_QUERY, window: range }, now)).toHaveLength(3);
     });
   });
 
@@ -197,7 +202,7 @@ if (import.meta.vitest) {
     test("names every fixed window", () => {
       expect(windowLabel("all")).toBe("All");
       expect(windowLabel("today")).toBe("Today");
-      expect(windowLabel("week")).toBe("Last Week");
+      expect(windowLabel("yesterday")).toBe("Yesterday");
     });
 
     test("calls a date range custom", () => {

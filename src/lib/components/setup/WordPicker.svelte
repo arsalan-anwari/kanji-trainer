@@ -1,23 +1,47 @@
 <script lang="ts">
-  import { Button, Card, Chip, EmptyState, Glyph, Icon, TextField, roving } from "kaizen-ui";
+  import { Button, Chip, EmptyState, Glyph, Icon, roving } from "kaizen-ui";
   import { app } from "../../state.svelte";
-  import { groupWordsBySet } from "../../content/sets";
+  import {
+    countBySet,
+    countBySubcategory,
+    groupWordsBySet,
+    SET_IDS,
+    subcategoryKey,
+    SUBCATEGORIES,
+    type SetId
+  } from "../../content/sets";
   import { WORD_SHAPES } from "../../quiz/settings";
   import { n, t } from "../../i18n.svelte";
 
   const LEVELS = ["N5", "N4", "N3", "N2", "N1"];
-  const SHOWN = ["all", "kept", "held"] as const;
 
   let search = $state("");
-  let shown = $state<(typeof SHOWN)[number]>("all");
+  let categoryFilter = $state<SetId[]>([]);
+  let subcategoryFilter = $state<string[]>([]);
 
   const needle = $derived(search.trim().toLowerCase());
 
+  const activeFilters = $derived(
+    (search.trim() !== "" ? 1 : 0) +
+      (categoryFilter.length > 0 ? 1 : 0) +
+      (subcategoryFilter.length > 0 ? 1 : 0)
+  );
+
+  // The category filter narrows the pool before the subcategory filter reads
+  // it, so the subcategory row only ever offers pairs that still hold a word.
+  const categoryScoped = $derived(
+    app.selectableWords.filter(
+      (word) => categoryFilter.length === 0 || categoryFilter.includes(word.set)
+    )
+  );
+
+  const categoryCounts = $derived(countBySet(app.selectableWords));
+  const subcategoryCounts = $derived(countBySubcategory(categoryScoped));
+
   const visible = $derived(
-    app.selectableWords.filter((word) => {
-      const held = app.excludedWords.has(word.id);
-      if (shown === "kept" && held) return false;
-      if (shown === "held" && !held) return false;
+    categoryScoped.filter((word) => {
+      if (subcategoryFilter.length > 0 && !subcategoryFilter.includes(word.subcategory))
+        return false;
       if (needle === "") return true;
       return [word.written, ...word.readings, ...word.glosses].some((text) =>
         text.toLowerCase().includes(needle)
@@ -37,6 +61,26 @@
     if (current.has(shape)) current.delete(shape);
     else current.add(shape);
     app.updateSettings({ wordShapes: [...current] });
+  }
+
+  function toggleCategory(id: SetId): void {
+    const current = new Set(categoryFilter);
+    if (current.has(id)) current.delete(id);
+    else current.add(id);
+    categoryFilter = [...current];
+
+    // Drop any subcategory no longer offered by a still-selected category.
+    const stillOffered = new Set(
+      categoryFilter.flatMap((set) => SUBCATEGORIES[set] as readonly string[])
+    );
+    subcategoryFilter = subcategoryFilter.filter((sub) => stillOffered.has(sub));
+  }
+
+  function toggleSubcategory(sub: string): void {
+    const current = new Set(subcategoryFilter);
+    if (current.has(sub)) current.delete(sub);
+    else current.add(sub);
+    subcategoryFilter = [...current];
   }
 </script>
 
@@ -58,6 +102,14 @@
       </Button>
       <Button
         variant="outline"
+        disabled={app.eligibleCount === 0}
+        onclick={() => app.clearWords(app.selectableWords.map((word) => word.id))}
+      >
+        <Icon name="select-none" />
+        {t("setup.words.unselectAll")}
+      </Button>
+      <Button
+        variant="outline"
         disabled={app.settings.excludedWords.length === 0}
         onclick={() => app.resetWords()}
       >
@@ -67,10 +119,30 @@
     </div>
   </div>
 
-  <Card title={t("setup.words.filters")} description={t("setup.words.filtersHint")}>
-    {#snippet icon()}<Icon name="filter" class="size-5" />{/snippet}
-    <div class="flex flex-col gap-3">
-      <TextField bind:value={search} label={t("setup.words.search")} placeholder={t("setup.words.search")} />
+  <details data-section class="rounded-2xl border-2 border-border bg-surface">
+    <summary
+      class="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-bold [&::-webkit-details-marker]:hidden"
+    >
+      <Icon name="filter" class="size-4" />
+      <span>{t("setup.words.filters")}</span>
+      {#if activeFilters > 0}
+        <span
+          class="inline-flex min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[0.625rem] tabular-nums text-brand-foreground"
+        >
+          {activeFilters}
+        </span>
+      {/if}
+      <Icon name="chevron-down" class="ml-auto size-4 text-muted-foreground" />
+    </summary>
+    <div class="flex flex-col gap-3 border-t-2 border-border px-4 py-4">
+      <input
+        type="text"
+        bind:value={search}
+        placeholder={t("setup.words.search")}
+        aria-label={t("setup.words.search")}
+        autocomplete="off"
+        class="w-full rounded-lg border-2 border-wire bg-surface px-3.5 py-2 text-sm focus-visible:border-selected focus-visible:outline-none"
+      />
 
       <div class="flex flex-wrap items-center gap-2">
         <span class="text-xs font-bold text-muted-foreground">{t("setup.level.title")}</span>
@@ -107,17 +179,45 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
-        <span class="text-xs font-bold text-muted-foreground">{t("setup.words.shown")}</span>
-        <div role="group" aria-label={t("setup.words.shown")} class="flex flex-wrap gap-2">
-          {#each SHOWN as option (option)}
-            <Chip size="sm" active={shown === option} onclick={() => (shown = option)}>
-              {t(`setup.words.shown-${option}`)}
+        <span class="text-xs font-bold text-muted-foreground">{t("setup.words.category")}</span>
+        <div role="group" aria-label={t("setup.words.category")} class="flex flex-wrap gap-2">
+          {#each SET_IDS as id (id)}
+            <Chip
+              size="sm"
+              disabled={(categoryCounts[id] ?? 0) === 0}
+              active={categoryFilter.includes(id)}
+              onclick={() => toggleCategory(id)}
+            >
+              {t(`common.set.${id}`)}
             </Chip>
           {/each}
         </div>
       </div>
+
+      {#each categoryFilter as category (category)}
+        <div class="flex flex-wrap items-center gap-2 pl-5">
+          <Icon name="chevron-down" class="size-3.5 -rotate-90 text-muted-foreground" />
+          <span class="text-xs font-bold text-muted-foreground">{t(`common.set.${category}`)}</span>
+          <div
+            role="group"
+            aria-label={t(`common.set.${category}`)}
+            class="flex flex-wrap gap-2"
+          >
+            {#each SUBCATEGORIES[category] as sub (sub)}
+              <Chip
+                size="sm"
+                disabled={(subcategoryCounts[subcategoryKey(category, sub)] ?? 0) === 0}
+                active={subcategoryFilter.includes(sub)}
+                onclick={() => toggleSubcategory(sub)}
+              >
+                {t(`common.subcategory.${sub}`)}
+              </Chip>
+            {/each}
+          </div>
+        </div>
+      {/each}
     </div>
-  </Card>
+  </details>
 
   {#each tree as branch (branch.set)}
     {@const ids = branch.groups.flatMap((group) => group.words.map((word) => word.id))}
@@ -142,16 +242,22 @@
         {#each branch.groups as group (group.subcategory)}
           {@const groupIds = group.words.map((word) => word.id)}
           {@const groupLabel = t(`common.subcategory.${group.subcategory}`)}
-          <section class="flex flex-col gap-2">
-            <h4 class="flex flex-wrap items-baseline gap-2 border-b border-wire pb-1">
-              <span class="font-bold">{groupLabel}</span>
-              <span class="text-xs tabular-nums text-muted-foreground">
+          <details open={openByDefault} class="rounded-xl border-2 border-border bg-surface">
+            <summary
+              class="flex cursor-pointer list-none flex-wrap items-center gap-2 px-3 py-2 font-bold [&::-webkit-details-marker]:hidden"
+            >
+              <span>{groupLabel}</span>
+              <span class="text-xs font-normal tabular-nums text-muted-foreground">
                 {t("setup.words.taken", {
                   taken: n(groupIds.filter((id) => !app.excludedWords.has(id)).length),
                   total: n(groupIds.length)
                 })}
               </span>
-              <span class="ml-auto flex gap-2">
+              <span
+                role="presentation"
+                class="ml-auto flex gap-2"
+                onclick={(event) => event.stopPropagation()}
+              >
                 <Button size="sm" variant="outline" onclick={() => app.selectWords(groupIds)}>
                   <Icon name="select-all" />
                   {t("setup.words.selectAll")}
@@ -161,12 +267,13 @@
                   {t("setup.words.clear")}
                 </Button>
               </span>
-            </h4>
+              <Icon name="chevron-down" class="size-4 text-muted-foreground" />
+            </summary>
             <div
               use:roving
               role="group"
               aria-label={t("setup.words.group", { label: groupLabel })}
-              class="grid gap-2 sm:grid-cols-2"
+              class="grid grid-cols-[repeat(auto-fill,minmax(7.5rem,1fr))] gap-2 border-t border-wire p-3"
             >
               {#each group.words as word (word.id)}
                 {@const on = !app.excludedWords.has(word.id)}
@@ -178,7 +285,7 @@
                     : 'border-wire bg-surface opacity-50 hover:bg-accent'}"
                   onclick={() => app.toggleWord(word.id)}
                 >
-                  <span class="flex flex-wrap items-baseline gap-x-2">
+                  <span class="flex flex-col">
                     <Glyph text={word.written} class="text-lg font-bold" />
                     <Glyph text={word.reading} class="text-sm text-muted-foreground" />
                   </span>
@@ -186,7 +293,7 @@
                 </button>
               {/each}
             </div>
-          </section>
+          </details>
         {/each}
       </div>
     </details>

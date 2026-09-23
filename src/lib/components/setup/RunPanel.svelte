@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { Card, Chip, Icon, OptionCard } from "kaizen-ui";
+  import { Card, Icon, OptionCard } from "kaizen-ui";
   import { app } from "../../state.svelte";
   import QuestionCountPicker from "./QuestionCountPicker.svelte";
   import {
     ANSWER_STYLES,
-    answerSurface,
     CATEGORIES,
     categoryOf,
     DIFFICULTIES,
@@ -13,11 +12,6 @@
   import { t } from "../../i18n.svelte";
 
   const category = $derived(categoryOf(app.settings.format));
-  const typingHintKey = $derived(
-    { written: "typingKanji", reading: "typing", meaning: "typingMeaning", image: "typing" }[
-      answerSurface(app.settings.format)
-    ]
-  );
 </script>
 
 <Card title={t("setup.format.title")} description={t("setup.format.description")}>
@@ -59,7 +53,7 @@
       <OptionCard
         active={app.settings.answerStyle === style}
         label={t(`common.answerStyle.${style}`)}
-        hint={style === "typing" ? t(`setup.answerStyle.${typingHintKey}`) : t(`setup.answerStyle.${style}`)}
+        hint={t(`setup.answerStyle.${style}`)}
         onclick={() => app.updateSettings({ answerStyle: style })}
       />
     {/each}
@@ -68,16 +62,14 @@
 
 <Card title={t("setup.difficulty.title")} description={t("setup.difficulty.description")}>
   {#snippet icon()}<Icon name="flame" class="size-5" />{/snippet}
-  <div role="group" aria-label={t("setup.difficulty.title")} class="flex flex-wrap gap-2">
+  <div role="group" aria-label={t("setup.difficulty.title")} class="grid gap-3 sm:grid-cols-3">
     {#each DIFFICULTIES as difficulty (difficulty)}
-      <Chip
-        size="sm"
+      <OptionCard
         active={app.settings.difficulty === difficulty}
-        title={t(`setup.difficulty.${difficulty}`)}
+        label={t(`common.difficulty.${difficulty}`)}
+        hint={t(`setup.difficulty.${difficulty}`)}
         onclick={() => app.updateSettings({ difficulty })}
-      >
-        {t(`common.difficulty.${difficulty}`)}
-      </Chip>
+      />
     {/each}
   </div>
 </Card>

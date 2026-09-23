@@ -192,6 +192,11 @@
             <span class="h-0.5 w-2.5 rounded-full bg-selected"></span>
           {/if}
         </span>
+        <span class="truncate">
+          {picked.length === 0
+            ? t("reports.list.shown", { count: shown.length })
+            : t("reports.list.pickedOf", { picked: picked.length, total: shown.length })}
+        </span>
       </button>
 
       <span bind:this={actionAnchor} class="inline-flex">
@@ -234,43 +239,49 @@
       {/if}
     </div>
 
-    <ul bind:this={listTop} class="flex flex-col gap-2">
-      {#each pageItems as report (report.id)}
-        {@const summary = summarize(report)}
-        <li>
-          <button
-            type="button"
-            aria-pressed={picked.includes(report.id)}
-            class="flex w-full cursor-pointer flex-col gap-1 rounded-xl border-2 px-3 py-2 text-left transition-colors {picked.includes(
-              report.id
-            )
-              ? 'border-selected bg-selected-soft'
-              : 'border-wire bg-surface hover:bg-accent'}"
-            onclick={() => toggle(report.id)}
-          >
-            <span class="flex items-baseline justify-between gap-2">
-              <span class="text-sm font-semibold">
-                {new Date(report.createdAt).toLocaleString()}
-              </span>
-              <span class="text-sm font-bold tabular-nums">
-                {t("reports.entry", { score: n(summary.score), total: n(summary.total) })}
-              </span>
-            </span>
-            <span class="flex flex-wrap gap-1">
-              <Badge tone="outline">{report.settings.level}</Badge>
-              <Badge tone="outline">{t(`common.format.${report.settings.format}`)}</Badge>
-              <Badge tone="outline">{t(`common.answerStyle.${report.settings.answerStyle}`)}</Badge>
-            </span>
-          </button>
-        </li>
-      {:else}
-        <li><EmptyState icon="sprout" title={t("reports.none")} /></li>
-      {/each}
-    </ul>
+    <div data-section class="flex flex-col gap-3">
+      <div
+        bind:this={listTop}
+        class="sheet ruled rounded-2xl border-2 border-border bg-surface p-2 sm:p-3"
+      >
+        <ul class="flex flex-col gap-2 p-1">
+          {#each pageItems as report (report.id)}
+            {@const summary = summarize(report)}
+            <li>
+              <button
+                type="button"
+                aria-pressed={picked.includes(report.id)}
+                class="flex w-full cursor-pointer flex-col items-start gap-1 rounded-xl border-2 p-3 text-left transition-colors {picked.includes(
+                  report.id
+                )
+                  ? 'border-selected bg-selected-soft'
+                  : 'border-wire bg-surface hover:bg-accent'}"
+                onclick={() => toggle(report.id)}
+              >
+                <span class="text-sm font-semibold">
+                  {new Date(report.createdAt).toLocaleString()}
+                </span>
+                <span class="text-xs text-muted-foreground tabular-nums">
+                  {t("reports.entry", { score: n(summary.score), total: n(summary.total) })}
+                </span>
+                <span class="flex flex-wrap gap-1">
+                  <Badge tone="outline">{report.settings.level}</Badge>
+                  <Badge tone="outline">{t(`common.format.${report.settings.format}`)}</Badge>
+                  <Badge tone="outline">{t(`common.answerStyle.${report.settings.answerStyle}`)}</Badge>
+                </span>
+              </button>
+            </li>
+          {:else}
+            <li><EmptyState icon="sprout" title={t("reports.none")} /></li>
+          {/each}
+        </ul>
+      </div>
+    </div>
 
     <Pagination
       bind:page
       {pages}
+      class="[&_button]:h-20"
       label={t("reports.pages.label")}
       previousLabel={t("reports.pages.previous")}
       nextLabel={t("reports.pages.next")}
@@ -300,7 +311,7 @@
           disabled={answers.length === 0}
           onclick={() => app.practiseMistakes(chosen)}
         >
-          <Icon name="flame" class="size-5" />
+          <Icon name="flame" class="size-5 text-seal" />
           {t("reports.practise.button")}
         </Button>
       </div>

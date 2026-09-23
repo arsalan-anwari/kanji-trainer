@@ -36,9 +36,7 @@
     "title": "Answer style",
     "description": "Tap an answer or type it.",
     "choice": "Pick one of the answers",
-    "typing": "Type the reading",
-    "typingMeaning": "Type what it means",
-    "typingKanji": "Type the word. This needs a Japanese input method (IME) enabled on your system to produce kanji."
+    "typing": "Type the answer"
   },
   "wordShapes": {
     "title": "Word shapes",
@@ -97,6 +95,7 @@
     "taken": "{taken} of {total} kept",
     "back": "Back to setup",
     "reset": "Reset",
+    "unselectAll": "Unselect all",
     "selectAll": "All",
     "clear": "None",
     "empty": "Pick a set to see its words.",
@@ -104,10 +103,8 @@
     "filters": "Filters",
     "filtersHint": "Narrow the list before picking words.",
     "search": "Search words",
-    "shown": "Show",
-    "shown-all": "All",
-    "shown-kept": "Kept",
-    "shown-held": "Held back",
+    "category": "Category",
+    "subcategory": "Sub-category",
     "noMatch": "No word matches this search."
   }
 }

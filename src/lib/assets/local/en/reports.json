@@ -4,7 +4,7 @@
   "window": {
     "all": "All",
     "today": "Today",
-    "week": "Last Week",
+    "yesterday": "Yesterday",
     "custom": "Custom",
     "range": "{from} – {to}"
   },
@@ -24,6 +24,8 @@
     "clear": "Clear filters"
   },
   "list": {
+    "shown": "{count} shown",
+    "pickedOf": "{picked} of {total}",
     "selectAll": "Select every run shown",
     "clearSelection": "Clear the selection",
     "remove": "Delete",
