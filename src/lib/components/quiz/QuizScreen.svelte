@@ -8,7 +8,7 @@
   import QuitConfirm from "./QuitConfirm.svelte";
   import QuizStatusBar from "./QuizStatusBar.svelte";
   import SoundChoices from "./SoundChoices.svelte";
-  import { answerSurface, promptSurface } from "../../quiz/settings";
+  import { answerSurface, isNearlyOut, promptSurface } from "../../quiz/settings";
   import TypingAnswer from "./TypingAnswer.svelte";
   import { n, t } from "../../i18n.svelte";
   import { clips } from "../../audio/clips.svelte";
@@ -39,10 +39,23 @@
   const said = $derived(
     question === null || app.phase !== "feedback"
       ? ""
-      : `${t(app.lastCorrect ? "quiz.correct" : "quiz.wrong")}. ${t("quiz.answerWas", {
+      : `${t(app.lastTimedOut ? "quiz.time.out" : app.lastCorrect ? "quiz.correct" : "quiz.wrong")}. ${t("quiz.answerWas", {
           answer: picksSound ? (word?.reading ?? "") : question.answer
         })}`
   );
+
+  const warned = $derived(
+    app.phase === "answering" &&
+      (isNearlyOut(app.questionRemaining, app.settings.perQuestionSeconds) ||
+        isNearlyOut(app.totalRemaining, app.settings.totalSeconds))
+      ? t("quiz.time.warning")
+      : ""
+  );
+
+  function visibility(): void {
+    if (document.hidden) app.pause();
+    else app.resume();
+  }
 
   function keydown(event: KeyboardEvent): void {
     if (question === null || app.confirmQuit || app.hintOpen) return;
@@ -88,6 +101,7 @@
 </script>
 
 <svelte:window onkeydown={keydown} />
+<svelte:document onvisibilitychange={visibility} />
 
 {#if app.confirmQuit}
   <QuitConfirm />
@@ -97,6 +111,7 @@
   <div class="flex min-h-0 flex-1 flex-col gap-3 sm:gap-6">
     <Announcer message={asked} />
     <Announcer assertive message={said} />
+    <Announcer message={warned} />
 
     <QuizStatusBar />
 

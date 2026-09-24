@@ -58,7 +58,7 @@ def main():
 
     if args.dry_run:
         for pack, category, light_path, dark_path in todo:
-            print(f"{pack}/{category}: {light_path.name} -> dark/{dark_path.name}")
+            print(f"{light_path} -> {dark_path}")
         return
     if not todo:
         print("nothing to do")
@@ -68,7 +68,7 @@ def main():
     for i, (pack, category, light_path, dark_path) in enumerate(todo, 1):
         dark_path.parent.mkdir(parents=True, exist_ok=True)
         smart_invert(Image.open(light_path)).save(dark_path)
-        print(f"[{i}/{len(todo)}] {pack}/{category}/{dark_path.name}")
+        print(f"[{i}/{len(todo)}] {dark_path}")
 
 
 if __name__ == "__main__":

@@ -238,7 +238,7 @@ if (import.meta.vitest) {
       createdAt,
       durationMs: 1000,
       settings: { ...DEFAULT_SETTINGS, sets: ["numbers"] },
-      answers: [{ wordId: "一|いち", correct: true, elapsedMs: 900, given: "いち" }],
+      answers: [{ wordId: "一|いち", correct: true, elapsedMs: 900, given: "いち", timedOut: false }],
       packs: ["n5-base"]
     };
   }

@@ -1,9 +1,3 @@
-# Local dev shell for Kanji Trainer: source this, then call the scripts in
-# scripts/ by name without the .sh, e.g. "generate_images --pack=n5-base".
-# invert_images and convert.py take the same --pack/--category flags.
-#
-#   source .kjtrc
-
 KJT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 
 # Ink Noir, the hint-image style: www.recraft.ai/styles/55e24d02-4fb6-452c-a02f-b3c341912259

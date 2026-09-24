@@ -164,7 +164,7 @@ def main():
         path = clip_path(word)
         found = next(((name, clip) for name, fetch in fetchers if (clip := fetch(word))), None)
         if found is None:
-            print(f"no clip: {word['written']} ({word['reading']})", file=sys.stderr)
+            print(f"no clip: {word['written']} ({word['reading']}), removed {out / path}", file=sys.stderr)
             (out / path).unlink(missing_ok=True)
             rows.append([path.as_posix(), "none", "", ""])
             continue
@@ -175,10 +175,12 @@ def main():
         else:
             encode(raw, out / path)
         rows.append([path.as_posix(), name, licence, url])
+        print(f"{name}: {out / path}")
     with open(PACKS / pack / "sources.tsv", "w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle, delimiter="\t", lineterminator="\n")
         writer.writerow(["path", "source", "licence", "original_url"])
         writer.writerows(rows)
+    print(PACKS / pack / "sources.tsv")
     counts = {}
     for row in rows:
         counts[row[1]] = counts.get(row[1], 0) + 1

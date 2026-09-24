@@ -40,6 +40,7 @@ import {
   normalizeSettings,
   parseSettings,
   promptSurface,
+  remainingMs,
   usesAudio,
   DEFAULT_SETTINGS,
   ONE_PASS,
@@ -117,10 +118,15 @@ class AppState {
   picked = $state<string | null>(null);
   staged = $state<string | null>(null);
   lastCorrect = $state(false);
+  lastTimedOut = $state(false);
   confirmQuit = $state(false);
   hintOpen = $state(false);
-  questionStartedAt = 0;
-  runStartedAt = 0;
+  now = $state(0);
+  questionStartedAt = $state(0);
+  runStartedAt = $state(0);
+  answeredAt = $state(0);
+  pausedAt = 0;
+  timer: ReturnType<typeof setInterval> | null = null;
 
   reports = $state<Report[]>([]);
   chartFilter = $state<WordFilter>(emptyFilter(DEFAULT_SETTINGS.level));
@@ -203,6 +209,13 @@ class AppState {
     this.questions.length === 0 ? 0 : (this.index + (this.phase === "answering" ? 0 : 1)) / this.questions.length
   );
   score = $derived(this.answers.filter((answer) => answer.correct).length);
+  questionRemaining = $derived(
+    remainingMs(
+      this.settings.perQuestionSeconds,
+      (this.phase === "answering" ? this.now : this.answeredAt) - this.questionStartedAt
+    )
+  );
+  totalRemaining = $derived(remainingMs(this.settings.totalSeconds, this.now - this.runStartedAt));
   lastSummary = $derived<Summary | null>(
     this.lastReport === null ? null : summarize(this.lastReport)
   );
@@ -429,12 +442,50 @@ class AppState {
     this.lastCorrect = false;
     this.confirmQuit = false;
     this.hintOpen = false;
-    this.runStartedAt = Date.now();
-    this.questionStartedAt = this.runStartedAt;
+    this.now = Date.now();
+    this.runStartedAt = this.now;
+    this.questionStartedAt = this.now;
     this.route = "quiz";
     this.splash = null;
     sfx.start();
+    this.#startTimer();
     this.#cue();
+  }
+
+  #startTimer(): void {
+    this.#stopTimer();
+    this.timer = setInterval(() => this.#tick(), 100);
+  }
+
+  #stopTimer(): void {
+    if (this.timer !== null) clearInterval(this.timer);
+    this.timer = null;
+  }
+
+  #tick(): void {
+    this.now = Date.now();
+    if (this.phase !== "answering") return;
+    if (this.totalRemaining === 0) {
+      this.finish();
+      return;
+    }
+    if (this.questionRemaining === 0) this.record(false, "", true);
+  }
+
+  pause(): void {
+    if (this.timer === null) return;
+    this.#stopTimer();
+    this.pausedAt = Date.now();
+  }
+
+  resume(): void {
+    if (this.timer !== null || this.route !== "quiz" || this.confirmQuit) return;
+    const held = Date.now() - this.pausedAt;
+    this.runStartedAt += held;
+    this.questionStartedAt += held;
+    this.answeredAt += held;
+    this.now = Date.now();
+    this.#startTimer();
   }
 
   #cue(): void {
@@ -466,22 +517,33 @@ class AppState {
     this.answerChoice(this.staged);
   }
 
-  record(correct: boolean, given: string): void {
+  record(correct: boolean, given: string, timedOut = false): void {
     const question = this.current;
     if (question === null) return;
+    this.answeredAt = Date.now();
     this.answers = [
       ...this.answers,
       {
         wordId: question.wordId,
         correct,
-        elapsedMs: Date.now() - this.questionStartedAt,
-        given
+        elapsedMs: this.answeredAt - this.questionStartedAt,
+        given,
+        timedOut
       }
     ];
     this.lastCorrect = correct;
+    this.lastTimedOut = timedOut;
     this.phase = "feedback";
     if (correct) sfx.correct();
     else sfx.wrong();
+    if (correct) this.#advanceAfterRight();
+  }
+
+  #advanceAfterRight(): void {
+    const { questions, index } = this;
+    setTimeout(() => {
+      if (this.questions === questions && this.index === index && !this.confirmQuit) this.next();
+    }, 700);
   }
 
   answerChoice(choice: string): void {
@@ -511,10 +573,12 @@ class AppState {
     this.staged = null;
     this.hintOpen = false;
     this.questionStartedAt = Date.now();
+    this.now = this.questionStartedAt;
     this.#cue();
   }
 
   finish(): void {
+    this.#stopTimer();
     const report: Report = {
       id: newReportId(),
       createdAt: new Date().toISOString(),
@@ -542,7 +606,13 @@ class AppState {
 
   askQuit(): void {
     sfx.click();
+    this.pause();
     this.confirmQuit = true;
+  }
+
+  cancelQuit(): void {
+    this.confirmQuit = false;
+    this.resume();
   }
 
   showHint(): void {
@@ -556,6 +626,7 @@ class AppState {
   }
 
   quit(): void {
+    this.#stopTimer();
     sfx.click();
     clips.stop();
     this.questions = [];

@@ -55,5 +55,11 @@
   "quitBody": "The questions answered so far will not be kept.",
   "quitConfirm": "Quit",
   "quitCancel": "Keep going",
-  "score": "{score} of {answered} right"
+  "score": "{score} of {answered} right",
+  "time": {
+    "out": "Out of time",
+    "warning": "Five seconds left",
+    "questionLeft": "Time left on this question",
+    "runLeft": "Time left in the run"
+  }
 }

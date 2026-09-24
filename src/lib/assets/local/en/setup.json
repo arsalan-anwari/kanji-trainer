@@ -109,5 +109,13 @@
     "category": "Category",
     "subcategory": "Sub-category",
     "noMatch": "No word matches this search."
+  },
+  "time": {
+    "perQuestion": "Time per question",
+    "wholeRun": "Time for the whole run",
+    "seconds": "Seconds per question",
+    "minutes": "Minutes for the run",
+    "secondsShort": "{count}s",
+    "minutesShort": "{count}m"
   }
 }

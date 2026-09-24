@@ -18,7 +18,7 @@
   <div class="mx-auto flex w-full max-w-xl items-center justify-between gap-4">
     <div class="flex min-w-0 flex-1 flex-col gap-1">
       <span class="text-h4 font-bold {app.lastCorrect ? 'text-success' : 'text-danger'}">
-        {t(app.lastCorrect ? "quiz.correct" : "quiz.wrong")}
+        {t(app.lastTimedOut ? "quiz.time.out" : app.lastCorrect ? "quiz.correct" : "quiz.wrong")}
       </span>
       <span class="text-sm text-foreground">
         <Glyph text={word.written} class="font-bold" />

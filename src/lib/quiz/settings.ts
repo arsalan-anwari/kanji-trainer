@@ -38,6 +38,8 @@ export type RunSettings = {
   excludedWords: string[];
   /** How believable the wrong answers are. */
   difficulty: Difficulty;
+  perQuestionSeconds: number;
+  totalSeconds: number;
 };
 
 export const DIFFICULTIES: readonly Difficulty[] = ["beginner", "advanced", "expert"];
@@ -118,6 +120,31 @@ export const CUSTOM_COUNT_VALUES: readonly number[] = Array.from(
   (_, index) => CUSTOM_COUNT_MIN + index * CUSTOM_COUNT_STEP
 );
 
+export const PER_QUESTION_SECONDS: readonly number[] = [0, 5, 10, 15];
+export const TOTAL_SECONDS: readonly number[] = [0, 60, 120, 300];
+
+export const CUSTOM_PER_QUESTION_MAX = 100;
+export const CUSTOM_TOTAL_MINUTES_MAX = 100;
+
+export function isCustomTime(seconds: number, options: readonly number[]): boolean {
+  return seconds > 0 && !options.includes(seconds);
+}
+
+export function remainingMs(limitSeconds: number, elapsedMs: number): number | null {
+  return limitSeconds === 0 ? null : Math.max(0, limitSeconds * 1000 - elapsedMs);
+}
+
+const WARNING_MS = 5000;
+
+export function isNearlyOut(leftMs: number | null, limitSeconds: number): boolean {
+  return leftMs !== null && limitSeconds * 1000 > WARNING_MS && leftMs > 0 && leftMs <= WARNING_MS;
+}
+
+function normalizeSeconds(seconds: number, max: number): number {
+  if (!Number.isFinite(seconds)) return 0;
+  return Math.min(max, Math.max(0, Math.round(seconds)));
+}
+
 export const DEFAULT_SETTINGS: RunSettings = {
   level: "N5",
   sets: [],
@@ -128,7 +155,9 @@ export const DEFAULT_SETTINGS: RunSettings = {
   questionCount: 20,
   wordShapes: [],
   excludedWords: [],
-  difficulty: "beginner"
+  difficulty: "beginner",
+  perQuestionSeconds: 0,
+  totalSeconds: 0
 };
 
 export function isCustomCount(count: number): boolean {
@@ -161,6 +190,8 @@ export function normalizeSettings(settings: RunSettings): {
   }
 
   next.questionCount = normalizeCount(next.questionCount);
+  next.perQuestionSeconds = normalizeSeconds(next.perQuestionSeconds, CUSTOM_PER_QUESTION_MAX);
+  next.totalSeconds = normalizeSeconds(next.totalSeconds, CUSTOM_TOTAL_MINUTES_MAX * 60);
   if (!answerStylesFor(next.format).includes(next.answerStyle)) next.answerStyle = "choice";
 
   return { settings: next, notes };
@@ -215,6 +246,8 @@ export function parseSettings(stored: unknown): RunSettings {
   if (!isRecord(stored)) return { ...DEFAULT_SETTINGS };
   const count = stored.questionCount;
   const choices = stored.choiceCount;
+  const perQuestion = stored.perQuestionSeconds;
+  const total = stored.totalSeconds;
   return normalizeSettings({
     level:
       typeof stored.level === "string" && stored.level !== ""
@@ -228,7 +261,9 @@ export function parseSettings(stored: unknown): RunSettings {
     questionCount: typeof count === "number" ? count : DEFAULT_SETTINGS.questionCount,
     wordShapes: pickWordShapes(stored.wordShapes),
     excludedWords: pickWordIds(stored.excludedWords),
-    difficulty: pick(stored.difficulty, DIFFICULTIES, DEFAULT_SETTINGS.difficulty)
+    difficulty: pick(stored.difficulty, DIFFICULTIES, DEFAULT_SETTINGS.difficulty),
+    perQuestionSeconds: typeof perQuestion === "number" ? perQuestion : 0,
+    totalSeconds: typeof total === "number" ? total : 0
   }).settings;
 }
 
@@ -296,9 +331,45 @@ if (import.meta.vitest) {
       questionCount: 50,
       wordShapes: ["1-kanji"],
       excludedWords: ["一|いち"],
-      difficulty: "expert"
+      difficulty: "expert",
+      perQuestionSeconds: 10,
+      totalSeconds: 120
     };
     expect(parseSettings(wanted)).toEqual(wanted);
+  });
+
+  test("leaves both clocks off for settings stored before timing existed", () => {
+    const { perQuestionSeconds, totalSeconds, ...legacy } = DEFAULT_SETTINGS;
+    expect([perQuestionSeconds, totalSeconds]).toEqual([0, 0]);
+    expect(parseSettings(legacy)).toEqual(DEFAULT_SETTINGS);
+  });
+
+  test("keeps a time limit whole, never negative, and under the custom ceiling", () => {
+    const read = parseSettings({ perQuestionSeconds: 7.4, totalSeconds: -30 });
+    expect([read.perQuestionSeconds, read.totalSeconds]).toEqual([7, 0]);
+    const long = parseSettings({ perQuestionSeconds: 999, totalSeconds: 999_999 });
+    expect(long.perQuestionSeconds).toBe(CUSTOM_PER_QUESTION_MAX);
+    expect(long.totalSeconds).toBe(CUSTOM_TOTAL_MINUTES_MAX * 60);
+  });
+
+  test("counts a clock down from its limit and stops at zero", () => {
+    expect(remainingMs(0, 4000)).toBeNull();
+    expect(remainingMs(5, 1200)).toBe(3800);
+    expect(remainingMs(5, 9000)).toBe(0);
+  });
+
+  test("warns once a clock is down to its last five seconds, unless that is all it ever had", () => {
+    expect(isNearlyOut(null, 0)).toBe(false);
+    expect(isNearlyOut(9000, 10)).toBe(false);
+    expect(isNearlyOut(4000, 10)).toBe(true);
+    expect(isNearlyOut(0, 10)).toBe(false);
+    expect(isNearlyOut(4000, 5)).toBe(false);
+  });
+
+  test("marks a time off the preset row as custom, and off as not custom", () => {
+    expect(isCustomTime(10, PER_QUESTION_SECONDS)).toBe(false);
+    expect(isCustomTime(7, PER_QUESTION_SECONDS)).toBe(true);
+    expect(isCustomTime(0, TOTAL_SECONDS)).toBe(false);
   });
 
   test("replaces anything stored that is not a setting this app knows", () => {

@@ -97,6 +97,11 @@ export function missesBySetAndWord(
   words: readonly Word[]
 ): MissSection[] {
   const byId = wordMap(words);
+  const spellings = new Map<string, number>();
+  for (const word of words) spellings.set(word.written, (spellings.get(word.written) ?? 0) + 1);
+  // 一日 is both いちにち and ついたち, so a shared spelling carries its reading.
+  const labelOf = (word: Word) =>
+    (spellings.get(word.written) ?? 0) > 1 ? `${word.written} (${word.reading})` : word.written;
   const bySet = new Map<SetId, Map<string, number>>();
   for (const report of reports) {
     for (const answer of report.answers) {
@@ -112,7 +117,10 @@ export function missesBySetAndWord(
     const tally = bySet.get(set);
     if (tally === undefined) return [];
     const tiles = [...tally.entries()]
-      .map(([wordId, count]) => ({ key: wordId, label: byId.get(wordId)?.written ?? wordId, count }))
+      .map(([wordId, count]) => {
+        const word = byId.get(wordId);
+        return { key: wordId, label: word === undefined ? wordId : labelOf(word), count };
+      })
       .sort((a, b) => b.count - a.count);
     return [{ key: set, label: set, total: tiles.reduce((sum, tile) => sum + tile.count, 0), tiles }];
   });
@@ -201,7 +209,7 @@ if (import.meta.vitest) {
   }
 
   function answer(wordId: string, correct: boolean, given: string, elapsedMs = 1000): Answer {
-    return { wordId, correct, elapsedMs, given };
+    return { wordId, correct, elapsedMs, given, timedOut: false };
   }
 
   function report(
@@ -298,6 +306,16 @@ if (import.meta.vitest) {
       expect(numbers?.total).toBe(2);
       expect(numbers?.tiles).toEqual([{ key: "一", label: "一", count: 2 }]);
       expect(places?.tiles).toEqual([{ key: "学校", label: "学校", count: 1 }]);
+    });
+
+    test("names the reading when two words share one spelling", () => {
+      const oneDay = { ...word("一日|いちにち", ["一", "日"]), written: "一日", reading: "いちにち" };
+      const first = { ...word("一日|ついたち", ["一", "日"]), written: "一日", reading: "ついたち" };
+      const reports = [
+        report("2026-09-19T10:00:00.000Z", "kanji-kana", [answer(first.id, false, "いちにち")])
+      ];
+      const [section] = missesBySetAndWord(reports, [oneDay, first, one]);
+      expect(section.tiles).toEqual([{ key: first.id, label: "一日 (ついたち)", count: 1 }]);
     });
 
     test("keeps two different words with the same kanji apart", () => {

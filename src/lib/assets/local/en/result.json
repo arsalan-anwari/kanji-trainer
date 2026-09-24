@@ -3,10 +3,14 @@
   "score": "Score",
   "accuracy": "Accuracy",
   "asked": "Questions",
+  "average": "Average per question",
+  "timedOut": "Out of time",
+  "secondsShort": "{count}s",
   "missed": {
     "title": "Words to look at again",
     "none": "Every word was right.",
-    "count": "{count} words"
+    "count": "{count} words",
+    "timedOut": "Out of time"
   },
   "again": "Set up another run",
   "report": "See past runs",

@@ -178,5 +178,6 @@
     "incomplete": "That .kj-report file is incomplete.",
     "damaged": "That .kj-report file is damaged.",
     "badRun": "That .kj-report file holds a run that cannot be read."
-  }
+  },
+  "off": "Off"
 }

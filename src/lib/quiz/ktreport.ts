@@ -130,8 +130,8 @@ if (import.meta.vitest) {
       durationMs: 42_000,
       settings: { ...DEFAULT_SETTINGS, sets: ["numbers"] },
       answers: [
-        { wordId: "一|いち", correct: true, elapsedMs: 900, given: "いち" },
-        { wordId: "二|に", correct: false, elapsedMs: 5000, given: "ふた" }
+        { wordId: "一|いち", correct: true, elapsedMs: 900, given: "いち", timedOut: false },
+        { wordId: "二|に", correct: false, elapsedMs: 5000, given: "ふた", timedOut: false }
       ],
       packs: ["n5-base"]
     };

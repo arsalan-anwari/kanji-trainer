@@ -178,7 +178,7 @@ def main():
 
     if args.dry_run:
         for pack, category, w, text, path in todo:
-            print(f"{pack}/{category}/{w['file']}\n  {text}\n")
+            print(f"{path}\n  {text}\n")
         return
     if not todo:
         print("nothing to do")
@@ -192,7 +192,7 @@ def main():
     for i, (pack, category, w, text, path) in enumerate(todo, 1):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(generate(text, session))
-        print(f"[{i}/{len(todo)}] {pack}/{category}/{w['file']}")
+        print(f"[{i}/{len(todo)}] {path}")
 
 
 def check():
@@ -214,7 +214,7 @@ def check():
             assert style_data["style"] and style_data["style_text"]
             skip = skiplist(pack, category)
             assert skip <= {w["file"] for w in rows}, sorted(skip - {w["file"] for w in rows})
-    assert total == 184, total
+    assert total == 197, total
     print(f"ok, {total} words parsed across {len(packs())} pack(s)")
 
 

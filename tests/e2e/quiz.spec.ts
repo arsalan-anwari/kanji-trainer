@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { wasWrong } from "./run";
 
 async function tabTo(page: Page, selector: string): Promise<void> {
   for (let press = 0; press < 40; press += 1) {
@@ -29,6 +30,7 @@ test("answers every question with the keyboard alone", async ({ page }) => {
 
     await tabTo(page, "[role='group'][aria-label='Answers'] button");
     await page.keyboard.press("Enter");
+    if (!(await wasWrong(page, question, 10))) continue;
 
     const next = question === 10 ? "See the score" : "Continue";
     await tabTo(page, `button:text-is("${next}")`);
@@ -45,7 +47,9 @@ test("keeps the answer hidden until one is given", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Continue" })).toHaveCount(0);
 
   await page.getByRole("group", { name: "Answers" }).getByRole("button").first().click();
-  await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
+  if (await wasWrong(page, 1, 10)) {
+    await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
+  }
 });
 
 test("takes a typed reading and offers typing only where an answer can be typed", async ({
@@ -97,7 +101,9 @@ test("asks a kanji in Japanese and answers it in English", async ({ page }) => {
 
   await tabTo(page, "[role='group'][aria-label='Answers'] button");
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
+  if (await wasWrong(page, 1, 10)) {
+    await expect(page.getByRole("button", { name: "Continue" })).toBeVisible();
+  }
 });
 
 test("asks a meaning in English and answers it in Japanese", async ({ page }) => {

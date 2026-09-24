@@ -45,7 +45,7 @@ def main():
 
     if args.dry_run:
         for pack, theme, png in todo:
-            print(f"{pack}/{theme}: {png.name} -> {png.with_suffix('.webp').name}")
+            print(f"{png} -> {png.with_suffix('.webp')}")
         return
     if not todo:
         print("nothing to do")
@@ -57,7 +57,7 @@ def main():
         before += png.stat().st_size
         convert(png, webp)
         after += webp.stat().st_size
-        print(f"[{i}/{len(todo)}] {pack}/{theme}/{webp.name}")
+        print(f"[{i}/{len(todo)}] {webp}")
     print(f"{before / 1e6:.1f} MB of png -> {after / 1e6:.1f} MB of webp")
 
 

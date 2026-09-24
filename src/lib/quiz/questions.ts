@@ -21,6 +21,7 @@ export type Answer = {
   correct: boolean;
   elapsedMs: number;
   given: string;
+  timedOut: boolean;
 };
 
 function surfaceOf(word: Word, surface: Surface): string {
@@ -100,6 +101,15 @@ export function soundsAlike(target: Word, candidate: Word): boolean {
   return target.readings.some((reading) => candidate.readings.includes(reading));
 }
 
+/**
+ * Whether the prompt alone cannot tell the two words apart: 一日 shown on its
+ * own is いちにち and ついたち alike, and はし heard is 橋 and 箸 alike.
+ */
+export function sharesPrompt(target: Word, candidate: Word, format: Format): boolean {
+  const heard = promptSurface(format) === "reading" || promptSurface(format) === "audio";
+  return (heard && soundsAlike(target, candidate)) || promptOf(target, format) === promptOf(candidate, format);
+}
+
 function byScore(
   target: Word,
   candidates: readonly Word[],
@@ -171,7 +181,9 @@ function buildChoices(
 
   const listening = usesAudio(format);
   const fair = (candidates: readonly Word[]) =>
-    listening ? candidates.filter((candidate) => !soundsAlike(target, candidate)) : candidates;
+    candidates.filter(
+      (candidate) => !sharesPrompt(target, candidate, format) && !(listening && soundsAlike(target, candidate))
+    );
   const drawn = fair(pool);
   const spare = fair(reserve);
 
@@ -227,7 +239,13 @@ export function buildQuestions(
       wordId: target.id,
       prompt: promptOf(target, settings.format),
       answer: answerOf(target, settings.format),
-      accepted: acceptedOf(target, settings.format),
+      accepted: [
+        ...new Set(
+          [target, ...words.filter((word) => sharesPrompt(target, word, settings.format))].flatMap((word) =>
+            acceptedOf(word, settings.format)
+          )
+        )
+      ],
       choices:
         settings.answerStyle === "choice"
           ? buildChoices(
@@ -543,6 +561,44 @@ test("asks the written form and answers the reading on kanji to kana", () => {
 
     test("fills one slot on advanced and none on beginner", () => {
       expect(DIFFICULTIES.map(similarCount)).toEqual([0, 1, 3]);
+    });
+  });
+
+  describe("two words behind one prompt", () => {
+    const day = (reading: string, meaning: string) =>
+      word("一日", "calendar", { id: `一日|${reading}`, reading, readings: [reading], meaning });
+    const oneDay = day("いちにち", "one day");
+    const first = day("ついたち", "1st of the month");
+    const others = ["二日", "三日", "四日", "五日"].map((id) => word(id, "calendar"));
+    const words = [oneDay, first, ...others];
+    const settings = {
+      ...DEFAULT_SETTINGS,
+      sets: ["calendar" as const],
+      questionCount: 1,
+      excludedWords: [first.id, ...others.map((entry) => entry.id)]
+    };
+
+    test("never offers the other word as a wrong choice, so only one choice is right", () => {
+      for (const format of ["kanji-kana", "kanji-meaning", "kanji-audio"] as const) {
+        for (let seed = 0; seed < 20; seed += 1) {
+          const [question] = buildQuestions({ ...settings, format }, words, seeded(seed));
+          expect(question.choices).not.toContain(answerOf(first, format));
+        }
+      }
+    });
+
+    test("accepts either word when typed, since the prompt cannot say which was meant", () => {
+      const typing = { ...settings, answerStyle: "typing" as const };
+      const [reading] = buildQuestions({ ...typing, format: "kanji-kana" }, words, seeded(1));
+      expect(checkTyped(reading, "ついたち", "kanji-kana")).toBe(true);
+      const [meaning] = buildQuestions({ ...typing, format: "kanji-meaning" }, words, seeded(1));
+      expect(meaning.accepted).toEqual(["one day", "1st of the month"]);
+    });
+
+    test("keeps the two apart where the prompt differs", () => {
+      const typing = { ...settings, answerStyle: "typing" as const };
+      const [question] = buildQuestions({ ...typing, format: "meaning-kana" }, words, seeded(1));
+      expect(question.accepted).toEqual(["いちにち"]);
     });
   });
 

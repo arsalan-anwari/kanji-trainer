@@ -10,7 +10,7 @@
   cancelLabel={t("quiz.quitCancel")}
   closeLabel={t("common.close")}
   onconfirm={() => app.quit()}
-  oncancel={() => (app.confirmQuit = false)}
+  oncancel={() => app.cancelQuit()}
 >
   {t("quiz.quitBody")}
 </ConfirmDialog>

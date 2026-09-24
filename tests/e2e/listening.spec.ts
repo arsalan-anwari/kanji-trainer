@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { moveOn } from "./run";
 
 async function startListeningRun(page: Page, direction: string): Promise<string[]> {
   const clips: string[] = [];
@@ -27,7 +28,7 @@ test("plays each heard word as it appears and finishes a run", async ({ page }) 
   for (let question = 1; question <= 10; question += 1) {
     await expect(page.getByText(`${question} / 10`)).toBeVisible();
     await page.getByRole("group", { name: "Answers" }).getByRole("button").first().click();
-    await page.getByRole("button", { name: question === 10 ? "See the score" : "Continue" }).click();
+    await moveOn(page, question, 10);
   }
   await expect(page.getByText("Run finished")).toBeVisible();
 });
@@ -51,7 +52,7 @@ test("picks a recording by tapping it, then checking", async ({ page }) => {
     await first.click();
     await expect(first).toHaveAttribute("aria-pressed", "true");
     await check.click();
-    await page.getByRole("button", { name: question === 10 ? "See the score" : "Continue" }).click();
+    await moveOn(page, question, 10);
   }
   await expect(page.getByText("Run finished")).toBeVisible();
 });

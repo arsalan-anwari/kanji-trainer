@@ -17,7 +17,10 @@ export type Summary = {
   total: number;
   score: number;
   accuracy: number;
+  averageMs: number;
+  timedOut: number;
   missedWordIds: string[];
+  timedOutWordIds: string[];
 };
 
 export function newReportId(): string {
@@ -34,11 +37,16 @@ export function summarize(report: Report): Summary {
     if (answer.correct || missed.includes(answer.wordId)) continue;
     missed.push(answer.wordId);
   }
+  const timedOut = report.answers.filter((answer) => answer.timedOut);
+  const totalMs = report.answers.reduce((sum, answer) => sum + answer.elapsedMs, 0);
   return {
     total,
     score,
     accuracy: total === 0 ? 0 : score / total,
-    missedWordIds: missed
+    averageMs: total === 0 ? 0 : Math.round(totalMs / total),
+    timedOut: timedOut.length,
+    missedWordIds: missed,
+    timedOutWordIds: [...new Set(timedOut.map((answer) => answer.wordId))]
   };
 }
 
@@ -67,7 +75,7 @@ function parseAnswer(value: unknown): Answer | null {
   if (typeof wordId !== "string" || wordId === "") return null;
   if (typeof correct !== "boolean" || typeof elapsedMs !== "number") return null;
   if (typeof given !== "string") return null;
-  return { wordId, correct, elapsedMs, given };
+  return { wordId, correct, elapsedMs, given, timedOut: value.timedOut === true };
 }
 
 export function parseReport(value: unknown): Report | null {
@@ -104,10 +112,10 @@ if (import.meta.vitest) {
     durationMs: 60_000,
     settings: { ...DEFAULT_SETTINGS, sets: ["numbers"] },
     answers: [
-      { wordId: "一|いち", correct: true, elapsedMs: 900, given: "いち" },
-      { wordId: "二|に", correct: false, elapsedMs: 1200, given: "ふた" },
-      { wordId: "二|に", correct: false, elapsedMs: 800, given: "じ" },
-      { wordId: "三|さん", correct: true, elapsedMs: 700, given: "さん" }
+      { wordId: "一|いち", correct: true, elapsedMs: 900, given: "いち", timedOut: false },
+      { wordId: "二|に", correct: false, elapsedMs: 1200, given: "ふた", timedOut: false },
+      { wordId: "二|に", correct: false, elapsedMs: 800, given: "じ", timedOut: false },
+      { wordId: "三|さん", correct: true, elapsedMs: 700, given: "さん", timedOut: false }
     ],
     packs: ["n5-base"]
   };
@@ -126,12 +134,45 @@ if (import.meta.vitest) {
 
     test("gives an accuracy of zero for a run with no answers", () => {
       expect(summarize({ ...report, answers: [] }).accuracy).toBe(0);
+      expect(summarize({ ...report, answers: [] }).averageMs).toBe(0);
+    });
+
+    test("averages the time per answer and counts the ones that ran out of time", () => {
+      const timed = {
+        ...report,
+        answers: [
+          ...report.answers,
+          { wordId: "四|よん", correct: false, elapsedMs: 5000, given: "", timedOut: true },
+          { wordId: "四|よん", correct: false, elapsedMs: 5000, given: "", timedOut: true }
+        ]
+      };
+      const summary = summarize(timed);
+      expect(summary.averageMs).toBe(Math.round((900 + 1200 + 800 + 700 + 10_000) / 6));
+      expect(summary.timedOut).toBe(2);
+      expect(summary.timedOutWordIds).toEqual(["四|よん"]);
+      expect(summary.missedWordIds).toEqual(["二|に", "四|よん"]);
     });
   });
 
   describe("reading a stored run back", () => {
     test("accepts a run this app wrote", () => {
       expect(parseReport(JSON.parse(JSON.stringify(report)))).toEqual(report);
+    });
+
+    test("reads a run saved before timing existed as untimed", () => {
+      const legacy = JSON.parse(JSON.stringify(report));
+      for (const answer of legacy.answers) delete answer.timedOut;
+      delete legacy.settings.perQuestionSeconds;
+      delete legacy.settings.totalSeconds;
+      expect(parseReport(legacy)).toEqual(report);
+    });
+
+    test("keeps which answers ran out of time", () => {
+      const timed = {
+        ...report,
+        answers: [{ wordId: "四|よん", correct: false, elapsedMs: 5000, given: "", timedOut: true }]
+      };
+      expect(parseReport(JSON.parse(JSON.stringify(timed)))?.answers[0]?.timedOut).toBe(true);
     });
 
     test("keeps the difficulty the run was set to", () => {

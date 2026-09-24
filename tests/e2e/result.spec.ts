@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { moveOn } from "./run";
 
 async function runThrough(page: Page, questions: number): Promise<void> {
   await page.goto("/");
@@ -11,9 +12,7 @@ async function runThrough(page: Page, questions: number): Promise<void> {
 
   for (let question = 1; question <= questions; question += 1) {
     await page.getByRole("group", { name: "Answers" }).getByRole("button").first().click();
-    await page
-      .getByRole("button", { name: question === questions ? "See the score" : "Continue" })
-      .click();
+    await moveOn(page, question, questions);
   }
 }
 

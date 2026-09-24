@@ -555,13 +555,13 @@ if (import.meta.vitest) {
     const sizes = countBySet(words);
 
     test("parses every row against the committed kanji list", () => {
-      expect(words.length).toBe(184);
+      expect(words.length).toBe(197);
     });
 
     test("holds the set sizes the curator last agreed to", () => {
       expect(sizes).toEqual({
         numbers: 23,
-        calendar: 42,
+        calendar: 55,
         time: 12,
         people: 19,
         position: 14,

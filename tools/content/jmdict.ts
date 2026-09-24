@@ -6,6 +6,7 @@ export type JmdictKanji = {
 export type JmdictKana = {
   text: string;
   tags: string[];
+  common: boolean;
   appliesToKanji: string[];
 };
 
@@ -61,6 +62,7 @@ function parseEntry(value: unknown): JmdictEntry | null {
     kana: kana.filter(isRecord).map((form) => ({
       text: typeof form.text === "string" ? form.text : "",
       tags: strings(form.tags),
+      common: form.common === true,
       appliesToKanji: strings(form.appliesToKanji)
     })),
     sense: sense.filter(isRecord).map((meaning) => ({
@@ -173,7 +175,9 @@ export function isMatch(result: Match | Rejection): result is Match {
 /**
  * Every reading of the written form a typed answer may give, the curated one
  * first. One word often has more than one live reading (七 なな and しち), and
- * the prompt cannot say which was wanted without giving it away.
+ * the prompt cannot say which was wanted without giving it away. Only readings
+ * JMdict marks common count: 九 also lists ここの, この and ここ, which are the
+ * bound stems of 九つ and 九日, not answers to 九 on its own.
  */
 export function acceptedReadings(
   entry: JmdictEntry,
@@ -184,6 +188,7 @@ export function acceptedReadings(
   for (const form of entry.kana) {
     if (readings.includes(form.text)) continue;
     if (!appliesTo(form.appliesToKanji, written)) continue;
+    if (!form.common) continue;
     if (form.tags.some((tag) => EXCLUDED_KANA_TAGS.includes(tag))) continue;
     if (!HIRAGANA.test(form.text)) continue;
     readings.push(form.text);
@@ -201,7 +206,7 @@ if (import.meta.vitest) {
   ): unknown => ({
     id: "1",
     kanji: kanji.map(([text, tags]) => ({ text, tags })),
-    kana: kana.map(([text, tags]) => ({ text, tags, appliesToKanji: ["*"] })),
+    kana: kana.map(([text, tags]) => ({ text, tags, common: true, appliesToKanji: ["*"] })),
     sense: senses.map((meaning) => ({
       misc: meaning.misc ?? [],
       appliesToKanji: ["*"],
@@ -324,6 +329,14 @@ if (import.meta.vitest) {
       expect(readingsOf("二十", "にじゅう", ["にじゅう", []], ["はた", ["ok"]])).toEqual([
         "にじゅう"
       ]);
+    });
+
+    test("leaves out a reading JMdict does not mark common", () => {
+      const nine = entry([["九", []]], [["きゅう", []], ["く", []], ["ここ", []]], [{ gloss: ["nine"] }]);
+      (nine as { kana: { common: boolean }[] }).kana[2].common = false;
+      const result = lookupWord(fixture(nine), "九", "きゅう");
+      if (!isMatch(result)) throw new Error(result.detail);
+      expect(acceptedReadings(result.entry, "九", "きゅう")).toEqual(["きゅう", "く"]);
     });
 
     test("leaves out a katakana form, which is not an answer to type", () => {

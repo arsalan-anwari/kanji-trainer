@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { Button, Card, EmptyState, Glyph, Icon, ResultSplash, Stat } from "kaizen-ui";
+  import { Badge, Button, Card, EmptyState, Glyph, Icon, ResultSplash, Stat } from "kaizen-ui";
   import { app } from "../../state.svelte";
   import { tierBlurb, tierEmoji, tierHeadline } from "../../quiz/score";
   import { n, t } from "../../i18n.svelte";
 
   const summary = $derived(app.lastSummary);
   const percent = $derived(summary === null ? 0 : Math.round(summary.accuracy * 100));
+  const timed = $derived((app.lastReport?.settings.perQuestionSeconds ?? 0) > 0);
 </script>
 
 {#if app.splash !== null}
@@ -42,6 +43,16 @@
       <Stat tone="brand" value={`${n(percent)}%`} label={t("result.accuracy")} />
       <Stat value={n(summary.total)} label={t("result.asked")} />
     </div>
+
+    <div class="grid gap-2 {timed ? 'grid-cols-2' : 'grid-cols-1'}">
+      <Stat
+        value={t("result.secondsShort", { count: n(Math.round(summary.averageMs / 100) / 10) })}
+        label={t("result.average")}
+      />
+      {#if timed}
+        <Stat value={n(summary.timedOut)} label={t("result.timedOut")} />
+      {/if}
+    </div>
   </div>
 
   <Card
@@ -58,6 +69,9 @@
             <span class="flex flex-wrap items-baseline gap-x-2">
               <Glyph text={word.written} class="text-lg font-bold" />
               <Glyph text={word.reading} class="text-sm text-muted-foreground" />
+              {#if summary.timedOutWordIds.includes(word.id)}
+                <Badge tone="danger">{t("result.missed.timedOut")}</Badge>
+              {/if}
             </span>
             <span class="text-xs leading-snug text-muted-foreground">{word.meaning}</span>
           </li>

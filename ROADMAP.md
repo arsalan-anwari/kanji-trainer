@@ -17,13 +17,14 @@
 - Icons for every category and subcategory, and expand/collapse all on the
   word lists.
 - Audio questions.
-
-## Next
-
 - Harder, exam-realistic wrong answers.
 - Downloadable content packs instead of everything bundled.
 - Timed runs.
+- Allow multiple words using the same kanji and handle this in quizes. 
+
+## Next
+
 - A kanji component-building quiz mode.
 - Full platform support + accessibility polish.
-- More JLPT levels.
+- More JLPT levels and packs.
 - Later: on-device handwriting and speech tutoring (v2.0+).
