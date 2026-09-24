@@ -287,6 +287,8 @@ if (import.meta.vitest) {
       set,
       subcategory: SUBCATEGORIES[set][0],
       level: "N5",
+      pack: "n5-base",
+      file: meaning,
       ...extra
     };
   }
@@ -435,7 +437,7 @@ test("asks the written form and answers the reading on kanji to kana", () => {
         pool,
         seeded(3)
       );
-      expect(question.prompt).toBe("/images/base/n5/light/nature/elements/water.png");
+      expect(question.prompt).toBe("/packs/n5-base/images/light/nature/elements/water.webp");
       expect(question.answer).toBe("水");
     });
 
@@ -577,7 +579,7 @@ test("asks the written form and answers the reading on kanji to kana", () => {
 
     test("asks a recording and answers the reading or the written word", () => {
       const [kana] = buildQuestions({ ...settings, format: "audio-kana" }, words, seeded(1));
-      expect(kana.prompt).toBe(`/audio/base/n5/nature/${SUBCATEGORIES.nature[0]}/persimmon.mp3`);
+      expect(kana.prompt).toBe(`/packs/n5-base/audio/nature/${SUBCATEGORIES.nature[0]}/persimmon.mp3`);
       expect(kana.answer).toBe("かき");
       const [recording] = buildQuestions({ ...settings, format: "kanji-audio" }, words, seeded(1));
       expect(recording.prompt).toBe("柿");

@@ -1,21 +1,23 @@
-"""Generate the hint images in data/images/ with the Recraft API.
+"""Generate the hint images of every pack with the Recraft API.
 
-One image per N5 word. Prompts live under tools/images/data/base/{level}/{category}/
+One image per word. Prompts live under data/overlay/packs/{pack}/prompts/{category}/
 as a words.json (the entries) plus a skiplist.txt (files already judged good,
-skipped by default) and a shared tools/images/data/base/{level}/style.json. Edit
+skipped by default) and a shared data/overlay/packs/{pack}/prompts/style.json. Edit
 those files to change what gets drawn; this script adds no wording.
 
-Images are written to data/images/base/{level}/light/{category}/{subcategory}/{file}:
+Images are written to data/packs/{pack}/images/light/{category}/{subcategory}/{file}.png:
 the light-theme picture, which is the one this API is asked to draw. The dark
-variant is a separate step, see invert.py. The subcategory is not curated here —
-it is read from the "subcategory" column of content/base/{level}/{level}-words.tsv, keyed by
-the written form, so the pictures cannot drift from the word list.
+variant is a separate step, see invert.py, and convert.py then turns both into
+the WebP the app loads. Neither the subcategory nor the file name is curated
+here — both are read from the "subcategory" and "file" columns of
+data/overlay/packs/{pack}/words.tsv, keyed by written form and reading, so the
+pictures cannot drift from the word list or from the paths the app asks for.
 
     export RECRAFT_API_KEY=...
     python3 tools/images/generate.py                              # everything, minus skiplists
-    python3 tools/images/generate.py --level=n5                   # one level, every category
-    python3 tools/images/generate.py --level=n5 --category=numbers,nature
-    python3 tools/images/generate.py --category=numbers           # error: no level given
+    python3 tools/images/generate.py --pack=n5-base               # one pack, every category
+    python3 tools/images/generate.py --pack=n5-base --category=numbers,nature
+    python3 tools/images/generate.py --category=numbers           # error: no pack given
     python3 tools/images/generate.py --all                        # ignore every skiplist
     python3 tools/images/generate.py --dry-run
 
@@ -36,47 +38,57 @@ import time
 import requests
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-# ponytail: base only; expansions (content/extra/{name}/{level}/) need a flag here
-CONTENT = ROOT / "content" / "base"
-DATA = pathlib.Path(__file__).resolve().parent / "data" / "base"
-OUT = ROOT / "data" / "images" / "base"
+OVERLAY = ROOT / "data" / "overlay" / "packs"
+OUT = ROOT / "data" / "packs"
 API = "https://external.api.recraft.ai/v1/images/generations"
 MODEL = os.environ.get("RECRAFT_MODEL", "recraftv4_1")
 SIZE = 1024  # smallest square the API offers; saved as-is, the UI scales it
 
 
-def levels():
-    return sorted(p.name for p in DATA.iterdir() if p.is_dir())
+def prompts(pack):
+    return OVERLAY / pack / "prompts"
 
 
-def categories(level):
-    level_dir = DATA / level
-    return sorted(p.name for p in level_dir.iterdir() if p.is_dir())
+def packs():
+    return sorted(p.name for p in OVERLAY.iterdir() if prompts(p.name).is_dir())
 
 
-def style(level):
-    return json.loads((DATA / level / "style.json").read_text())
+def categories(pack):
+    return sorted(p.name for p in prompts(pack).iterdir() if p.is_dir())
 
 
-def words(level, category):
-    return json.loads((DATA / level / category / "words.json").read_text())["words"]
+def style(pack):
+    return json.loads((prompts(pack) / "style.json").read_text())
 
 
-def subcategories(level):
-    """{written form: subcategory} from the curated word list, the one source."""
-    lines = (CONTENT / level / f"{level}-words.tsv").read_text().splitlines()
+def words(pack, category):
+    """The prompt entries, each given its subcategory and file from the word list."""
+    rows = curated(pack)
+    entries = json.loads((prompts(pack) / category / "words.json").read_text())["words"]
+    for w in entries:
+        key = (w["word"], w["reading"])
+        if key not in rows:
+            sys.exit(f"{pack}/{category}: {w['word']} ({w['reading']}) is not in the word list")
+        w.update(rows[key])
+    return entries
+
+
+def curated(pack):
+    """{(written, reading): {subcategory, file}} from the curated word list, the one source."""
+    lines = (OVERLAY / pack / "words.tsv").read_text().splitlines()
     header = lines[0].split("\t")
-    written, sub = header.index("written"), header.index("subcategory")
+    written, reading = header.index("written"), header.index("reading")
+    sub, file = header.index("subcategory"), header.index("file")
     rows = (line.split("\t") for line in lines[1:] if line)
-    return {row[written]: row[sub] for row in rows}
+    return {(row[written], row[reading]): {"subcategory": row[sub], "file": f"{row[file]}.png"} for row in rows}
 
 
-def png_dir(level, category, subcategory, theme="light"):
-    return OUT / level / theme / category / subcategory
+def png_dir(pack, category, subcategory, theme="light"):
+    return OUT / pack / "images" / theme / category / subcategory
 
 
-def skiplist(level, category):
-    path = DATA / level / category / "skiplist.txt"
+def skiplist(pack, category):
+    path = prompts(pack) / category / "skiplist.txt"
     if not path.exists():
         return set()
     lines = (l.split("#")[0].strip() for l in path.read_text().splitlines())
@@ -90,28 +102,36 @@ def prompt(word, style_data):
 
 
 def plan(args):
-    """Every (level, category) pair this run should touch."""
-    if args.category and not args.level:
-        sys.exit("--category needs --level: it is not clear which level's categories are meant")
+    """Every (pack, category) pair this run should touch."""
+    if args.category and not args.pack:
+        sys.exit("--category needs --pack: it is not clear which pack's categories are meant")
 
-    wanted_levels = [args.level] if args.level else levels()
-    for level in wanted_levels:
-        if not (DATA / level).is_dir():
-            sys.exit(f"no such level: {level}")
+    wanted_packs = [args.pack] if args.pack else packs()
+    for pack in wanted_packs:
+        if not prompts(pack).is_dir():
+            sys.exit(f"no such pack: {pack}")
 
     pairs = []
-    for level in wanted_levels:
-        available = categories(level)
+    for pack in wanted_packs:
+        available = categories(pack)
         if args.category:
             wanted = args.category.split(",")
             unknown = [c for c in wanted if c not in available]
             if unknown:
-                sys.exit(f"no such category in {level}: {', '.join(unknown)}")
+                sys.exit(f"no such category in {pack}: {', '.join(unknown)}")
             wanted_categories = wanted
         else:
             wanted_categories = available
-        pairs += [(level, category) for category in wanted_categories]
+        pairs += [(pack, category) for category in wanted_categories]
     return pairs
+
+
+def add_filters(ap, all_help):
+    ap.add_argument("--pack", metavar="PACK", help="only this pack, e.g. n5-base")
+    ap.add_argument("--category", metavar="CAT[,CAT...]", help="only these categories; requires --pack")
+    ap.add_argument("--all", action="store_true", help=all_help)
+    ap.add_argument("--dry-run", action="store_true", help="print what would be done, do nothing")
+    ap.add_argument("--limit", type=int, help="stop after N images")
 
 
 def generate(text, session):
@@ -140,30 +160,25 @@ def generate(text, session):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--level", metavar="LEVEL", help="only this level, e.g. n5")
-    ap.add_argument("--category", metavar="CAT[,CAT...]", help="only these categories; requires --level")
-    ap.add_argument("--all", action="store_true", help="regenerate every image, ignoring the skiplists")
-    ap.add_argument("--dry-run", action="store_true", help="print the prompts, call nothing")
-    ap.add_argument("--limit", type=int, help="stop after N images")
+    add_filters(ap, "regenerate every image, ignoring the skiplists")
     args = ap.parse_args()
 
     todo = []
-    for level, category in plan(args):
-        style_data = style(level)
-        entries = words(level, category)
-        skip = set() if args.all else skiplist(level, category)
-        subs = subcategories(level)
+    for pack, category in plan(args):
+        style_data = style(pack)
+        entries = words(pack, category)
+        skip = set() if args.all else skiplist(pack, category)
         for w in entries:
             if w["file"] in skip:
                 continue
-            out_dir = png_dir(level, category, subs[w["word"]])
-            todo.append((level, category, w, prompt(w, style_data), out_dir / w["file"]))
+            out_dir = png_dir(pack, category, w["subcategory"])
+            todo.append((pack, category, w, prompt(w, style_data), out_dir / w["file"]))
     if args.limit:
         todo = todo[: args.limit]
 
     if args.dry_run:
-        for level, category, w, text, path in todo:
-            print(f"{level}/{category}/{w['file']}\n  {text}\n")
+        for pack, category, w, text, path in todo:
+            print(f"{pack}/{category}/{w['file']}\n  {text}\n")
         return
     if not todo:
         print("nothing to do")
@@ -174,37 +189,33 @@ def main():
     session = requests.Session()
     session.headers["Authorization"] = f"Bearer {key}"
     print(f"{len(todo)} image(s), model {MODEL}, style_id {os.environ.get('RECRAFT_STYLE_ID', '(none, style line only)')}")
-    for i, (level, category, w, text, path) in enumerate(todo, 1):
+    for i, (pack, category, w, text, path) in enumerate(todo, 1):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(generate(text, session))
-        print(f"[{i}/{len(todo)}] {level}/{category}/{w['file']}")
+        print(f"[{i}/{len(todo)}] {pack}/{category}/{w['file']}")
 
 
 def check():
     total = 0
-    for level in levels():
-        subs = subcategories(level)
-        for category in categories(level):
-            style_data = style(level)
-            rows = words(level, category)
+    for pack in packs():
+        for category in categories(pack):
+            style_data = style(pack)
+            rows = words(pack, category)
             total += len(rows)
-            assert len({w["file"] for w in rows}) == len(rows), f"duplicate file name in {level}/{category}"
-            assert all(w["file"].endswith(".png") for w in rows)
-            missing = [w["word"] for w in rows if w["word"] not in subs]
-            assert not missing, f"{level}/{category}: not in the word list: {missing}"
+            assert len({w["file"] for w in rows}) == len(rows), f"duplicate file name in {pack}/{category}"
             for theme in ("light", "dark"):
                 absent = [
                     w["file"]
                     for w in rows
-                    if not (png_dir(level, category, subs[w["word"]], theme) / w["file"]).exists()
+                    if not (png_dir(pack, category, w["subcategory"], theme) / w["file"]).with_suffix(".webp").exists()
                 ]
-                assert not absent, f"{level}/{theme}/{category}: missing {absent}"
+                assert not absent, f"{pack}/{theme}/{category}: missing {absent}"
             assert all(w["prompt"] and w["word"] and w["name"] for w in rows), "empty field"
             assert style_data["style"] and style_data["style_text"]
-            skip = skiplist(level, category)
+            skip = skiplist(pack, category)
             assert skip <= {w["file"] for w in rows}, sorted(skip - {w["file"] for w in rows})
     assert total == 184, total
-    print(f"ok, {total} words parsed across {len(levels())} level(s)")
+    print(f"ok, {total} words parsed across {len(packs())} pack(s)")
 
 
 if __name__ == "__main__":

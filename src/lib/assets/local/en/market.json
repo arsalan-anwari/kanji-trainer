@@ -1,0 +1,84 @@
+{
+  "title": "Marketplace",
+  "tagline": "Add levels and themed word packs. Everything you download stays on this device and works offline.",
+  "stats": {
+    "installed": "Installed",
+    "updates": "Updates",
+    "available": "To discover"
+  },
+  "catalog": {
+    "fresh": "Catalog up to date",
+    "stale": "Offline: showing the catalog from your last connection",
+    "none": "Catalog not loaded: showing only what is installed",
+    "refresh": "Check for new packs"
+  },
+  "filter": {
+    "theme": "Theme",
+    "level": "Level",
+    "all": "All"
+  },
+  "theme": {
+    "base": "Base level",
+    "travel": "Travel",
+    "food": "Food and drink",
+    "work": "Work",
+    "school": "School",
+    "culture": "Culture",
+    "media": "Anime and manga"
+  },
+  "section": {
+    "updates": "Updates",
+    "installed": "Your packs",
+    "available": "Discover"
+  },
+  "badge": {
+    "installed": "Installed",
+    "update": "Update",
+    "new": "New",
+    "off": "Off",
+    "required": "Required"
+  },
+  "meta": {
+    "words": "{count} words",
+    "kanji": "{count} kanji",
+    "size": "{size} MB",
+    "version": "v{version}"
+  },
+  "action": {
+    "download": "Download",
+    "update": "Update",
+    "details": "Details",
+    "detailsOf": "Details of {title}",
+    "use": "Use in practice",
+    "useHint": "Its sets and words show on Practice and Chart",
+    "alwaysOn": "Always on: every run builds on it",
+    "delete": "Remove {title}",
+    "retry": "Try again"
+  },
+  "progress": "Downloading {done} of {total} MB",
+  "progressLabel": "Download of {title}",
+  "failed": "The download did not finish. Check your connection and try again.",
+  "needsNetwork": "Connect to the internet to download.",
+  "browserOnly": "Packs are installed by the app. In the browser, build data/ instead.",
+  "empty": "No pack matches these filters.",
+  "source": "Packs come from the Kanji Trainer dataset on Hugging Face.",
+  "remove": {
+    "title": "Remove {title}?",
+    "body": "Its words leave Practice and Chart. Past runs that used them are kept, but show a warning and stay out of your totals until you download it again.",
+    "confirm": "Remove",
+    "cancel": "Keep"
+  },
+  "gate": {
+    "title": "Download the basics",
+    "description": "Kanji Trainer needs its base packs before anything else. It is a one-time download; after that the app works offline.",
+    "total": "{size} MB in total",
+    "start": "Download",
+    "offline": "The pack catalog could not be loaded. Check your internet connection and try again; if it keeps failing, the catalog may not be published yet.",
+    "retry": "Try again",
+    "busy": "Downloading {title}…"
+  },
+  "description": {
+    "loading": "Loading the description…",
+    "missing": "The description could not be loaded. Connect to the internet to read it before downloading."
+  }
+}

@@ -30,6 +30,12 @@ export type Word = {
   /** What the word is about inside its set. One of SUBCATEGORIES[set]. */
   subcategory: string;
   level: string;
+  pack: string;
+  /**
+   * Name of the word's picture and clip, without extension. Curated once and
+   * never derived from `meaning`, so relabelling a word leaves its media put.
+   */
+  file: string;
 };
 
 export type Kanji = {

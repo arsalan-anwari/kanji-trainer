@@ -1,6 +1,5 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, sep } from "node:path";
-import { fileURLToPath } from "node:url";
 import { describe, expect, test } from "vitest";
 import { renderAttribution, renderLicence } from "../../tools/content/attribution.ts";
 import {
@@ -10,11 +9,13 @@ import {
   buildWords,
   clipExists,
   clueNames,
-  DATA_DIR,
-  OUTPUT_DIR,
+  DESCRIPTION_FILE,
+  loadPackInfo,
+  packOutput,
   readCached
 } from "../../tools/content/build.ts";
-import { audioUrl, imageUrl } from "../../src/lib/quiz/hints.ts";
+import { audioPath, imagePath } from "../../src/lib/packs/url.ts";
+import { parsePackMeta } from "../../src/lib/packs/catalog.ts";
 import { CACHE_DIR } from "../../tools/content/fetch.ts";
 import { indexByWrittenForm, parseJmdict } from "../../tools/content/jmdict.ts";
 import { parseKradfile } from "../../tools/content/kradfile.ts";
@@ -28,11 +29,15 @@ import {
   SET_IDS
 } from "../../tools/content/validate.ts";
 
-const WHERE = "data/content/base/n5/n5.json";
+const PACK = "n5-base";
 
-const IMAGE_DIR = fileURLToPath(new URL("../../data/images/", import.meta.url));
+const WHERE = `data/packs/${PACK}/content.json`;
 
-const AUDIO_DIR = fileURLToPath(new URL("../../data/audio/base/n5/", import.meta.url));
+const OUTPUT_DIR = packOutput(PACK);
+
+const IMAGE_DIR = join(OUTPUT_DIR, "images");
+
+const AUDIO_DIR = join(OUTPUT_DIR, "audio");
 
 const read = (name: string) => readFileSync(join(OUTPUT_DIR, name), "utf8");
 
@@ -50,19 +55,19 @@ function countFiles(dir: string, matches: (path: string) => boolean): number {
 }
 
 function loadContent() {
-  if (!existsSync(join(OUTPUT_DIR, "base/n5/n5.json"))) {
+  if (!existsSync(join(OUTPUT_DIR, "content.json"))) {
     throw new Error(
-      "data/content/ is generated and is not in git. Run \"npm run content:build\" to regenerate it, or \"scripts/sync_data.sh --download\" to fetch the published copy."
+      "data/packs/ is generated and is not in git. Run \"npm run content:build\" to regenerate it, or \"scripts/sync_data.sh --download\" to fetch the published copy."
     );
   }
-  return parseContent(JSON.parse(read("base/n5/n5.json")), WHERE);
+  return parseContent(JSON.parse(read("content.json")), WHERE);
 }
 
 const content = loadContent();
 
-const kanjiRows = loadKanjiList("n5");
+const kanjiRows = loadKanjiList(PACK);
 const levelKanji = new Set(kanjiRows.map((row) => row.character));
-const wordRows = loadWordList("n5", levelKanji);
+const wordRows = loadWordList(PACK, levelKanji);
 
 const cacheIsPopulated = existsSync(join(CACHE_DIR, "jmdict-eng-common.json"));
 
@@ -145,29 +150,34 @@ describe("the shipped N5 content", () => {
     expect(content.kanji.filter((entry) => entry.look === "")).toEqual([]);
   });
 
-  test("names a picture file for every word", () => {
-    const paths = content.words.map((word) => imageUrl(word));
+  test("names a picture file for every word, in both themes", () => {
+    const paths = content.words.map((word) => imagePath(word));
     expect(new Set(paths).size).toBe(content.words.length);
     for (const path of paths) {
-      expect(existsSync(join(IMAGE_DIR, path.replace("/images/", "")))).toBe(true);
+      expect(existsSync(join(OUTPUT_DIR, path))).toBe(true);
+      expect(existsSync(join(OUTPUT_DIR, path.replace("images/light/", "images/dark/")))).toBe(true);
     }
+  });
+
+  test("files every word under the pack it was built from", () => {
+    expect(content.words.filter((word) => word.pack !== PACK)).toEqual([]);
   });
 
   test("flags a clip on exactly the words whose file exists", () => {
     for (const word of content.words) {
-      expect([word.id, existsSync(join(DATA_DIR, audioUrl(word)))]).toEqual([word.id, word.hasAudio]);
+      expect([word.id, existsSync(join(OUTPUT_DIR, audioPath(word)))]).toEqual([word.id, word.hasAudio]);
     }
   });
 
   test("records where every clip came from, and a gap only where no source had one", () => {
-    const rows = readFileSync(join(AUDIO_DIR, "sources.tsv"), "utf8")
+    const rows = readFileSync(join(OUTPUT_DIR, "sources.tsv"), "utf8")
       .trimEnd()
       .split("\n")
       .slice(1)
       .map((line) => line.split("\t"));
     const bySource = new Map(rows.map(([path, source]) => [path, source]));
     for (const word of content.words) {
-      const source = bySource.get(audioUrl(word).replace("/audio/base/n5/", ""));
+      const source = bySource.get(audioPath(word).replace("audio/", ""));
       expect([word.id, source === "none"]).toEqual([word.id, !word.hasAudio]);
     }
   });
@@ -182,16 +192,37 @@ describe("the shipped N5 content", () => {
     expect(size(AUDIO_DIR)).toBeLessThan(5 * 1024 * 1024);
   });
 
-  test("writes only its own folder, so a rebuild leaves the pictures alone", () => {
-    expect(OUTPUT_DIR.endsWith("/data/content/")).toBe(true);
-    expect(IMAGE_DIR.startsWith(OUTPUT_DIR)).toBe(false);
-    expect(readdirSync(OUTPUT_DIR).sort()).toEqual(["ATTRIBUTION.md", "LICENSE", "base"]);
-    const isLightPng = (path: string) => path.includes(`${sep}light${sep}`) && path.endsWith(".png");
-    expect(countFiles(IMAGE_DIR, isLightPng)).toBe(content.words.length);
+  test("ships one light WebP per word and no leftover png", () => {
+    const isLightWebp = (path: string) => path.includes(`${sep}light${sep}`) && path.endsWith(".webp");
+    expect(countFiles(IMAGE_DIR, isLightWebp)).toBe(content.words.length);
+    expect(countFiles(IMAGE_DIR, (path) => path.endsWith(".png"))).toBe(0);
+  });
+
+  test("keeps the whole pack small enough for a first-start download on mobile", () => {
+    const pictures = countFiles(IMAGE_DIR, () => true);
+    expect(pictures).toBe(content.words.length * 2);
+    const size = (dir: string): number =>
+      readdirSync(dir, { withFileTypes: true }).reduce(
+        (total, entry) =>
+          total + (entry.isDirectory() ? size(join(dir, entry.name)) : statSync(join(dir, entry.name)).size),
+        0
+      );
+    expect(size(OUTPUT_DIR)).toBeLessThan(20 * 1024 * 1024);
+  });
+
+  test("describes itself with the counts its content holds", () => {
+    const meta = parsePackMeta(JSON.parse(read("pack.json")));
+    expect(meta).toEqual({
+      ...loadPackInfo(PACK),
+      words: content.words.length,
+      kanji: content.kanji.length,
+      description: DESCRIPTION_FILE
+    });
+    expect(read(DESCRIPTION_FILE)).toContain("# JLPT N5");
   });
 
   test("stays small enough to parse instantly on WebKitGTK and low-end Android", () => {
-    expect(Buffer.byteLength(read("base/n5/n5.json"))).toBeLessThan(200 * 1024);
+    expect(Buffer.byteLength(read("content.json"))).toBeLessThan(200 * 1024);
   });
 });
 
@@ -230,7 +261,7 @@ describe.skipIf(!cacheIsPopulated)("rebuilding from the pinned sources", () => {
       "N5",
       loadManifest().sources,
       buildKanji(kanjiRows, kradfile, kanjidic),
-      buildWords(wordRows, index, levelKanji, kanjidic, clipExists),
+      buildWords(PACK, wordRows, index, levelKanji, kanjidic, clipExists),
       buildTaughtComponents(
         loadComponentList(),
         kradfile,
@@ -238,6 +269,6 @@ describe.skipIf(!cacheIsPopulated)("rebuilding from the pinned sources", () => {
       ),
       content.generated
     );
-    expect(`${JSON.stringify(rebuilt, null, 2)}\n`).toBe(read("base/n5/n5.json"));
+    expect(`${JSON.stringify(rebuilt, null, 2)}\n`).toBe(read("content.json"));
   });
 });

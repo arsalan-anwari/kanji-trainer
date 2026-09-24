@@ -7,17 +7,22 @@ DATA="$ROOT/data"
 
 usage() {
   cat <<'USAGE'
-Usage: scripts/sync_data.sh --upload | --download
+Usage: scripts/sync_data.sh --upload | --download [--force]
 
-  --upload     Publish data/ to the Hugging Face dataset, replacing what is
-               there. data/README.md becomes the dataset card. Files under a
-               subdirectory of the dataset that no longer exist locally are
-               removed; .gitattributes at the dataset root is left alone.
+  --upload     Archive every built pack into data/archives/{id}.tar, write
+               data/catalog.json, then publish all of data/, the curated
+               data/overlay/ included, to the Hugging Face dataset, replacing
+               what is there. data/README.md becomes the dataset card. Files
+               under a subdirectory of the dataset that no longer exist locally
+               are removed; .gitattributes at the dataset root is left alone.
 
-  --download   Fetch the dataset into data/, skipping .gitattributes.
+  --download   Fetch the dataset into data/, skipping .gitattributes. An
+               existing data/overlay/ is left alone, since it may hold edits
+               not uploaded yet; add --force to replace it with the published
+               copy.
 
-data/ is generated and is not in git. Regenerate it locally with
-"npm run content:build", or fetch the published copy with --download.
+data/ is not in git; the dataset is its only home. After a clone, run
+--download before anything else.
 
 Authentication comes from "hf auth login" or the HF_TOKEN environment variable.
 USAGE
@@ -40,6 +45,7 @@ upload() {
     echo "sync_data: $DATA does not exist. Run 'npm run content:build' first." >&2
     exit 1
   fi
+  node "$ROOT/tools/content/catalog.ts"
   hf upload "$REPO" "$DATA" . \
     --type dataset \
     --delete "*/**" \
@@ -48,11 +54,17 @@ upload() {
 }
 
 download() {
+  local skip=()
+  if [ -d "$DATA/overlay" ] && [ "${1:-}" != "--force" ]; then
+    echo "sync_data: keeping the local data/overlay/; pass --force to replace it." >&2
+    skip=(--exclude "overlay/**")
+  fi
   mkdir -p "$DATA"
   hf download "$REPO" \
     --type dataset \
     --local-dir "$DATA" \
-    --exclude ".gitattributes"
+    --exclude ".gitattributes" \
+    "${skip[@]}"
   rm -rf "$DATA/.cache"
 }
 
@@ -60,7 +72,7 @@ require_hf
 
 case "${1:-}" in
   --upload) upload ;;
-  --download) download ;;
+  --download) download "${2:-}" ;;
   -h | --help) usage ;;
   *)
     usage >&2

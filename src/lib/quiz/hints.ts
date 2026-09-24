@@ -1,4 +1,5 @@
 import type { Kanji, Word } from "../content/types";
+import { audioPath, imagePath, packUrl } from "../packs/url";
 import { toRomajiHint } from "./romaji.ts";
 import type { Difficulty, Format } from "./settings";
 
@@ -30,26 +31,17 @@ export function lookIndex(kanji: readonly Kanji[]): LookIndex {
   return new Map(kanji.map((entry) => [entry.character, entry.look]));
 }
 
-export function imageSlug(meaning: string): string {
-  return meaning
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
 export function imageUrl(word: Word): string {
-  const { level, set, subcategory, meaning } = word;
-  return `/images/base/${level.toLowerCase()}/light/${set}/${subcategory}/${imageSlug(meaning)}.png`;
+  return packUrl(word.pack, imagePath(word));
 }
 
 export function audioUrl(word: Word): string {
-  const { level, set, subcategory, meaning } = word;
-  return `/audio/base/${level.toLowerCase()}/${set}/${subcategory}/${imageSlug(meaning)}.mp3`;
+  return packUrl(word.pack, audioPath(word));
 }
 
 /** Swaps a light image url for its pre-rendered dark counterpart. */
 export function darkImageUrl(url: string): string {
-  return url.replace("/light/", "/dark/");
+  return url.replace("/images/light/", "/images/dark/");
 }
 
 function looksOf(word: Word, looks: LookIndex): string {
@@ -99,7 +91,9 @@ if (import.meta.vitest) {
     hasAudio: true,
     set: "places",
     subcategory: "buildings",
-    level: "N5"
+    level: "N5",
+    pack: "n5-base",
+    file: "school"
   };
 
   const looks = new Map([
@@ -184,23 +178,29 @@ if (import.meta.vitest) {
     test("points at the picture the word's meaning names", () => {
       expect(hintFor(word, "kana-kanji", "advanced", looks)).toEqual({
         kind: "image",
-        text: "/images/base/n5/light/places/buildings/school.png"
+        text: "/packs/n5-base/images/light/places/buildings/school.webp"
       });
     });
 
-    test("slugs a meaning the way the picture files are named", () => {
-      expect(imageSlug("10,000")).toBe("10-000");
-      expect(imageSlug("20 years old")).toBe("20-years-old");
-      expect(imageSlug("once more")).toBe("once-more");
+    test("names a clip after the same file as the picture", () => {
+      expect(audioUrl(word)).toBe("/packs/n5-base/audio/places/buildings/school.mp3");
     });
 
-    test("names a clip after the same slug as the picture", () => {
-      expect(audioUrl(word)).toBe("/audio/base/n5/places/buildings/school.mp3");
+    test("keeps a word's media put when its label changes", () => {
+      expect(imageUrl({ ...word, meaning: "place of learning" })).toBe(
+        "/packs/n5-base/images/light/places/buildings/school.webp"
+      );
+    });
+
+    test("files a word's media under the pack it came from", () => {
+      expect(audioUrl({ ...word, pack: "n5-travel" })).toBe(
+        "/packs/n5-travel/audio/places/buildings/school.mp3"
+      );
     });
 
     test("swaps the light image url for its dark counterpart", () => {
-      expect(darkImageUrl("/images/base/n5/light/places/buildings/school.png")).toBe(
-        "/images/base/n5/dark/places/buildings/school.png"
+      expect(darkImageUrl("/packs/n5-base/images/light/places/buildings/school.webp")).toBe(
+        "/packs/n5-base/images/dark/places/buildings/school.webp"
       );
     });
 

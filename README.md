@@ -28,8 +28,8 @@ Typing a kanji answer needs a Japanese input method (IME) enabled on your device
 ```sh
 git submodule update --init   # vendor/kaizen-ui
 npm ci
-npm run content:build         # generate data/content and data/images (needed before the app runs)
-npm run audio:fetch           # generate data/audio from data/content (needs ffmpeg)
+npm run content:build         # build data/packs from data/overlay (needed before the app runs)
+npm run audio:fetch           # fetch a pack's clips into data/packs (needs ffmpeg)
 npm run tauri:dev             # app against the vite dev server
 npm run tauri:build           # release binary for this platform
 npm run dev                   # vite only, browser mode
@@ -40,17 +40,16 @@ npm test                      # vitest
 
 ## Getting `data/`
 
-`data/` holds the generated content, pictures, audio and flashcard PDFs the app
-loads at runtime. It is not in git. After a clone download it:
-
+`data/` is not in git. Its only home is the Hugging Face dataset: 
 ```sh
-scripts/sync_data.sh --download  # download it from Hugging Face
+scripts/sync_data.sh --download  # everything, data/overlay/ included
 ```
+
 
 The download comes from
 [arsalan-anwari/kanji-data](https://huggingface.co/datasets/arsalan-anwari/kanji-data).
 
-See [content/README.md](content/README.md) for the curated inputs and how to
+See [data/overlay/README.md](data/overlay/README.md) for the curated inputs and how to
 update the upstream data.
 
 ## Licence

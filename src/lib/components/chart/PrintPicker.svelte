@@ -19,7 +19,7 @@
 
   function start(): void {
     asking = false;
-    void printJob.start(app.printWords, app.content?.kanji ?? [], size);
+    void printJob.start(app.printWords, app.kanji, size);
     app.go("chart");
   }
 </script>

@@ -59,6 +59,7 @@ type Flags = { on: HTMLImageElement | null; kun: HTMLImageElement | null };
 function loadImage(url: string): Promise<HTMLImageElement | null> {
   return new Promise((resolve) => {
     const image = new Image();
+    image.crossOrigin = "anonymous";
     image.onload = () => resolve(image);
     image.onerror = () => resolve(null);
     image.src = url;

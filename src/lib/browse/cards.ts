@@ -122,6 +122,8 @@ if (import.meta.vitest) {
       set,
       subcategory,
       level: "N5",
+      pack: "n5-base",
+      file: id,
       ...extra
     };
   }

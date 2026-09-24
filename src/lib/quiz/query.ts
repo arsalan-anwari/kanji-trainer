@@ -124,7 +124,8 @@ if (import.meta.vitest) {
       createdAt,
       durationMs: 1000,
       settings: { ...DEFAULT_SETTINGS, sets: ["numbers"], ...settings },
-      answers: []
+      answers: [],
+      packs: ["n5-base"]
     };
   }
 

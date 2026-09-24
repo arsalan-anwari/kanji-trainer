@@ -59,7 +59,7 @@ export function deletePreset(name: string): Preset[] {
   return kept;
 }
 
-function inTauri(): boolean {
+export function inTauri(): boolean {
   return typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 }
 
@@ -238,7 +238,8 @@ if (import.meta.vitest) {
       createdAt,
       durationMs: 1000,
       settings: { ...DEFAULT_SETTINGS, sets: ["numbers"] },
-      answers: [{ wordId: "一|いち", correct: true, elapsedMs: 900, given: "いち" }]
+      answers: [{ wordId: "一|いち", correct: true, elapsedMs: 900, given: "いち" }],
+      packs: ["n5-base"]
     };
   }
 

@@ -44,7 +44,7 @@ test("fetches no clip until a play button is pressed, and playing never flips", 
 
   await card.getByRole("button", { name: "Play 学校" }).click();
   await expect.poll(() => clips.length).toBe(1);
-  expect(clips[0]).toContain("/audio/base/n5/places/buildings/school.mp3");
+  expect(clips[0]).toContain("/packs/n5-base/audio/places/buildings/school.mp3");
   await expect(flip).toHaveAttribute("aria-pressed", "false");
 });
 

@@ -18,7 +18,9 @@
   "nav": {
     "setup": "Practice",
     "chart": "Chart",
-    "reports": "Report"
+    "reports": "Report",
+    "market": "Marketplace",
+    "marketUpdates": "Marketplace ({count})"
   },
   "content": {
     "loading": "Loading the word list…",

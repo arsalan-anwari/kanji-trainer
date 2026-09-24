@@ -1,9 +1,0 @@
-# Images in nature already judged good: generate.py skips these.
-# One file name per line; blank lines and # comments ignored.
-
-mountain.png
-rain.png
-river.png
-tree.png
-water.png
-weather.png

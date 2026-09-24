@@ -6,7 +6,6 @@ __pycache__
 
 # Build artifacts
 .cache
-/data
 node_modules
 dist
 src-tauri/dist
@@ -14,6 +13,9 @@ src-tauri/target
 src-tauri/gen/android
 src-tauri/gen/apple
 target
+
+# Data folder
+data/
 
 # IDE files
 .idea/

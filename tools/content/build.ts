@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { renderAttribution, renderLicence } from "./attribution.ts";
@@ -13,6 +13,10 @@ import {
   loadComponentList,
   loadKanjiList,
   loadWordList,
+  missingOverlay,
+  packSource,
+  readOverlay,
+  OVERLAY_DIR,
   SET_IDS,
   wordId
 } from "./validate.ts";
@@ -21,31 +25,62 @@ import type { Kanjidic } from "./kanjidic.ts";
 import type { Kradfile } from "./kradfile.ts";
 import type { ComponentRow, KanjiRow, WordRow } from "./validate.ts";
 import type { Content, Kanji, Source, Word } from "../../src/lib/content/types.ts";
-import { audioUrl } from "../../src/lib/quiz/hints.ts";
+import { audioPath } from "../../src/lib/packs/url.ts";
+import { parsePackInfo, type PackInfo, type PackMeta } from "../../src/lib/packs/catalog.ts";
 
 export function byCodePoint(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;
 }
 
-export const OUTPUT_DIR = fileURLToPath(new URL("../../data/content/", import.meta.url));
+export const PACKS_DIR = fileURLToPath(new URL("../../data/packs/", import.meta.url));
 
-export const DATA_DIR = fileURLToPath(new URL("../../data/", import.meta.url));
-
-export function clipExists(word: Word): boolean {
-  return existsSync(join(DATA_DIR, audioUrl(word)));
+export function packOutput(pack: string): string {
+  return join(PACKS_DIR, pack);
 }
 
-/** Hand-curated media under content/ that is laid over data/ on every build. */
+export function clipExists(word: Word): boolean {
+  return existsSync(join(packOutput(word.pack), audioPath(word)));
+}
+
 export const OVERRIDE_DIRS = ["audio", "images"];
 
-export function applyOverrides(): void {
-  const content = fileURLToPath(new URL("../../content/", import.meta.url));
+
+export function applyOverrides(pack: string): void {
   for (const dir of OVERRIDE_DIRS) {
-    if (existsSync(join(content, dir))) cpSync(join(content, dir), join(DATA_DIR, dir), { recursive: true });
+    const from = join(packSource(pack), dir);
+    if (existsSync(from)) cpSync(from, join(packOutput(pack), dir), { recursive: true });
   }
 }
 
-const LEVEL = "n5";
+export function packIds(): string[] {
+  const root = join(OVERLAY_DIR, "packs");
+  if (!existsSync(root)) throw missingOverlay(root);
+  return readdirSync(root, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && existsSync(join(root, entry.name, "pack.json")))
+    .map((entry) => entry.name)
+    .sort(byCodePoint);
+}
+
+export function loadPackInfo(pack: string): PackInfo {
+  const where = `data/overlay/packs/${pack}/pack.json`;
+  const info = parsePackInfo(JSON.parse(readOverlay(join(packSource(pack), "pack.json"))));
+  if (info === null) throw new Error(`${where}: needs id, level, a known theme, version and title`);
+  if (info.id !== pack) throw new Error(`${where}: id "${info.id}" must match its folder "${pack}"`);
+  return info;
+}
+
+export function packMeta(info: PackInfo, content: Content, description: string): PackMeta {
+  return { ...info, words: content.words.length, kanji: content.kanji.length, description };
+}
+
+export const DESCRIPTION_FILE = "description.md";
+
+export function copyDescription(pack: string): string {
+  const from = join(packSource(pack), DESCRIPTION_FILE);
+  if (!existsSync(from)) return "";
+  copyFileSync(from, join(packOutput(pack), DESCRIPTION_FILE));
+  return DESCRIPTION_FILE;
+}
 
 export function readCached(name: string): unknown {
   try {
@@ -72,6 +107,7 @@ export function shortGloss(gloss: string): string {
 }
 
 export function buildWords(
+  pack: string,
   rows: readonly WordRow[],
   index: Lookup,
   levelKanji: ReadonlySet<string>,
@@ -83,7 +119,7 @@ export function buildWords(
   const labelled = new Map<string, string>();
 
   rows.forEach((row, position) => {
-    const where = `content/base/${row.level.toLowerCase()}/${row.level.toLowerCase()}-words.tsv row ${position + 1}`;
+    const where = `data/overlay/packs/${pack}/words.tsv row ${position + 1}`;
     const result = lookupWord(index, row.written, row.reading);
     if (!isMatch(result)) {
       problems.push(`${where}: ${row.written} (${row.reading}) — ${result.detail}`);
@@ -141,7 +177,9 @@ export function buildWords(
       hasAudio: false,
       set: row.set,
       subcategory: row.subcategory,
-      level: row.level
+      level: row.level,
+      pack,
+      file: row.file
     };
     words.push({ ...word, hasAudio: hasClip(word) });
   });
@@ -202,7 +240,7 @@ export function buildTaughtComponents(
     const shared = counts.get(row.character) ?? 0;
     if (shared < 2) {
       problems.push(
-        `content/components.tsv: "${row.character}" (${row.name}) occurs in ${shared} kanji of the level, so it is not worth teaching as a component`
+        `data/overlay/shared/components.tsv: "${row.character}" (${row.name}) occurs in ${shared} kanji of the level, so it is not worth teaching as a component`
       );
       continue;
     }
@@ -248,39 +286,59 @@ export function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-function main(): void {
-  applyOverrides();
-  const manifest = loadManifest();
-  const kanjiRows = loadKanjiList(LEVEL);
+function buildPack(
+  pack: string,
+  manifest: ReturnType<typeof loadManifest>,
+  index: Lookup,
+  kradfile: Kradfile,
+  kanjidic: Kanjidic
+): PackMeta {
+  const info = loadPackInfo(pack);
+  const out = packOutput(pack);
+  mkdirSync(out, { recursive: true });
+  applyOverrides(pack);
+  const kanjiRows = loadKanjiList(pack);
   const levelKanji = new Set(kanjiRows.map((row) => row.character));
-  const wordRows = loadWordList(LEVEL, levelKanji);
-  const index = indexByWrittenForm(parseJmdict(readCached("jmdict-eng-common.json")));
-  const kradfile = parseKradfile(readCached("kradfile.json"));
-  const kanjidic = parseKanjidic(readCached("kanjidic2.json"));
+  const wordRows = loadWordList(pack, levelKanji);
+  const offLevel = wordRows.filter((row) => row.level !== info.level);
+  if (offLevel.length > 0) {
+    throw new Error(`data/overlay/packs/${pack}/words.tsv: ${offLevel.length} row(s) are not ${info.level}, the level pack.json names`);
+  }
 
   const characters = kanjiRows.map((row) => row.character);
   const content = buildContent(
-    LEVEL.toUpperCase(),
+    info.level,
     manifest.sources,
     buildKanji(kanjiRows, kradfile, kanjidic),
-    buildWords(wordRows, index, levelKanji, kanjidic, clipExists),
+    buildWords(pack, wordRows, index, levelKanji, kanjidic, clipExists),
     buildTaughtComponents(loadComponentList(), kradfile, characters),
     today()
   );
+  const meta = packMeta(info, content, copyDescription(pack));
 
-  mkdirSync(join(OUTPUT_DIR, "base", LEVEL), { recursive: true });
-  writeFileSync(join(OUTPUT_DIR, "base", LEVEL, `${LEVEL}.json`), `${JSON.stringify(content, null, 2)}\n`);
-  writeFileSync(join(OUTPUT_DIR, "ATTRIBUTION.md"), renderAttribution(content.sources));
-  writeFileSync(join(OUTPUT_DIR, "LICENSE"), renderLicence(content.sources));
+  writeFileSync(join(out, "content.json"), `${JSON.stringify(content, null, 2)}\n`);
+  writeFileSync(join(out, "pack.json"), `${JSON.stringify(meta, null, 2)}\n`);
+  writeFileSync(join(out, "ATTRIBUTION.md"), renderAttribution(content.sources));
+  writeFileSync(join(out, "LICENSE"), renderLicence(content.sources));
 
   const sizes = countBySet(wordRows);
   process.stdout.write(
-    `${content.kanji.length} kanji, ${content.words.length} words, ${content.taughtComponents.length} taught components\n`
+    `${pack}: ${content.kanji.length} kanji, ${content.words.length} words, ${content.taughtComponents.length} taught components\n`
   );
   for (const id of SET_IDS) {
     process.stdout.write(`  ${id.padEnd(12)} ${String(sizes[id]).padStart(3)}\n`);
   }
-  process.stdout.write("0 unresolved rows, ATTRIBUTION.md and LICENSE regenerated\n");
+  return meta;
+}
+
+function main(): void {
+  const manifest = loadManifest();
+  const index = indexByWrittenForm(parseJmdict(readCached("jmdict-eng-common.json")));
+  const kradfile = parseKradfile(readCached("kradfile.json"));
+  const kanjidic = parseKanjidic(readCached("kanjidic2.json"));
+  const packs = packIds().map((pack) => buildPack(pack, manifest, index, kradfile, kanjidic));
+  writeFileSync(join(PACKS_DIR, "index.json"), `${JSON.stringify(packs.map((pack) => pack.id), null, 2)}\n`);
+  process.stdout.write(`${packs.length} pack(s) built, 0 unresolved rows\n`);
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -318,11 +376,11 @@ if (import.meta.vitest) {
   const row = (written: string, reading: string, meaning = ""): WordRow => ({
     written,
     reading,
-    expansion: "base",
     set: "places",
     subcategory: "buildings",
     level: "N5",
     meaning,
+    file: "w",
     clue: "",
     note: ""
   });
@@ -347,28 +405,29 @@ if (import.meta.vitest) {
 
   describe("buildWords", () => {
     test("attaches every English sense JMdict carries as its own entry", () => {
-      expect(buildWords([row("日本", "にほん")], index, levelKanji)[0].glosses).toEqual(["Japan"]);
+      expect(buildWords("n5-base", [row("日本", "にほん")], index, levelKanji)[0].glosses).toEqual(["Japan"]);
     });
 
     test("labels a word with the first gloss when the curator filled nothing in", () => {
-      expect(buildWords([row("日本", "にほん")], index, levelKanji)[0].meaning).toBe("Japan");
+      expect(buildWords("n5-base", [row("日本", "にほん")], index, levelKanji)[0].meaning).toBe("Japan");
     });
 
     test("prefers the curator's meaning over the gloss", () => {
-      const built = buildWords([row("日本", "にほん", "the country")], index, levelKanji);
+      const built = buildWords("n5-base", [row("日本", "にほん", "the country")], index, levelKanji);
       expect(built[0].meaning).toBe("the country");
       expect(built[0].glosses).toEqual(["Japan"]);
     });
 
     test("refuses two words of a level that would answer one meaning question", () => {
       expect(() =>
-        buildWords([row("日本", "にほん", "sweets"), row("お菓子", "おかし")], index, levelKanji)
+        buildWords("n5-base", [row("日本", "にほん", "sweets"), row("お菓子", "おかし")], index, levelKanji)
       ).toThrow(/お菓子 \(おかし\) and 日本 \(にほん\) both mean "sweets"/);
     });
 
     test("refuses a clue that names the meaning it is hinting at", () => {
       expect(() =>
         buildWords(
+          "n5-base",
           [{ ...row("日本", "にほん"), clue: "The country called Japan." }],
           index,
           levelKanji
@@ -378,31 +437,31 @@ if (import.meta.vitest) {
 
     test("refuses a label too long to read on a tile", () => {
       const wordy = "a".repeat(MEANING_LIMIT + 1);
-      expect(() => buildWords([row("日本", "にほん", wordy)], index, levelKanji)).toThrow(
+      expect(() => buildWords("n5-base", [row("日本", "にほん", wordy)], index, levelKanji)).toThrow(
         new RegExp(`is labelled "${wordy}", ${MEANING_LIMIT + 1} characters`)
       );
     });
 
     test("builds the id from the written form and the reading", () => {
-      expect(buildWords([row("日本", "にほん")], index, levelKanji)[0].id).toBe("日本|にほん");
+      expect(buildWords("n5-base", [row("日本", "にほん")], index, levelKanji)[0].id).toBe("日本|にほん");
     });
 
     test("tags a word only with the kanji the level teaches", () => {
-      expect(buildWords([row("お菓子", "おかし")], index, levelKanji)[0].kanji).toEqual(["子"]);
+      expect(buildWords("n5-base", [row("お菓子", "おかし")], index, levelKanji)[0].kanji).toEqual(["子"]);
     });
 
     test("fails on a reading JMdict does not have, naming the row", () => {
-      expect(() => buildWords([row("日本", "にっぽん")], index, levelKanji)).toThrow(
+      expect(() => buildWords("n5-base", [row("日本", "にっぽん")], index, levelKanji)).toThrow(
         /row 1: 日本 \(にっぽん\) — JMdict has "日本" but not with the reading "にっぽん"/
       );
     });
 
     test("fails rather than silently dropping a usually-kana word", () => {
-      expect(() => buildWords([row("葉書", "はがき")], index, levelKanji)).toThrow(/usually kana/);
+      expect(() => buildWords("n5-base", [row("葉書", "はがき")], index, levelKanji)).toThrow(/usually kana/);
     });
 
     test("keeps every reading JMdict accepts, the curated one first", () => {
-      const [built] = buildWords([row("日本", "にほん")], index, levelKanji);
+      const [built] = buildWords("n5-base", [row("日本", "にほん")], index, levelKanji);
       expect(built.readings).toEqual(["にほん"]);
     });
 
@@ -437,23 +496,23 @@ if (import.meta.vitest) {
           }
         ]
       });
-      expect(buildWords([row("本", "ほん")], single, levelKanji, readings)[0].readingClass).toBe(
+      expect(buildWords("n5-base", [row("本", "ほん")], single, levelKanji, readings)[0].readingClass).toBe(
         "on"
       );
     });
 
     test("leaves a compound with no reading class, since it is read as a whole", () => {
-      expect(buildWords([row("日本", "にほん")], index, levelKanji)[0].readingClass).toBeUndefined();
+      expect(buildWords("n5-base", [row("日本", "にほん")], index, levelKanji)[0].readingClass).toBeUndefined();
     });
 
     test("lets two words of different levels share a label", () => {
       const other = { ...row("お菓子", "おかし", "Japan"), level: "N4" };
-      expect(buildWords([row("日本", "にほん"), other], index, levelKanji)).toHaveLength(2);
+      expect(buildWords("n5-base", [row("日本", "にほん"), other], index, levelKanji)).toHaveLength(2);
     });
 
     test("reports every unresolved row, not only the first", () => {
       expect(() =>
-        buildWords([row("日本", "にっぽん"), row("葉書", "はがき")], index, levelKanji)
+        buildWords("n5-base", [row("日本", "にっぽん"), row("葉書", "はがき")], index, levelKanji)
       ).toThrow(/2 curated row\(s\)/);
     });
   });

@@ -1,19 +1,20 @@
 """Derive the dark-theme png variant from each light-theme png.
 
-Converts data/images/base/{level}/light/{category}/{subcategory}/{file}.png into
-data/images/base/{level}/dark/{category}/{subcategory}/{file}.png with a hue-preserving
+Converts data/packs/{pack}/images/light/{category}/{subcategory}/{file}.png into
+data/packs/{pack}/images/dark/{category}/{subcategory}/{file}.png with a hue-preserving
 invert: RGB invert followed by a 180 degree hue rotation, the same
 "smart invert" a browser does for `filter: invert(1) hue-rotate(180deg)`.
 A pale background goes dark and dark linework goes light while each color
 keeps its hue, rather than the color-shifting mess a plain RGB invert gives
 you (red would come out cyan). Runs entirely locally: no API, no cost.
 
-Same --level/--category hierarchy as generate.py.
+Same --pack/--category hierarchy as generate.py. A dark picture counts as
+existing in either format, so a converted WebP is not redone from nothing.
 
     python3 tools/images/invert.py                              # every png
-    python3 tools/images/invert.py --level=n5                   # one level
-    python3 tools/images/invert.py --level=n5 --category=numbers,nature
-    python3 tools/images/invert.py --category=numbers           # error: no level given
+    python3 tools/images/invert.py --pack=n5-base               # one pack
+    python3 tools/images/invert.py --pack=n5-base --category=numbers,nature
+    python3 tools/images/invert.py --category=numbers           # error: no pack given
     python3 tools/images/invert.py --all                        # redo darks that already exist
     python3 tools/images/invert.py --dry-run
 """
@@ -22,7 +23,7 @@ import argparse
 
 from PIL import Image, ImageOps
 
-from generate import plan, png_dir, subcategories, words
+from generate import add_filters, plan, png_dir, words
 
 
 def smart_invert(image):
@@ -38,41 +39,36 @@ def smart_invert(image):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--level", metavar="LEVEL", help="only this level, e.g. n5")
-    ap.add_argument("--category", metavar="CAT[,CAT...]", help="only these categories; requires --level")
-    ap.add_argument("--all", action="store_true", help="redo dark pngs that already exist")
-    ap.add_argument("--dry-run", action="store_true", help="print the pngs that would be inverted, do nothing")
-    ap.add_argument("--limit", type=int, help="stop after N images")
+    add_filters(ap, "redo dark pngs that already exist")
     args = ap.parse_args()
 
     todo = []
-    for level, category in plan(args):
-        subs = subcategories(level)
-        for w in words(level, category):
-            subcategory = subs[w["word"]]
-            light_path = png_dir(level, category, subcategory, "light") / w["file"]
-            dark_path = png_dir(level, category, subcategory, "dark") / w["file"]
+    for pack, category in plan(args):
+        for w in words(pack, category):
+            subcategory = w["subcategory"]
+            light_path = png_dir(pack, category, subcategory, "light") / w["file"]
+            dark_path = png_dir(pack, category, subcategory, "dark") / w["file"]
             if not light_path.exists():
                 continue
-            if dark_path.exists() and not args.all:
+            if (dark_path.exists() or dark_path.with_suffix(".webp").exists()) and not args.all:
                 continue
-            todo.append((level, category, light_path, dark_path))
+            todo.append((pack, category, light_path, dark_path))
     if args.limit:
         todo = todo[: args.limit]
 
     if args.dry_run:
-        for level, category, light_path, dark_path in todo:
-            print(f"{level}/{category}: {light_path.name} -> dark/{dark_path.name}")
+        for pack, category, light_path, dark_path in todo:
+            print(f"{pack}/{category}: {light_path.name} -> dark/{dark_path.name}")
         return
     if not todo:
         print("nothing to do")
         return
 
     print(f"{len(todo)} image(s)")
-    for i, (level, category, light_path, dark_path) in enumerate(todo, 1):
+    for i, (pack, category, light_path, dark_path) in enumerate(todo, 1):
         dark_path.parent.mkdir(parents=True, exist_ok=True)
         smart_invert(Image.open(light_path)).save(dark_path)
-        print(f"[{i}/{len(todo)}] {level}/{category}/{dark_path.name}")
+        print(f"[{i}/{len(todo)}] {pack}/{category}/{dark_path.name}")
 
 
 if __name__ == "__main__":

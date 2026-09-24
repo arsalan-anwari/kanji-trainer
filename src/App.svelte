@@ -18,6 +18,8 @@
   import ReportsScreen from "./lib/components/reports/ReportsScreen.svelte";
   import ChartScreen from "./lib/components/chart/ChartScreen.svelte";
   import PrintPicker from "./lib/components/chart/PrintPicker.svelte";
+  import MarketScreen from "./lib/components/market/MarketScreen.svelte";
+  import BaseGate from "./lib/components/market/BaseGate.svelte";
   import { t } from "./lib/i18n.svelte";
 
   app.load();
@@ -50,11 +52,21 @@
   const tabs = $derived(
     app.route === "quiz"
       ? []
-      : TAB_ROUTES.map((route) => ({ value: route, label: t(`common.nav.${route}`) }))
+      : TAB_ROUTES.map((route) => ({
+          value: route,
+          label:
+            route === "market" && app.updateCount > 0
+              ? t("common.nav.marketUpdates", { count: app.updateCount })
+              : t(`common.nav.${route}`)
+        }))
   );
 
   const tab = $derived<TabRoute>(
-    app.route === "reports" ? "reports" : app.route === "chart" || app.route === "print" ? "chart" : "setup"
+    app.route === "reports" || app.route === "market"
+      ? app.route
+      : app.route === "chart" || app.route === "print"
+        ? "chart"
+        : "setup"
   );
 
   $effect(() => focusMain(app.route));
@@ -101,11 +113,13 @@
     tabindex="-1"
     class="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 pb-[calc(var(--nav-bar)+var(--edge-y))] focus:outline-none sm:gap-5"
   >
-    {#if app.contentFailed}
+    {#if app.route === "market"}
+      <MarketScreen />
+    {:else if app.contentFailed}
       <Card title={t("common.content.failed")}>
-        <Button onclick={() => app.loadContent()}>{t("common.content.retry")}</Button>
+        <Button onclick={() => app.loadPacks()}>{t("common.content.retry")}</Button>
       </Card>
-    {:else if app.content === null}
+    {:else if !app.ready}
       <Card title={t("common.content.loading")}>
         <p class="text-sm text-muted-foreground">{t("common.tagline")}</p>
       </Card>
@@ -128,6 +142,10 @@
     {/if}
   </main>
 </div>
+
+{#if app.needsBase}
+  <BaseGate />
+{/if}
 
 {#if menu}
   <SettingsMenu labels={prefsLabels} onclose={() => (menu = false)} />

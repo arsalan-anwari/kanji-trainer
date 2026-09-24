@@ -98,5 +98,6 @@
   "tip": {
     "stat": "{correct} of {total} right, {mastery}",
     "speed": "{label}: {averageMs}ms average"
-  }
+  },
+  "packMissing": "A pack this run used is off or removed, so it is left out of the totals below."
 }

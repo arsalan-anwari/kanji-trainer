@@ -115,7 +115,9 @@ function parseWord(value: unknown, where: string): Word {
     hasAudio: value.hasAudio === true,
     set,
     subcategory,
-    level: text(value, "level", where)
+    level: text(value, "level", where),
+    pack: text(value, "pack", where),
+    file: text(value, "file", where)
   };
 }
 

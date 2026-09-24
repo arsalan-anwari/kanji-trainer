@@ -1,3 +1,4 @@
+pub mod packs;
 mod reports;
 
 use tauri::{window::Color, Manager, Theme};
@@ -29,7 +30,12 @@ pub fn run() {
             reports::delete_report,
             reports::write_report_file,
             reports::write_binary_file,
-            reports::read_report_file
+            reports::read_report_file,
+            packs::list_packs,
+            packs::fetch_catalog,
+            packs::install_pack,
+            packs::read_description,
+            packs::delete_pack
         ])
         .run(tauri::generate_context!())
         .expect("failed to start kanji trainer");

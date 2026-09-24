@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readOverlay } from "./validate.ts";
 import { fileURLToPath } from "node:url";
 import type { Source } from "../../src/lib/content/types.ts";
 
@@ -17,7 +17,7 @@ export type Manifest = {
 };
 
 export const MANIFEST_PATH = fileURLToPath(
-  new URL("../../content/sources.json", import.meta.url)
+  new URL("../../data/overlay/shared/sources.json", import.meta.url)
 );
 
 const SHA256_HEX = /^[0-9a-f]{64}$/;
@@ -106,7 +106,7 @@ export function parseManifest(value: unknown): Manifest {
 }
 
 export function loadManifest(path: string = MANIFEST_PATH): Manifest {
-  return parseManifest(JSON.parse(readFileSync(path, "utf8")));
+  return parseManifest(JSON.parse(readOverlay(path)));
 }
 
 if (import.meta.vitest) {

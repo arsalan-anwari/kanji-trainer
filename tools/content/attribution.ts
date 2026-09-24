@@ -10,7 +10,7 @@ export function renderAttribution(sources: readonly Source[]): string {
     "The content files in this directory are generated from the sources below.",
     `They are licensed ${SHARE_ALIKE}; see LICENSE in this directory.`,
     "",
-    "This file is generated from `content/sources.json`. Do not edit it by hand:",
+    "This file is generated from `data/overlay/shared/sources.json`. Do not edit it by hand:",
     "`npm run content:build` overwrites it.",
     ""
   ];
@@ -55,7 +55,7 @@ export function renderLicence(sources: readonly Source[]): string {
     "separately; see the LICENSE file at the root of the repository.",
     "",
     "Per-source attribution, which this licence requires, is in ATTRIBUTION.md",
-    "next to this file. Both files are generated from content/sources.json."
+    "next to this file. Both files are generated from data/overlay/shared/sources.json."
   );
 
   return `${lines.join("\n").trimEnd()}\n`;

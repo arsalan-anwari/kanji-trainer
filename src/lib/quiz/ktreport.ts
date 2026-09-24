@@ -132,7 +132,8 @@ if (import.meta.vitest) {
       answers: [
         { wordId: "一|いち", correct: true, elapsedMs: 900, given: "いち" },
         { wordId: "二|に", correct: false, elapsedMs: 5000, given: "ふた" }
-      ]
+      ],
+      packs: ["n5-base"]
     };
   }
 

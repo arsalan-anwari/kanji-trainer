@@ -24,7 +24,7 @@
     type TreeTableGroup
   } from "kaizen-ui";
   import { app } from "../../state.svelte";
-  import { summarize } from "../../quiz/report";
+  import { isCounted, summarize } from "../../quiz/report";
   import {
     formatTree,
     missesBySetAndWord,
@@ -46,7 +46,8 @@
   const chosen = $derived(
     picked.length === 0 ? shown : shown.filter((report) => picked.includes(report.id))
   );
-  const answers = $derived(chosen.flatMap((report) => report.answers));
+  const counted = $derived(app.countedReports(chosen));
+  const answers = $derived(counted.flatMap((report) => report.answers));
   const right = $derived(answers.filter((answer) => answer.correct).length);
   const accuracy = $derived(answers.length === 0 ? 0 : Math.round((right / answers.length) * 100));
   const allPicked = $derived(
@@ -71,7 +72,7 @@
   );
 
   const formatTreeRows = $derived<TreeTableGroup[]>(
-    formatTree(chosen).map((group) => ({
+    formatTree(counted).map((group) => ({
       ...group,
       label: t(`common.category.${group.key}`),
       children: group.children.map((child) => ({ ...child, label: t(`common.format.${child.key}`) }))
@@ -79,14 +80,14 @@
   );
 
   const missSections = $derived<MissSection[]>(
-    missesBySetAndWord(chosen, app.words).map((section) => ({
+    missesBySetAndWord(counted, app.words).map((section) => ({
       ...section,
       label: t(`common.set.${section.key}`)
     }))
   );
 
   const speedGroups = $derived<AreaSparkGroup[]>(
-    timeSeriesByFormat(chosen, TIME_BASELINE_RUNS).map((group) => ({
+    timeSeriesByFormat(counted, TIME_BASELINE_RUNS).map((group) => ({
       ...group,
       label: t(`common.category.${group.key}`),
       series: group.series.map((series) => ({ ...series, label: t(`common.format.${series.key}`) }))
@@ -264,6 +265,12 @@
                 <span class="text-xs text-muted-foreground tabular-nums">
                   {t("reports.entry", { score: n(summary.score), total: n(summary.total) })}
                 </span>
+                {#if !isCounted(report, app.enabledPackIds)}
+                  <span class="flex items-start gap-1.5 text-xs font-bold text-danger">
+                    <Icon name="info" class="size-4 shrink-0" />
+                    {t("reports.packMissing")}
+                  </span>
+                {/if}
                 <span class="flex flex-wrap gap-1">
                   <Badge tone="outline">{report.settings.level}</Badge>
                   <Badge tone="outline">{t(`common.format.${report.settings.format}`)}</Badge>
@@ -309,7 +316,7 @@
         <Button
           variant="brand"
           disabled={answers.length === 0}
-          onclick={() => app.practiseMistakes(chosen)}
+          onclick={() => app.practiseMistakes(counted)}
         >
           <Icon name="flame" class="size-5 text-seal" />
           {t("reports.practise.button")}
@@ -318,7 +325,7 @@
 
       <div class="grid grid-cols-3 gap-2">
         <Stat tone="brand" value={`${n(accuracy)}%`} label={t("reports.stat.accuracy")} />
-        <Stat value={n(chosen.length)} label={t("reports.stat.runs")} />
+        <Stat value={n(counted.length)} label={t("reports.stat.runs")} />
         <Stat value={n(answers.length)} label={t("reports.stat.answers")} />
       </div>
 

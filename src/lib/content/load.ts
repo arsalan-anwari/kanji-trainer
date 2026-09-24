@@ -51,6 +51,9 @@ function parseWord(value: unknown): Word | null {
   const set = text(value.set);
   const subcategory = text(value.subcategory);
   const level = text(value.level);
+  const pack = text(value.pack);
+  const file = text(value.file);
+  if (pack === null || file === null) return null;
   if (id === null || written === null || reading === null || meaning === null) return null;
   if (glosses === null || glosses.length === 0) return null;
   if (readings === null || !readings.includes(reading)) return null;
@@ -74,7 +77,9 @@ function parseWord(value: unknown): Word | null {
     hasAudio: value.hasAudio === true,
     set,
     subcategory,
-    level
+    level,
+    pack,
+    file
   };
 }
 
@@ -117,18 +122,27 @@ export function parseContent(value: unknown): Content | null {
   return { level, generated, sources, kanji, words, taughtComponents };
 }
 
-export function contentUrl(level: string): string {
-  return `/content/base/${level.toLowerCase()}/${level.toLowerCase()}.json`;
+function firstBy<T>(lists: readonly (readonly T[])[], key: (item: T) => string): T[] {
+  const kept = new Map<string, T>();
+  for (const list of lists) {
+    for (const item of list) {
+      if (!kept.has(key(item))) kept.set(key(item), item);
+    }
+  }
+  return [...kept.values()];
 }
 
-export async function loadContent(level: string): Promise<Content | null> {
-  try {
-    const response = await fetch(contentUrl(level));
-    if (!response.ok) return null;
-    return parseContent(await response.json());
-  } catch {
-    return null;
-  }
+export function mergeContents(contents: readonly Content[]): { words: Word[]; kanji: Kanji[] } {
+  return {
+    words: firstBy(
+      contents.map((content) => content.words),
+      (word) => word.id
+    ),
+    kanji: firstBy(
+      contents.map((content) => content.kanji),
+      (entry) => entry.character
+    )
+  };
 }
 
 if (import.meta.vitest) {
@@ -149,7 +163,9 @@ if (import.meta.vitest) {
     hasAudio: true,
     set: "numbers",
     subcategory: "digits",
-    level: "N5"
+    level: "N5",
+    pack: "n5-base",
+    file: "one"
   };
   const payload = {
     level: "N5",
@@ -221,10 +237,35 @@ if (import.meta.vitest) {
     });
   });
 
+  describe("merging the enabled packs", () => {
+    const base = parseContent(payload);
+    const extra = parseContent({
+      ...payload,
+      words: [word, { ...word, id: "二|に", written: "二", reading: "に", readings: ["に"], meaning: "two", pack: "n5-food" }],
+      kanji: [{ character: "一", level: "N5", look: "later", components: ["一"], on: [], kun: [] }]
+    });
+
+    test("puts every pack's words side by side, each word once", () => {
+      if (base === null || extra === null) throw new Error("fixtures must parse");
+      expect(mergeContents([base, extra]).words.map((entry) => entry.id)).toEqual(["一|いち", "二|に"]);
+    });
+
+    test("keeps the first pack's entry for a kanji two packs teach", () => {
+      if (base === null || extra === null) throw new Error("fixtures must parse");
+      const { kanji } = mergeContents([base, extra]);
+      expect(kanji).toHaveLength(1);
+      expect(kanji[0]?.look).toBe("");
+    });
+
+    test("holds nothing when no pack is enabled", () => {
+      expect(mergeContents([])).toEqual({ words: [], kanji: [] });
+    });
+  });
+
   describe("the committed N5 content file", () => {
     test("parses as content the app can run on", async () => {
       const { readFile } = await import("node:fs/promises");
-      const raw = await readFile(new URL("../../../data/content/base/n5/n5.json", import.meta.url), "utf8");
+      const raw = await readFile(new URL("../../../data/packs/n5-base/content.json", import.meta.url), "utf8");
       const content = parseContent(JSON.parse(raw));
       expect(content?.level).toBe("N5");
       expect(content?.words).toHaveLength(184);

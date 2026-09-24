@@ -11,9 +11,8 @@ import zipfile
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CACHE = ROOT / ".cache" / "audio"
-CONTENT = ROOT / "data" / "content" / "base"
-LOCAL = ROOT / "content" / "audio" / "base"
-OUT = ROOT / "data" / "audio" / "base"
+PACKS = ROOT / "data" / "packs"
+OVERLAY = ROOT / "data" / "overlay" / "packs"
 
 KA_DATA = "https://raw.githubusercontent.com/kanjialive/kanji-data-media/master/language-data/ka_data.csv"
 KA_AUDIO = "https://media.kanjialive.com/examples_audio/audio-mp3.zip"
@@ -34,12 +33,8 @@ RATE = "44100"
 BITRATE = "128k"
 
 
-def slug(meaning):
-    return re.sub(r"[^a-z0-9]+", "-", meaning.lower()).strip("-")
-
-
 def clip_path(word):
-    return pathlib.Path(word["set"]) / word["subcategory"] / f"{slug(word['meaning'])}.mp3"
+    return pathlib.Path(word["set"]) / word["subcategory"] / f"{word['file']}.mp3"
 
 
 def get(url, params=None):
@@ -72,8 +67,8 @@ def kanji_alive_index():
     return index
 
 
-def from_local(word, level):
-    path = LOCAL / level / clip_path(word)
+def from_local(word, pack):
+    path = OVERLAY / pack / "audio" / clip_path(word)
     if not path.exists():
         return None
     return path.read_bytes(), "unknown", path.relative_to(ROOT).as_posix()
@@ -152,18 +147,18 @@ def encode(raw, destination):
 
 
 def main():
-    level = sys.argv[1] if len(sys.argv) > 1 else "n5"
-    words = json.loads((CONTENT / level / f"{level}.json").read_text())["words"]
+    pack = sys.argv[1] if len(sys.argv) > 1 else "n5-base"
+    words = json.loads((PACKS / pack / "content.json").read_text())["words"]
     index = kanji_alive_index()
     archive = zipfile.ZipFile(cached("audio-mp3.zip", KA_AUDIO))
     fetchers = [
-        ("local", lambda word: from_local(word, level)),
+        ("local", lambda word: from_local(word, pack)),
         ("kanjialive", lambda word: from_kanji_alive(word, index, archive)),
         ("jpod101", from_jpod),
         ("lingualibre", from_lingua_libre),
         ("commons", from_commons),
     ]
-    out = OUT / level
+    out = PACKS / pack / "audio"
     rows = []
     for word in words:
         path = clip_path(word)
@@ -175,13 +170,12 @@ def main():
             continue
         name, (raw, licence, url) = found
         if name == "local":
-            # Hand-curated clips ship byte for byte, the same file content:build lays over data/.
             (out / path).parent.mkdir(parents=True, exist_ok=True)
             (out / path).write_bytes(raw)
         else:
             encode(raw, out / path)
         rows.append([path.as_posix(), name, licence, url])
-    with open(out / "sources.tsv", "w", encoding="utf-8", newline="") as handle:
+    with open(PACKS / pack / "sources.tsv", "w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle, delimiter="\t", lineterminator="\n")
         writer.writerow(["path", "source", "licence", "original_url"])
         writer.writerows(rows)

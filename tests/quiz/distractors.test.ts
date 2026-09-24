@@ -6,12 +6,12 @@ import { answerOf, buildQuestions } from "../../src/lib/quiz/questions.ts";
 import { answerSurface, DEFAULT_SETTINGS, FORMATS, usesAudio } from "../../src/lib/quiz/settings.ts";
 import { componentIndex, similarity, SHARED_KANJI } from "../../src/lib/quiz/similarity.ts";
 
-const raw = readFileSync(new URL("../../data/content/base/n5/n5.json", import.meta.url), "utf8");
+const raw = readFileSync(new URL("../../data/packs/n5-base/content.json", import.meta.url), "utf8");
 const content = parseContent(JSON.parse(raw));
 
 if (content === null) {
   throw new Error(
-    "data/content/ is generated and is not in git. Run \"npm run content:build\" to regenerate it, or \"scripts/sync_data.sh --download\" to fetch the published copy."
+    "data/packs/ is generated and is not in git. Run \"npm run content:build\" to regenerate it, or \"scripts/sync_data.sh --download\" to fetch the published copy."
   );
 }
 

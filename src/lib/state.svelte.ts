@@ -1,4 +1,4 @@
-import { loadContent } from "./content/load";
+import { mergeContents } from "./content/load";
 import {
   countBySubcategory,
   groupWordsByKanji,
@@ -9,7 +9,25 @@ import {
   SET_IDS,
   type SetId
 } from "./content/sets";
-import type { Content, Word } from "./content/types";
+import type { Content, Kanji, Word } from "./content/types";
+import {
+  enabledPacks,
+  isBase,
+  missingBases,
+  offers,
+  type CatalogEntry,
+  type InstalledPack,
+  type Offer
+} from "./packs/catalog";
+import {
+  deletePack,
+  fetchCatalog,
+  installPack,
+  listInstalled,
+  loadPackContent,
+  preparePacks,
+  type Progress
+} from "./packs/store";
 import {
   buildQuestions,
   checkChoice,
@@ -29,7 +47,7 @@ import {
 } from "./quiz/settings";
 import { fallbackHint, hintFor, lookIndex, type Hint } from "./quiz/hints";
 import { componentIndex } from "./quiz/similarity";
-import { newReportId, summarize, type Report, type Summary } from "./quiz/report";
+import { isCounted, newReportId, packsOf, summarize, type Report, type Summary } from "./quiz/report";
 import { settingsFromMistakes } from "./quiz/diagnosis";
 import { emptyFilter, filterWords, kanjiIndex, type WordFilter } from "./browse/cards";
 import { scoreTier } from "./quiz/score";
@@ -47,22 +65,44 @@ import {
   type Preset
 } from "./storage";
 
-export type Route = "setup" | "study" | "words" | "quiz" | "result" | "reports" | "chart" | "print";
+export type Route =
+  | "setup"
+  | "study"
+  | "words"
+  | "quiz"
+  | "result"
+  | "reports"
+  | "chart"
+  | "print"
+  | "market";
 export type Phase = "answering" | "feedback" | "done";
 
 /** The tabs the header pages between. Study and the run are sub-screens. */
-export const TAB_ROUTES = ["setup", "reports", "chart"] as const;
+export const TAB_ROUTES = ["setup", "reports", "chart", "market"] as const;
 
 export type TabRoute = (typeof TAB_ROUTES)[number];
 
 const SETTINGS_KEY = "kanji-trainer-settings";
 const CHOSEN_PRESET_KEY = "kanji-trainer-chosen-preset";
+const DISABLED_PACKS_KEY = "kanji-trainer-disabled-packs";
+
+function pickIds(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((entry): entry is string => typeof entry === "string") : [];
+}
 
 
 class AppState {
   route = $state<Route>("setup");
-  content = $state<Content | null>(null);
+  installed = $state<InstalledPack[]>([]);
+  packContents = $state<Record<string, Content>>({});
+  packsLoaded = $state(false);
   contentFailed = $state(false);
+  catalog = $state<CatalogEntry[]>([]);
+  catalogFresh = $state(false);
+  catalogChecked = $state(false);
+  disabledPacks = $state<string[]>([]);
+  installing = $state<Record<string, Progress>>({});
+  installFailed = $state<string[]>([]);
   settings = $state<RunSettings>({ ...DEFAULT_SETTINGS });
   notes = $state<string[]>([]);
   presets = $state<Preset[]>([]);
@@ -88,9 +128,22 @@ class AppState {
   lastReport = $state<Report | null>(null);
   splash = $state<FanfareGrade | null>(null);
 
-  words = $derived<Word[]>(this.content?.words ?? []);
-  components = $derived(componentIndex(this.content?.kanji ?? []));
-  looks = $derived(lookIndex(this.content?.kanji ?? []));
+  enabledPackIds = $derived<string[]>(enabledPacks(this.installed, this.disabledPacks));
+  merged = $derived(
+    mergeContents(this.enabledPackIds.flatMap((id) => this.packContents[id] ?? []))
+  );
+  words = $derived<Word[]>(this.merged.words);
+  kanji = $derived<Kanji[]>(this.merged.kanji);
+  ready = $derived(this.words.length > 0);
+  offers = $derived<Offer[]>(offers(this.catalog, this.installed));
+  updateCount = $derived(this.offers.filter((offer) => offer.state === "update").length);
+  missingBases = $derived<CatalogEntry[]>(missingBases(this.catalog, this.installed));
+  needsBase = $derived(
+    this.packsLoaded &&
+      (!this.installed.some(isBase) || (this.catalogFresh && this.missingBases.length > 0))
+  );
+  components = $derived(componentIndex(this.kanji));
+  looks = $derived(lookIndex(this.kanji));
   levels = $derived<string[]>([...new Set(this.words.map((word) => word.level))]);
   availableSets = $derived<SetId[]>(setsWithWords(this.words));
   kanjiInSet = $derived(kanjiBySet(this.words));
@@ -115,7 +168,7 @@ class AppState {
     )
   );
 
-  kanjiByCharacter = $derived(kanjiIndex(this.content?.kanji ?? []));
+  kanjiByCharacter = $derived(kanjiIndex(this.kanji));
   charted = $derived<Word[]>(filterWords(this.words, this.chartFilter));
   printWords = $derived<Word[]>(this.charted.filter((word) => !this.printExcluded.has(word.id)));
 
@@ -180,19 +233,81 @@ class AppState {
       typeof chosen === "string" && this.presets.some((preset) => preset.name === chosen)
         ? chosen
         : "";
+    this.disabledPacks = pickIds(loadJson<unknown>(DISABLED_PACKS_KEY, []));
     void this.refreshReports();
-    void this.loadContent();
+    void this.loadPacks();
+    void this.refreshCatalog();
   }
 
   async refreshReports(): Promise<void> {
     this.reports = await listReports();
   }
 
-  async loadContent(): Promise<void> {
+  async loadPacks(): Promise<void> {
     this.contentFailed = false;
-    const content = await loadContent(this.settings.level);
-    this.content = content;
-    this.contentFailed = content === null;
+    await preparePacks();
+    const installed = await listInstalled();
+    const loaded = await Promise.all(
+      installed.map(async (pack) => [pack.id, await loadPackContent(pack.id)] as const)
+    );
+    const contents: Record<string, Content> = {};
+    for (const [id, content] of loaded) if (content !== null) contents[id] = content;
+    this.installed = installed;
+    this.packContents = contents;
+    this.contentFailed = installed.some(isBase) && Object.keys(contents).length === 0;
+    this.packsLoaded = true;
+  }
+
+  async refreshCatalog(): Promise<void> {
+    const result = await fetchCatalog();
+    this.catalogChecked = true;
+    if (result === null) return;
+    this.catalog = result.packs;
+    this.catalogFresh = result.fresh;
+  }
+
+  async #reloadPack(id: string): Promise<void> {
+    this.installed = await listInstalled();
+    const content = await loadPackContent(id);
+    const next = { ...this.packContents };
+    if (content === null) delete next[id];
+    else next[id] = content;
+    this.packContents = next;
+  }
+
+  async installPack(id: string): Promise<boolean> {
+    if (id in this.installing) return false;
+    this.installFailed = this.installFailed.filter((entry) => entry !== id);
+    this.installing = { ...this.installing, [id]: { done: 0, total: 0 } };
+    const ok = await installPack(id, (progress) => {
+      this.installing = { ...this.installing, [id]: progress };
+    });
+    const rest = { ...this.installing };
+    delete rest[id];
+    this.installing = rest;
+    if (ok) await this.#reloadPack(id);
+    else this.installFailed = [...this.installFailed, id];
+    return ok;
+  }
+
+  async installMissingBases(): Promise<void> {
+    if (this.catalog.length === 0) await this.refreshCatalog();
+    for (const entry of this.missingBases) {
+      if (!(await this.installPack(entry.id))) return;
+    }
+  }
+
+  async removePack(id: string): Promise<boolean> {
+    const ok = await deletePack(id);
+    if (ok) await this.#reloadPack(id);
+    return ok;
+  }
+
+  setPackEnabled(id: string, on: boolean): void {
+    sfx.select();
+    const rest = this.disabledPacks.filter((entry) => entry !== id);
+    this.disabledPacks = on ? rest : [...rest, id];
+    storeJson(DISABLED_PACKS_KEY, this.disabledPacks);
   }
 
   updateSettings(patch: Partial<RunSettings>): void {
@@ -405,7 +520,11 @@ class AppState {
       createdAt: new Date().toISOString(),
       durationMs: Date.now() - this.runStartedAt,
       settings: { ...this.settings },
-      answers: [...this.answers]
+      answers: [...this.answers],
+      packs: packsOf(
+        this.answers.map((answer) => answer.wordId),
+        this.words
+      )
     };
     this.lastReport = report;
     clips.stop();
@@ -453,8 +572,12 @@ class AppState {
     this.message = "reports.deleted";
   }
 
+  countedReports(reports: readonly Report[]): Report[] {
+    return reports.filter((report) => isCounted(report, this.enabledPackIds));
+  }
+
   practiseMistakes(reports: readonly Report[]): void {
-    const patch = settingsFromMistakes(reports, this.words);
+    const patch = settingsFromMistakes(this.countedReports(reports), this.words);
     if (Object.keys(patch).length === 0) {
       this.message = "reports.practise.empty";
       return;

@@ -1,6 +1,6 @@
 # Local dev shell for Kanji Trainer: source this, then call the scripts in
-# scripts/ by name without the .sh, e.g. "generate_images --level=n5".
-# invert_images takes the same --level/--category flags.
+# scripts/ by name without the .sh, e.g. "generate_images --pack=n5-base".
+# invert_images and convert.py take the same --pack/--category flags.
 #
 #   source .kjtrc
 

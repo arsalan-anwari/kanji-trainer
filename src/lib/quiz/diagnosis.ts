@@ -194,7 +194,9 @@ if (import.meta.vitest) {
       hasAudio: true,
       set,
       subcategory: SUBCATEGORIES[set][0],
-      level: "N5"
+      level: "N5",
+      pack: "n5-base",
+      file: id
     };
   }
 
@@ -213,7 +215,8 @@ if (import.meta.vitest) {
       createdAt,
       durationMs: answers.length * 1000,
       settings: { ...DEFAULT_SETTINGS, sets: ["numbers"], format },
-      answers
+      answers,
+      packs: ["n5-base"]
     };
   }
 

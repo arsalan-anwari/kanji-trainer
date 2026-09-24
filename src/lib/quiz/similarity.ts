@@ -95,7 +95,9 @@ if (import.meta.vitest) {
       hasAudio: true,
       set: "places",
     subcategory: "buildings",
-      level: "N5"
+      level: "N5",
+      pack: "n5-base",
+      file: written
     };
   }
 

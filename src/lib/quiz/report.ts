@@ -1,4 +1,5 @@
 import type { Answer } from "./questions";
+import type { Word } from "../content/types";
 import { DEFAULT_SETTINGS, parseSettings, type RunSettings } from "./settings";
 
 export type Report = {
@@ -7,7 +8,10 @@ export type Report = {
   durationMs: number;
   settings: RunSettings;
   answers: Answer[];
+  packs: string[];
 };
+
+export const LEGACY_PACKS = ["n5-base"];
 
 export type Summary = {
   total: number;
@@ -42,6 +46,21 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+export function isCounted(report: Report, enabled: readonly string[]): boolean {
+  return report.packs.every((pack) => enabled.includes(pack));
+}
+
+export function packsOf(wordIds: readonly string[], words: readonly Pick<Word, "id" | "pack">[]): string[] {
+  const wanted = new Set(wordIds);
+  return [...new Set(words.filter((word) => wanted.has(word.id)).map((word) => word.pack))].sort();
+}
+
+function parsePacks(value: unknown): string[] {
+  if (!Array.isArray(value)) return [...LEGACY_PACKS];
+  const packs = value.filter((entry): entry is string => typeof entry === "string" && entry !== "");
+  return packs.length === 0 ? [...LEGACY_PACKS] : packs;
+}
+
 function parseAnswer(value: unknown): Answer | null {
   if (!isRecord(value)) return null;
   const { wordId, correct, elapsedMs, given } = value;
@@ -71,7 +90,8 @@ export function parseReport(value: unknown): Report | null {
     createdAt,
     durationMs,
     settings: parseSettings(value.settings),
-    answers: parsed
+    answers: parsed,
+    packs: parsePacks(value.packs)
   };
 }
 
@@ -88,7 +108,8 @@ if (import.meta.vitest) {
       { wordId: "二|に", correct: false, elapsedMs: 1200, given: "ふた" },
       { wordId: "二|に", correct: false, elapsedMs: 800, given: "じ" },
       { wordId: "三|さん", correct: true, elapsedMs: 700, given: "さん" }
-    ]
+    ],
+    packs: ["n5-base"]
   };
 
   describe("summarising a finished run", () => {
@@ -120,6 +141,42 @@ if (import.meta.vitest) {
       expect(parseReport(JSON.parse(JSON.stringify(report)))?.settings.difficulty).toBe("beginner");
     });
 
+    test("files a run saved before packs existed under the N5 base", () => {
+      const { packs, ...legacy } = report;
+      expect(packs).toEqual(["n5-base"]);
+      expect(parseReport(JSON.parse(JSON.stringify(legacy)))?.packs).toEqual(["n5-base"]);
+    });
+
+    test("keeps the packs a run drew from", () => {
+      const mixed = { ...report, packs: ["n5-base", "n5-food"] };
+      expect(parseReport(JSON.parse(JSON.stringify(mixed)))?.packs).toEqual(["n5-base", "n5-food"]);
+    });
+  });
+
+  describe("counting a run only while its packs are in use", () => {
+    const food = { ...report, id: "run-2", packs: ["n5-base", "n5-food"] };
+
+    test("counts a run whose every pack is enabled", () => {
+      expect(isCounted(food, ["n5-base", "n5-food"])).toBe(true);
+    });
+
+    test("leaves out a run once one of its packs is off or removed", () => {
+      const counted = [report, food].filter((entry) => isCounted(entry, ["n5-base"]));
+      expect(counted.map((entry) => entry.id)).toEqual(["run-1"]);
+      expect(counted.flatMap((entry) => entry.answers)).toHaveLength(4);
+    });
+
+    test("names the packs of the words a run asked, each once", () => {
+      const words = [
+        { id: "一|いち", pack: "n5-base" },
+        { id: "寿司|すし", pack: "n5-food" },
+        { id: "二|に", pack: "n5-base" }
+      ];
+      expect(packsOf(["寿司|すし", "一|いち", "一|いち"], words)).toEqual(["n5-base", "n5-food"]);
+    });
+  });
+
+  describe("refusing what is not a run", () => {
     test("refuses anything that is not a run", () => {
       expect(parseReport(null)).toBeNull();
       expect(parseReport({ ...report, id: "" })).toBeNull();
