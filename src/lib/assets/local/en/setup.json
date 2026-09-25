@@ -30,7 +30,9 @@
     "image-kana": "See a picture, pick the reading",
     "audio-kana": "Hear the word, answer its reading",
     "audio-kanji": "Hear the word, answer the written word",
-    "kanji-audio": "See the word, pick the right recording"
+    "kanji-audio": "See the word, pick the right recording",
+    "assemble": "Build the word from its pieces.",
+    "kana-assemble": "See the reading and meaning, build the written word"
   },
   "direction": {
     "title": "Direction",

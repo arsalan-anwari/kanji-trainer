@@ -37,6 +37,19 @@ import {
   type Question
 } from "./quiz/questions";
 import {
+  emptyBoard,
+  givenOf,
+  isFull,
+  judge,
+  lift,
+  nextEmpty,
+  place,
+  shapesOf,
+  trayDone,
+  type Board
+} from "./quiz/assemble";
+import {
+  isAssembly,
   normalizeSettings,
   parseSettings,
   promptSurface,
@@ -77,6 +90,7 @@ export type Route =
   | "print"
   | "market";
 export type Phase = "answering" | "feedback" | "done";
+export type Move = { kind: "placed" | "lifted" | "done"; slot: number; block: number };
 
 /** The tabs the header pages between. Study and the run are sub-screens. */
 export const TAB_ROUTES = ["setup", "reports", "chart", "market"] as const;
@@ -121,6 +135,10 @@ class AppState {
   lastTimedOut = $state(false);
   confirmQuit = $state(false);
   hintOpen = $state(false);
+  ghosted = $state(false);
+  board = $state<Board>([]);
+  slot = $state(0);
+  move = $state<Move | null>(null);
   now = $state(0);
   questionStartedAt = $state(0);
   runStartedAt = $state(0);
@@ -175,14 +193,15 @@ class AppState {
   );
 
   kanjiByCharacter = $derived(kanjiIndex(this.kanji));
+  shapes = $derived(shapesOf(this.merged.parts, this.kanji));
   charted = $derived<Word[]>(filterWords(this.words, this.chartFilter));
   printWords = $derived<Word[]>(this.charted.filter((word) => !this.printExcluded.has(word.id)));
 
   pickerOrder = $derived<string[]>(SET_IDS.flatMap((id) => this.kanjiInSet[id]));
   selectableWords = $derived<Word[]>(
-    eligibleWords({ ...this.settings, excludedWords: [] }, this.words)
+    eligibleWords({ ...this.settings, excludedWords: [] }, this.words, this.shapes)
   );
-  pool = $derived<Word[]>(eligibleWords(this.settings, this.words));
+  pool = $derived<Word[]>(eligibleWords(this.settings, this.words, this.shapes));
   eligibleCount = $derived(this.pool.length);
   questionTotal = $derived(
     this.settings.questionCount === ONE_PASS ? this.eligibleCount : this.settings.questionCount
@@ -430,7 +449,13 @@ class AppState {
   }
 
   start(): void {
-    const questions = buildQuestions(this.settings, this.words, Math.random, this.components);
+    const questions = buildQuestions(
+      this.settings,
+      this.words,
+      Math.random,
+      this.components,
+      this.shapes
+    );
     if (questions.length === 0) return;
     this.questions = questions;
     this.answers = [];
@@ -447,6 +472,7 @@ class AppState {
     this.questionStartedAt = this.now;
     this.route = "quiz";
     this.splash = null;
+    this.#resetBoard();
     sfx.start();
     this.#startTimer();
     this.#cue();
@@ -534,7 +560,10 @@ class AppState {
     this.lastCorrect = correct;
     this.lastTimedOut = timedOut;
     this.phase = "feedback";
-    if (correct) sfx.correct();
+    if (isAssembly(this.settings.format)) {
+      if (correct) sfx.wood.solved();
+      else sfx.wood.failed();
+    } else if (correct) sfx.correct();
     else sfx.wrong();
     if (correct) this.#advanceAfterRight();
   }
@@ -574,7 +603,53 @@ class AppState {
     this.hintOpen = false;
     this.questionStartedAt = Date.now();
     this.now = this.questionStartedAt;
+    this.#resetBoard();
     this.#cue();
+  }
+
+  #resetBoard(): void {
+    const puzzle = this.current?.puzzle;
+    this.board = puzzle === undefined ? [] : emptyBoard(puzzle);
+    this.slot = 0;
+    this.move = null;
+    this.ghosted = false;
+  }
+
+  selectSlot(slot: number): void {
+    if (this.phase !== "answering" || this.current?.puzzle === undefined) return;
+    if (this.board[slot] !== null) {
+      this.liftSlot(slot);
+      return;
+    }
+    this.slot = slot;
+    sfx.wood.slot();
+  }
+
+  liftSlot(slot: number): void {
+    const block = this.board[slot];
+    if (this.phase !== "answering" || block === null || block === undefined) return;
+    this.board = lift(this.board, slot);
+    this.slot = slot;
+    this.move = { kind: "lifted", slot, block };
+    sfx.wood.lift();
+  }
+
+  placeBlock(block: number): void {
+    const puzzle = this.current?.puzzle;
+    if (this.phase !== "answering" || puzzle === undefined) return;
+    const slot = this.slot;
+    this.board = place(this.board, slot, block);
+    sfx.wood.pick();
+    if (isFull(this.board)) {
+      this.move = { kind: "placed", slot, block };
+      this.record(judge(puzzle, this.board), givenOf(puzzle, this.board));
+      return;
+    }
+    const finished = trayDone(puzzle, this.board, puzzle.slots[slot].tray);
+    this.move = { kind: finished ? "done" : "placed", slot, block };
+    if (finished) sfx.wood.done();
+    else sfx.wood.place();
+    this.slot = nextEmpty(this.board, slot);
   }
 
   finish(): void {
@@ -618,7 +693,8 @@ class AppState {
   showHint(): void {
     if (this.hint === null) return;
     sfx.hint();
-    this.hintOpen = true;
+    if (this.hint.kind === "ghost") this.ghosted = true;
+    else this.hintOpen = true;
   }
 
   hideHint(): void {

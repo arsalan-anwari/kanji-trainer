@@ -55,8 +55,9 @@ test("keeps the answer hidden until one is given", async ({ page }) => {
 test("takes a typed reading and offers typing only where an answer can be typed", async ({
   page
 }) => {
+  const styles = page.getByRole("group", { name: "Answer style" });
   await page.goto("/");
-  await page.getByRole("button", { name: "Type the reading" }).click();
+  await styles.getByRole("button", { name: /^Typing/ }).click();
   await page.getByRole("button", { name: /^Nature/ }).click();
   await page.getByRole("button", { name: "Start" }).click();
 
@@ -73,9 +74,13 @@ test("takes a typed reading and offers typing only where an answer can be typed"
   await page.getByRole("button", { name: "Quit", exact: true }).first().click();
   await page.getByLabel("Quit this run?").getByRole("button", { name: "Quit", exact: true }).click();
 
-  // Typing the written form is offered, with the IME it needs spelled out.
-  await page.getByRole("button", { name: "Kana to kanji" }).click();
-  await expect(page.getByRole("button", { name: /input method \(IME\)/ })).toBeEnabled();
+  await page.getByRole("button", { name: /^Kana to kanji/ }).click();
+  await expect(styles.getByRole("button", { name: /^Typing/ })).toBeEnabled();
+
+  await page.getByRole("button", { name: /^Listening/ }).click();
+  await page.getByRole("button", { name: /^Kanji to sound/ }).click();
+  await expect(styles.getByRole("button")).toHaveCount(1);
+  await expect(styles.getByRole("button", { name: /^Typing/ })).toHaveCount(0);
 });
 
 async function startMeaningRun(page: Page, direction: string): Promise<void> {

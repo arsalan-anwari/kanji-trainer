@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Board, FitText, Projector, RecordPlayer, viewport } from "kaizen-ui";
   import { clips } from "../../audio/clips.svelte";
-  import { isJapanese, promptSurface } from "../../quiz/settings";
+  import { isAssembly, isJapanese, promptSurface } from "../../quiz/settings";
   import type { Question } from "../../quiz/questions";
   import { darkImageUrl } from "../../quiz/hints";
   import { isDarkTheme } from "../../theme.svelte";
@@ -20,6 +20,7 @@
 
   const imgSrc = $derived(dark ? darkImageUrl(question.prompt) : question.prompt);
   const playing = $derived(clips.playing === question.prompt);
+  const meaning = $derived(isAssembly(app.settings.format) ? (app.currentWord?.meaning ?? "") : "");
 </script>
 
 <div class="flex w-full flex-col items-center gap-2 sm:gap-3">
@@ -64,5 +65,8 @@
         class="font-medium {japanese ? 'jp' : ''}"
       />
     </Board>
+    {#if meaning !== ""}
+      <p class="text-h4 font-semibold">{meaning}</p>
+    {/if}
   {/if}
 </div>

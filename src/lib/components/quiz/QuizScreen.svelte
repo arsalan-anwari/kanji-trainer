@@ -10,6 +10,7 @@
   import SoundChoices from "./SoundChoices.svelte";
   import { answerSurface, isNearlyOut, promptSurface } from "../../quiz/settings";
   import TypingAnswer from "./TypingAnswer.svelte";
+  import AssembleBoard from "./AssembleBoard.svelte";
   import { n, t } from "../../i18n.svelte";
   import { clips } from "../../audio/clips.svelte";
 
@@ -126,7 +127,9 @@
           <QuestionPrompt {question} />
         </div>
         <div class="flex w-full flex-1 justify-center">
-          {#if app.settings.answerStyle === "typing"}
+          {#if question.puzzle !== undefined}
+            <AssembleBoard puzzle={question.puzzle} />
+          {:else if app.settings.answerStyle === "typing"}
             <TypingAnswer />
           {:else if picksSound}
             <SoundChoices {question} />

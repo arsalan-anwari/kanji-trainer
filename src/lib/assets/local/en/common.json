@@ -115,7 +115,8 @@
     "reading": "Reading",
     "meaning": "Meaning",
     "visualize": "Visualize",
-    "listening": "Listening"
+    "listening": "Listening",
+    "assemble": "Assemble"
   },
   "format": {
     "kanji-kana": "Kanji to kana",
@@ -128,7 +129,8 @@
     "image-kana": "Image to kana",
     "audio-kana": "Sound to kana",
     "audio-kanji": "Sound to kanji",
-    "kanji-audio": "Kanji to sound"
+    "kanji-audio": "Kanji to sound",
+    "kana-assemble": "Kana to blocks"
   },
   "answerStyle": {
     "choice": "Multiple choice",

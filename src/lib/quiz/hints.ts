@@ -3,7 +3,7 @@ import { audioPath, imagePath, packUrl } from "../packs/url";
 import { toRomajiHint } from "./romaji.ts";
 import type { Difficulty, Format } from "./settings";
 
-export type HintKind = "romaji" | "clue" | "look" | "image";
+export type HintKind = "romaji" | "clue" | "look" | "image" | "ghost";
 export type Hint = { kind: HintKind; text: string };
 
 export type LookIndex = ReadonlyMap<string, string>;
@@ -19,7 +19,8 @@ const KINDS: Record<Format, { beginner: HintKind | null; advanced: HintKind | nu
   "image-kana": { beginner: "romaji", advanced: null },
   "audio-kana": { beginner: "romaji", advanced: null },
   "audio-kanji": { beginner: "look", advanced: null },
-  "kanji-audio": { beginner: null, advanced: null }
+  "kanji-audio": { beginner: null, advanced: null },
+  "kana-assemble": { beginner: "ghost", advanced: null }
 };
 
 export function hintKind(format: Format, difficulty: Difficulty): HintKind | null {
@@ -55,6 +56,7 @@ export function textOf(word: Word, kind: HintKind, looks: LookIndex): string {
   if (kind === "romaji") return toRomajiHint(word.reading);
   if (kind === "clue") return word.clue;
   if (kind === "look") return looksOf(word, looks);
+  if (kind === "ghost") return word.written;
   return imageUrl(word);
 }
 
@@ -115,7 +117,8 @@ if (import.meta.vitest) {
         "romaji",
         "romaji",
         "look",
-        null
+        null,
+        "ghost"
       ]);
       expect(formats.map((format) => hintKind(format, "advanced"))).toEqual([
         "clue",
@@ -123,6 +126,7 @@ if (import.meta.vitest) {
         "clue",
         null,
         "clue",
+        null,
         null,
         null,
         null,

@@ -30,7 +30,7 @@
 
 <svelte:window onkeydown={keydown} />
 
-{#if app.hint !== null}
+{#if app.hint !== null && !app.ghosted}
   <IconButton
     icon="lightbulb"
     label={t("quiz.hint.open")}

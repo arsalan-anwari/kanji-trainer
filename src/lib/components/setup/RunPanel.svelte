@@ -10,6 +10,7 @@
     CUSTOM_TOTAL_MINUTES_MAX,
     DIFFICULTIES,
     DIRECTIONS_BY_CATEGORY,
+    isAssembly,
     isCustomTime,
     PER_QUESTION_SECONDS,
     TOTAL_SECONDS
@@ -70,6 +71,7 @@
   </div>
 </Card>
 
+{#if !isAssembly(app.settings.format)}
 <Card title={t("setup.answerStyle.title")} description={t("setup.answerStyle.description")}>
   {#snippet icon()}<Icon name="keyboard" class="size-5" />{/snippet}
   <div role="group" aria-label={t("setup.answerStyle.title")} class="grid gap-3 sm:grid-cols-2">
@@ -83,6 +85,7 @@
     {/each}
   </div>
 </Card>
+{/if}
 
 <Card title={t("setup.difficulty.title")} description={t("setup.difficulty.description")}>
   {#snippet icon()}<Icon name="flame" class="size-5" />{/snippet}

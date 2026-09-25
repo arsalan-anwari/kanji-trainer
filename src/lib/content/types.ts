@@ -38,6 +38,15 @@ export type Word = {
   file: string;
 };
 
+export type Rect = [x: number, y: number, w: number, h: number];
+
+export type Part = {
+  element: string;
+  original?: string;
+  rect: Rect;
+  strokes: string[];
+};
+
 export type Kanji = {
   character: string;
   level: string;
@@ -65,5 +74,7 @@ export type Content = {
   sources: Source[];
   kanji: Kanji[];
   words: Word[];
+  /** How every kanji the words are written with is cut into blocks. */
+  parts: Record<string, Part[]>;
   taughtComponents: string[];
 };

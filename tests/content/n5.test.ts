@@ -5,6 +5,7 @@ import { renderAttribution, renderLicence } from "../../tools/content/attributio
 import {
   buildContent,
   buildKanji,
+  buildParts,
   buildTaughtComponents,
   buildWords,
   clipExists,
@@ -12,8 +13,11 @@ import {
   DESCRIPTION_FILE,
   loadPackInfo,
   packOutput,
-  readCached
+  readCached,
+  readCachedText
 } from "../../tools/content/build.ts";
+import { parseKanjivg } from "../../tools/content/kanjivg.ts";
+import { parseAnimcjk } from "../../tools/content/animcjk.ts";
 import { audioPath, imagePath } from "../../src/lib/packs/url.ts";
 import { parsePackMeta } from "../../src/lib/packs/catalog.ts";
 import { CACHE_DIR } from "../../tools/content/fetch.ts";
@@ -127,6 +131,39 @@ describe("the shipped N5 content", () => {
     expect(content.kanji.filter((entry) => entry.on.length + entry.kun.length === 0)).toEqual([]);
   });
 
+  test("cuts every kanji a word is written with, the level's or not, into 1 to 4 parts", () => {
+    const written = new Set(content.words.flatMap((word) => [...word.written].filter((glyph) => /\p{Script=Han}/u.test(glyph))));
+    expect([...written].filter((character) => content.parts[character] === undefined)).toEqual([]);
+    const cuts = Object.values(content.parts);
+    expect(cuts.filter((cut) => cut.length < 1 || cut.length > 4)).toEqual([]);
+    expect(cuts.flat().filter((part) => part.strokes.length === 0)).toEqual([]);
+  });
+
+  test("puts 亻 on the left half of 休 and 木 on the right", () => {
+    expect(content.parts["休"]?.map((part) => [part.element, part.rect])).toEqual([
+      ["亻", [0, 0, 2, 4]],
+      ["木", [2, 0, 2, 4]]
+    ]);
+  });
+
+  test("looks inside KanjiVG's unnamed groups, so 学 is ⺍ over 冖 over 子", () => {
+    expect(content.parts["学"]?.map((part) => part.element)).toEqual(["⺍", "冖", "子"]);
+    expect(content.parts["曜"]?.map((part) => part.element)).toEqual(["日", "翟"]);
+  });
+
+  test("names the pieces KanjiVG leaves unnamed from AnimCJK, so 前 is 䒑 月 刂", () => {
+    expect(content.parts["前"]?.map((part) => part.element)).toEqual(["䒑", "月", "刂"]);
+    expect(content.parts["電"]?.map((part) => part.element)).toEqual(["雨", "电"]);
+    expect(content.parts["年"]).toHaveLength(1);
+  });
+
+  test("names every piece in English for a screen reader", () => {
+    const names: Record<string, string> = JSON.parse(
+      readFileSync(new URL("../../src/lib/assets/local/en/components.json", import.meta.url), "utf8")
+    );
+    expect(content.taughtComponents.filter((piece) => !(piece in names))).toEqual([]);
+  });
+
   test("ships the curated components as bare characters, not their English names", () => {
     const curated = loadComponentList();
     expect(content.taughtComponents).toEqual([...curated.map((row) => row.character)].sort());
@@ -222,7 +259,7 @@ describe("the shipped N5 content", () => {
   });
 
   test("stays small enough to parse instantly on WebKitGTK and low-end Android", () => {
-    expect(Buffer.byteLength(read("content.json"))).toBeLessThan(200 * 1024);
+    expect(Buffer.byteLength(read("content.json"))).toBeLessThan(320 * 1024);
   });
 });
 
@@ -257,16 +294,20 @@ describe.skipIf(!cacheIsPopulated)("rebuilding from the pinned sources", () => {
     const index = indexByWrittenForm(parseJmdict(readCached("jmdict-eng-common.json")));
     const kradfile = parseKradfile(readCached("kradfile.json"));
     const kanjidic = parseKanjidic(readCached("kanjidic2.json"));
+    const words = buildWords(PACK, wordRows, index, levelKanji, kanjidic, clipExists);
+    const parts = buildParts(
+      words.map((word) => word.written),
+      parseKanjivg(readCachedText("kanjivg.xml")),
+      parseAnimcjk(readCachedText("animcjk-ja.txt")),
+      new Set(loadComponentList().map((row) => row.character))
+    );
     const rebuilt = buildContent(
       "N5",
       loadManifest().sources,
       buildKanji(kanjiRows, kradfile, kanjidic),
-      buildWords(PACK, wordRows, index, levelKanji, kanjidic, clipExists),
-      buildTaughtComponents(
-        loadComponentList(),
-        kradfile,
-        kanjiRows.map((row) => row.character)
-      ),
+      words,
+      parts,
+      buildTaughtComponents(loadComponentList(), parts),
       content.generated
     );
     expect(`${JSON.stringify(rebuilt, null, 2)}\n`).toBe(read("content.json"));

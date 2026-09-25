@@ -1,5 +1,5 @@
 import { isSetId, isSubcategoryOf } from "./sets";
-import type { Content, Kanji, ReadingClass, Source, Word } from "./types";
+import type { Content, Kanji, Part, ReadingClass, Rect, Source, Word } from "./types";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -83,6 +83,25 @@ function parseWord(value: unknown): Word | null {
   };
 }
 
+function parseRect(value: unknown): Rect | null {
+  if (!Array.isArray(value) || value.length !== 4) return null;
+  const [x, y, w, h] = value;
+  const cells = [x, y, w, h];
+  if (!cells.every((cell) => Number.isInteger(cell) && cell >= 0 && cell <= 4)) return null;
+  if (w < 1 || h < 1 || x + w > 4 || y + h > 4) return null;
+  return [x, y, w, h];
+}
+
+export function parsePart(value: unknown): Part | null {
+  if (!isRecord(value)) return null;
+  const element = text(value.element);
+  const rect = parseRect(value.rect);
+  const strokes = textList(value.strokes);
+  if (element === null || rect === null || strokes === null || strokes.length === 0) return null;
+  const original = text(value.original);
+  return { element, ...(original === null ? {} : { original }), rect, strokes };
+}
+
 function parseKanji(value: unknown): Kanji | null {
   if (!isRecord(value)) return null;
   const character = text(value.character);
@@ -93,6 +112,18 @@ function parseKanji(value: unknown): Kanji | null {
   if (character === null || level === null || components === null) return null;
   if (on === null || kun === null) return null;
   return { character, level, look: optionalText(value.look), components, on, kun };
+}
+
+function parseParts(value: unknown): Record<string, Part[]> | null {
+  if (value === undefined) return {};
+  if (!isRecord(value)) return null;
+  const parts: Record<string, Part[]> = {};
+  for (const [character, entries] of Object.entries(value)) {
+    const parsed = list(entries, parsePart);
+    if (parsed === null || parsed.length === 0) return null;
+    parts[character] = parsed;
+  }
+  return parts;
 }
 
 function parseSource(value: unknown): Source | null {
@@ -115,11 +146,12 @@ export function parseContent(value: unknown): Content | null {
   const sources = list(value.sources, parseSource);
   const kanji = list(value.kanji, parseKanji);
   const words = list(value.words, parseWord);
+  const parts = parseParts(value.parts);
   const taughtComponents = textList(value.taughtComponents);
   if (level === null || generated === null || sources === null) return null;
-  if (kanji === null || words === null || taughtComponents === null) return null;
+  if (kanji === null || words === null || parts === null || taughtComponents === null) return null;
   if (words.length === 0) return null;
-  return { level, generated, sources, kanji, words, taughtComponents };
+  return { level, generated, sources, kanji, words, parts, taughtComponents };
 }
 
 function firstBy<T>(lists: readonly (readonly T[])[], key: (item: T) => string): T[] {
@@ -132,8 +164,13 @@ function firstBy<T>(lists: readonly (readonly T[])[], key: (item: T) => string):
   return [...kept.values()];
 }
 
-export function mergeContents(contents: readonly Content[]): { words: Word[]; kanji: Kanji[] } {
+export function mergeContents(contents: readonly Content[]): {
+  words: Word[];
+  kanji: Kanji[];
+  parts: Record<string, Part[]>;
+} {
   return {
+    parts: Object.assign({}, ...[...contents].reverse().map((content) => content.parts)),
     words: firstBy(
       contents.map((content) => content.words),
       (word) => word.id
@@ -232,6 +269,24 @@ if (import.meta.vitest) {
       expect(parseContent({ ...payload, words: [rest] })).toBeNull();
     });
 
+    test("reads a pack built before parts existed as having none", () => {
+      expect(parseContent(payload)?.parts).toEqual({});
+    });
+
+    test("keeps each part's element, full form, slot and strokes", () => {
+      const part = { element: "亻", original: "人", rect: [0, 0, 2, 4], strokes: ["M1,1l2,2"] };
+      expect(parseContent({ ...payload, parts: { 休: [part] } })?.parts).toEqual({ 休: [part] });
+    });
+
+    test("rejects a part whose slot runs off the grid", () => {
+      const part = { element: "亻", rect: [3, 0, 2, 4], strokes: ["M1,1l2,2"] };
+      expect(parseContent({ ...payload, parts: { 休: [part] } })).toBeNull();
+    });
+
+    test("rejects a kanji cut into nothing", () => {
+      expect(parseContent({ ...payload, parts: { 休: [] } })).toBeNull();
+    });
+
     test("rejects a kanji list holding something other than strings", () => {
       expect(parseContent({ ...payload, words: [{ ...word, kanji: [1] }] })).toBeNull();
     });
@@ -241,6 +296,10 @@ if (import.meta.vitest) {
     const base = parseContent(payload);
     const extra = parseContent({
       ...payload,
+      parts: {
+        一: [{ element: "一", rect: [0, 0, 4, 4], strokes: ["M2,2"] }],
+        二: [{ element: "二", rect: [0, 0, 4, 4], strokes: ["M3,3"] }]
+      },
       words: [word, { ...word, id: "二|に", written: "二", reading: "に", readings: ["に"], meaning: "two", pack: "n5-food" }],
       kanji: [{ character: "一", level: "N5", look: "later", components: ["一"], on: [], kun: [] }]
     });
@@ -257,8 +316,16 @@ if (import.meta.vitest) {
       expect(kanji[0]?.look).toBe("");
     });
 
+    test("keeps the first pack's cut of a kanji and adds the ones only a later pack writes", () => {
+      if (base === null || extra === null) throw new Error("fixtures must parse");
+      const first: Content = { ...base, parts: { 一: [{ element: "一", rect: [0, 0, 4, 4], strokes: ["M1,1"] }] } };
+      const { parts } = mergeContents([first, extra]);
+      expect(Object.keys(parts).sort()).toEqual(["一", "二"]);
+      expect(parts["一"]?.[0]?.strokes).toEqual(["M1,1"]);
+    });
+
     test("holds nothing when no pack is enabled", () => {
-      expect(mergeContents([])).toEqual({ words: [], kanji: [] });
+      expect(mergeContents([])).toEqual({ words: [], kanji: [], parts: {} });
     });
   });
 

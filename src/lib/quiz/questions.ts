@@ -2,9 +2,11 @@ import { SUBCATEGORIES, subcategoryKey } from "../content/sets";
 import type { Word } from "../content/types";
 import { audioUrl, imageUrl } from "./hints";
 import { normalizeReading } from "./romaji";
-import { answerSurface, DEFAULT_SETTINGS, DIFFICULTIES, promptSurface, usesAudio } from "./settings";
+import { answerSurface, DEFAULT_SETTINGS, DIFFICULTIES, isAssembly, promptSurface, usesAudio } from "./settings";
+import { buildPuzzle, canAssemble, shapesOf, type Puzzle, type Shapes } from "./assemble";
 import type { Difficulty, Format, RunSettings, Surface, WordShape } from "./settings";
 import { similarity, type ComponentIndex } from "./similarity";
+import { shuffle } from "./shuffle";
 
 export type Question = {
   index: number;
@@ -14,6 +16,7 @@ export type Question = {
   /** Every surface a typed answer may give. One entry when the answer is a form. */
   accepted: string[];
   choices: string[];
+  puzzle?: Puzzle;
 };
 
 export type Answer = {
@@ -64,7 +67,11 @@ export function wordShape(word: Word): WordShape {
  * A word is in play when its set is chosen, its subcategory is chosen, and its
  * shape is one of the shapes asked for.
  */
-export function eligibleWords(settings: RunSettings, words: readonly Word[]): Word[] {
+export function eligibleWords(
+  settings: RunSettings,
+  words: readonly Word[],
+  cuts: Shapes = new Map()
+): Word[] {
   const sets = new Set(settings.sets);
   const subcategories = new Set(settings.subcategories);
   const shapes = new Set(settings.wordShapes);
@@ -75,17 +82,9 @@ export function eligibleWords(settings: RunSettings, words: readonly Word[]): Wo
     if (subcategories.size > 0 && !subcategories.has(subcategoryKey(word.set, word.subcategory)))
       return false;
     if (shapes.size > 0 && !shapes.has(wordShape(word))) return false;
+    if (isAssembly(settings.format) && !canAssemble(word, cuts)) return false;
     return word.hasAudio || !usesAudio(settings.format);
   });
-}
-
-function shuffle<T>(items: readonly T[], rng: () => number): T[] {
-  const copy = items.slice();
-  for (let index = copy.length - 1; index > 0; index -= 1) {
-    const swap = Math.floor(rng() * (index + 1));
-    [copy[index], copy[swap]] = [copy[swap], copy[index]];
-  }
-  return copy;
 }
 
 export function similarCount(difficulty: Difficulty): number {
@@ -215,9 +214,11 @@ export function buildQuestions(
   settings: RunSettings,
   words: readonly Word[],
   rng: () => number = Math.random,
-  components: ComponentIndex = new Map()
+  components: ComponentIndex = new Map(),
+  shapes: Shapes = new Map()
 ): Question[] {
-  const pool = eligibleWords(settings, words);
+  const pool = eligibleWords(settings, words, shapes);
+  const assembly = isAssembly(settings.format);
   if (pool.length === 0) return [];
 
   const everything = atLevel(words, settings.level).filter(
@@ -234,7 +235,9 @@ export function buildQuestions(
     if (bag.length === 0) bag = shuffle(pool, rng);
     const target = bag[bag.length - 1];
     bag.pop();
+    const puzzle = assembly ? buildPuzzle(target, shapes, settings.difficulty, rng) : null;
     questions.push({
+      ...(puzzle === null ? {} : { puzzle }),
       index,
       wordId: target.id,
       prompt: promptOf(target, settings.format),
@@ -247,7 +250,7 @@ export function buildQuestions(
         )
       ],
       choices:
-        settings.answerStyle === "choice"
+        settings.answerStyle === "choice" && !assembly
           ? buildChoices(
               target,
               distractors,
@@ -406,6 +409,20 @@ test("asks the written form and answers the reading on kanji to kana", () => {
       const [question] = buildQuestions(settings, all, seeded(3));
       expect(question.prompt).not.toContain("reading");
       expect(question.answer).toContain("reading");
+    });
+
+    test("builds a puzzle from the reading on assemble, with no choices", () => {
+      const shapes = shapesOf({ 一: [{ element: "一", rect: [0, 0, 4, 4], strokes: ["M0,0"] }] }, []);
+      const assembly = { ...settings, format: "kana-assemble" as const };
+      const questions = buildQuestions(assembly, all, seeded(3), new Map(), shapes);
+      expect(questions.every((question) => question.wordId === "一|一")).toBe(true);
+      expect(questions[0].prompt).toBe("一reading");
+      expect(questions[0].choices).toEqual([]);
+      expect(questions[0].puzzle?.slots.map((slot) => slot.element)).toEqual(["一"]);
+    });
+
+    test("leaves out a word whose kanji have no parts on assemble", () => {
+      expect(eligibleWords({ ...settings, format: "kana-assemble" }, all)).toEqual([]);
     });
 
     test("swaps the sides on kana to kanji", () => {

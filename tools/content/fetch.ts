@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { gunzipSync } from "node:zlib";
+import { gunzipSync, gzipSync } from "node:zlib";
 import { loadManifest } from "./sources.ts";
 import type { SourceFile } from "./sources.ts";
 
@@ -43,7 +43,8 @@ export function readSingleTarEntry(tar: Uint8Array): Uint8Array {
 }
 
 export function unpack(url: string, bytes: Uint8Array): Uint8Array {
-  return url.endsWith(".tgz") ? readSingleTarEntry(gunzipSync(bytes)) : bytes;
+  if (url.endsWith(".tgz")) return readSingleTarEntry(gunzipSync(bytes));
+  return url.endsWith(".gz") ? gunzipSync(bytes) : bytes;
 }
 
 async function download(url: string): Promise<Uint8Array> {
@@ -156,6 +157,13 @@ if (import.meta.vitest) {
     test("passes a plain file through unchanged", () => {
       const bytes = new TextEncoder().encode("a,b\n1,2\n");
       expect(unpack("https://example.test/x.csv", bytes)).toBe(bytes);
+    });
+  });
+
+  describe("unpack a gzip", () => {
+    test("inflates a lone gzipped file", () => {
+      const bytes = new TextEncoder().encode("<kanjivg/>");
+      expect(new TextDecoder().decode(unpack("https://example.test/x.xml.gz", gzipSync(bytes)))).toBe("<kanjivg/>");
     });
   });
 

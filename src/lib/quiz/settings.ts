@@ -12,9 +12,10 @@ export type Format =
   | "image-kana"
   | "audio-kana"
   | "audio-kanji"
-  | "kanji-audio";
+  | "kanji-audio"
+  | "kana-assemble";
 export type Surface = "written" | "reading" | "meaning" | "image" | "audio";
-export type Category = "reading" | "meaning" | "visualize" | "listening";
+export type Category = "reading" | "meaning" | "visualize" | "listening" | "assemble";
 export type AnswerStyle = "choice" | "typing";
 export type WordShape = "1-kanji" | "2-kanji" | "okurigana";
 export type Difficulty = "beginner" | "advanced" | "expert";
@@ -44,13 +45,14 @@ export type RunSettings = {
 
 export const DIFFICULTIES: readonly Difficulty[] = ["beginner", "advanced", "expert"];
 
-export const CATEGORIES: readonly Category[] = ["reading", "meaning", "visualize", "listening"];
+export const CATEGORIES: readonly Category[] = ["reading", "meaning", "visualize", "listening", "assemble"];
 
 export const DIRECTIONS_BY_CATEGORY: Record<Category, readonly Format[]> = {
   reading: ["kanji-kana", "kana-kanji"],
   meaning: ["kanji-meaning", "meaning-kanji", "kana-meaning", "meaning-kana"],
   visualize: ["image-kanji", "image-kana"],
-  listening: ["audio-kana", "audio-kanji", "kanji-audio"]
+  listening: ["audio-kana", "audio-kanji", "kanji-audio"],
+  assemble: ["kana-assemble"]
 };
 
 export const FORMATS: readonly Format[] = CATEGORIES.flatMap(
@@ -76,7 +78,8 @@ const SIDES: Record<Format, { prompt: Surface; answer: Surface }> = {
   "image-kana": { prompt: "image", answer: "reading" },
   "audio-kana": { prompt: "audio", answer: "reading" },
   "audio-kanji": { prompt: "audio", answer: "written" },
-  "kanji-audio": { prompt: "written", answer: "audio" }
+  "kanji-audio": { prompt: "written", answer: "audio" },
+  "kana-assemble": { prompt: "reading", answer: "written" }
 };
 
 export function promptSurface(format: Format): Surface {
@@ -91,6 +94,10 @@ export function usesAudio(format: Format): boolean {
   return categoryOf(format) === "listening";
 }
 
+export function isAssembly(format: Format): boolean {
+  return categoryOf(format) === "assemble";
+}
+
 export function isJapanese(surface: Surface): boolean {
   return surface === "written" || surface === "reading";
 }
@@ -98,7 +105,7 @@ export function isJapanese(surface: Surface): boolean {
 export const ANSWER_STYLES: readonly AnswerStyle[] = ["choice", "typing"];
 
 export function answerStylesFor(format: Format): readonly AnswerStyle[] {
-  return answerSurface(format) === "audio" ? ["choice"] : ANSWER_STYLES;
+  return answerSurface(format) === "audio" || isAssembly(format) ? ["choice"] : ANSWER_STYLES;
 }
 export const CHOICE_COUNTS: readonly number[] = [4];
 
@@ -403,7 +410,8 @@ if (import.meta.vitest) {
       "image",
       "audio",
       "audio",
-      "written"
+      "written",
+      "reading"
     ]);
     expect(FORMATS.map(answerSurface)).toEqual([
       "reading",
@@ -416,8 +424,15 @@ if (import.meta.vitest) {
       "reading",
       "reading",
       "written",
-      "audio"
+      "audio",
+      "written"
     ]);
+  });
+
+  test("answers an assembly by placing blocks, never by typing", () => {
+    expect(answerStylesFor("kana-assemble")).toEqual(["choice"]);
+    expect(isAssembly("kana-assemble")).toBe(true);
+    expect(isAssembly("kana-kanji")).toBe(false);
   });
 
   test("groups every format under exactly one category", () => {
@@ -432,7 +447,8 @@ if (import.meta.vitest) {
       "visualize",
       "listening",
       "listening",
-      "listening"
+      "listening",
+      "assemble"
     ]);
     expect(FORMATS.filter(usesAudio)).toEqual(["audio-kana", "audio-kanji", "kanji-audio"]);
   });

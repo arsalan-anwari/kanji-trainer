@@ -3,7 +3,8 @@ import { describe, expect, test } from "vitest";
 import { parseContent } from "../../src/lib/content/load.ts";
 import type { Word } from "../../src/lib/content/types.ts";
 import { answerOf, buildQuestions } from "../../src/lib/quiz/questions.ts";
-import { answerSurface, DEFAULT_SETTINGS, FORMATS, usesAudio } from "../../src/lib/quiz/settings.ts";
+import { answerSurface, DEFAULT_SETTINGS, FORMATS, isAssembly, usesAudio } from "../../src/lib/quiz/settings.ts";
+import { buildPuzzle, canAssemble, shapesOf } from "../../src/lib/quiz/assemble.ts";
 import { componentIndex, similarity, SHARED_KANJI } from "../../src/lib/quiz/similarity.ts";
 
 const raw = readFileSync(new URL("../../data/packs/n5-base/content.json", import.meta.url), "utf8");
@@ -68,7 +69,7 @@ function distractorScores(
 }
 
 describe("an expert run over the places set", () => {
-  for (const format of FORMATS) {
+  for (const format of FORMATS.filter((entry) => !isAssembly(entry))) {
     test(`leaves no distractor discardable on sight on ${format}`, () => {
       const questions = run("expert", format);
       expect(questions.length).toBeGreaterThan(0);
@@ -89,5 +90,19 @@ describe("an expert run over the places set", () => {
 
   test("still lets a beginner meet a distractor that shares nothing", () => {
     expect(distractorScores(run("beginner", "kanji-kana"), "kanji-kana")).toContain(0);
+  });
+});
+
+describe("assembling the N5 words", () => {
+  const shapes = shapesOf(content.parts, content.kanji);
+
+  test("can build every word of the level", () => {
+    expect(words.filter((word) => !canAssemble(word, shapes)).map((word) => word.written)).toEqual([]);
+  });
+
+  test("gives an expert at least one look-alike in most words", () => {
+    const built = words.flatMap((word, at) => buildPuzzle(word, shapes, "expert", seeded(at)) ?? []);
+    const padded = built.filter((puzzle) => puzzle.blocks.length > puzzle.slots.length);
+    expect(padded.length / built.length).toBeGreaterThan(0.8);
   });
 });

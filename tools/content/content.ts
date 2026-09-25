@@ -1,5 +1,6 @@
-import type { Content, Kanji, ReadingClass, Source, Word } from "../../src/lib/content/types.ts";
-import { isSetId, isSingleKanji, isSubcategoryOf, isKana, wordId } from "./validate.ts";
+import type { Content, Kanji, Part, ReadingClass, Source, Word } from "../../src/lib/content/types.ts";
+import { isSetId, isSingleKanji, isSubcategoryOf, isKana, kanjiIn, wordId } from "./validate.ts";
+import { parsePart } from "../../src/lib/content/load.ts";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -167,6 +168,29 @@ function parseSource(value: unknown, where: string): Source {
   };
 }
 
+function parseParts(value: unknown, where: string): Record<string, Part[]> {
+  if (!isRecord(value)) {
+    throw new Error(`${where}: must be an object`);
+  }
+  const parts: Record<string, Part[]> = {};
+  for (const [character, entries] of Object.entries(value)) {
+    if (!isSingleKanji(character) || !Array.isArray(entries)) {
+      throw new Error(`${where}: "${character}" must be one kanji holding a list of parts`);
+    }
+    if (entries.length === 0 || entries.length > 4) {
+      throw new Error(`${where}: "${character}" has ${entries.length} parts, not 1 to 4`);
+    }
+    parts[character] = entries.map((item, index) => {
+      const part = parsePart(item);
+      if (part === null) {
+        throw new Error(`${where}: "${character}" parts[${index}] needs an element, a slot on the 4 by 4 grid and strokes`);
+      }
+      return part;
+    });
+  }
+  return parts;
+}
+
 export function parseContent(value: unknown, where: string): Content {
   if (!isRecord(value)) {
     throw new Error(`${where}: must be an object`);
@@ -183,6 +207,7 @@ export function parseContent(value: unknown, where: string): Content {
     words: list(value, "words", where).map((item, index) =>
       parseWord(item, `${where} word ${index}`)
     ),
+    parts: parseParts(value.parts, `${where} parts`),
     taughtComponents: characters(value, "taughtComponents", where)
   };
   if (content.sources.length === 0) {
@@ -225,18 +250,19 @@ export function contentProblems(content: Content, where: string): string[] {
     }
   }
 
-  const shared = new Map<string, number>();
-  for (const entry of content.kanji) {
-    for (const component of entry.components) {
-      shared.set(component, (shared.get(component) ?? 0) + 1);
+  for (const character of new Set(content.words.flatMap((word) => kanjiIn(word.written)))) {
+    if (content.parts[character] === undefined) {
+      problems.push(`${where}: "${character}" is written in a word but has no parts`);
     }
   }
-  for (const component of content.taughtComponents) {
-    const count = shared.get(component) ?? 0;
-    if (count < 2) {
-      problems.push(
-        `${where}: component "${component}" occurs in ${count} kanji of the level, so it is not worth teaching`
-      );
+
+  const pieces = new Set(content.taughtComponents);
+  for (const [character, parts] of Object.entries(content.parts)) {
+    if (parts.length < 2) continue;
+    for (const part of parts) {
+      if (!pieces.has(part.element)) {
+        problems.push(`${where}: "${part.element}", a piece of "${character}", is not in the piece list`);
+      }
     }
   }
 

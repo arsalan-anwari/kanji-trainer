@@ -544,7 +544,7 @@ if (import.meta.vitest) {
   describe("the committed component list", () => {
     test("names every component it teaches", () => {
       const components = loadComponentList();
-      expect(components.length).toBe(30);
+      expect(components.length).toBe(126);
       expect(components.every((row) => row.name !== "")).toBe(true);
     });
   });

@@ -5,7 +5,10 @@ import { renderAttribution, renderLicence } from "./attribution.ts";
 import { CACHE_DIR } from "./fetch.ts";
 import { acceptedReadings, indexByWrittenForm, isMatch, lookupWord, parseJmdict } from "./jmdict.ts";
 import { parseKanjidic, readingClassOf } from "./kanjidic.ts";
-import { componentFrequency, decompose, parseKradfile } from "./kradfile.ts";
+import { decompose, parseKradfile } from "./kradfile.ts";
+import { parseKanjivg, partsOf } from "./kanjivg.ts";
+import type { Kanjivg } from "./kanjivg.ts";
+import { parseAnimcjk, type Animcjk } from "./animcjk.ts";
 import { loadManifest } from "./sources.ts";
 import {
   countBySet,
@@ -24,7 +27,7 @@ import type { Lookup } from "./jmdict.ts";
 import type { Kanjidic } from "./kanjidic.ts";
 import type { Kradfile } from "./kradfile.ts";
 import type { ComponentRow, KanjiRow, WordRow } from "./validate.ts";
-import type { Content, Kanji, Source, Word } from "../../src/lib/content/types.ts";
+import type { Content, Kanji, Part, Source, Word } from "../../src/lib/content/types.ts";
 import { audioPath } from "../../src/lib/packs/url.ts";
 import { parsePackInfo, type PackInfo, type PackMeta } from "../../src/lib/packs/catalog.ts";
 
@@ -82,12 +85,16 @@ export function copyDescription(pack: string): string {
   return DESCRIPTION_FILE;
 }
 
-export function readCached(name: string): unknown {
+export function readCachedText(name: string): string {
   try {
-    return JSON.parse(readFileSync(join(CACHE_DIR, name), "utf8"));
+    return readFileSync(join(CACHE_DIR, name), "utf8");
   } catch {
     throw new Error(`${name} is not in .cache/content — run "npm run content:fetch" first`);
   }
+}
+
+export function readCached(name: string): unknown {
+  return JSON.parse(readCachedText(name));
 }
 
 const NO_READINGS = { on: [], kun: [] };
@@ -227,30 +234,45 @@ export function buildKanji(
   return kanji.sort((a, b) => byCodePoint(a.character, b.character));
 }
 
+export function buildParts(
+  written: readonly string[],
+  kanjivg: Kanjivg,
+  animcjk: Animcjk = new Map(),
+  known: ReadonlySet<string> = new Set()
+): Record<string, Part[]> {
+  const characters = [...new Set(written.flatMap(kanjiIn))].sort(byCodePoint);
+  return Object.fromEntries(
+    characters.map((character) => [character, partsOf(character, kanjivg, animcjk, known)])
+  );
+}
+
+export function piecesOf(parts: Readonly<Record<string, Part[]>>): string[] {
+  const pieces = new Set<string>();
+  for (const cut of Object.values(parts)) {
+    if (cut.length < 2) continue;
+    for (const part of cut) pieces.add(part.element);
+  }
+  return [...pieces].sort(byCodePoint);
+}
+
 export function buildTaughtComponents(
   rows: readonly ComponentRow[],
-  kradfile: Kradfile,
-  levelKanji: readonly string[]
+  parts: Readonly<Record<string, Part[]>>
 ): string[] {
-  const counts = componentFrequency(kradfile, levelKanji);
-  const problems: string[] = [];
-  const taught: string[] = [];
-
-  for (const row of rows) {
-    const shared = counts.get(row.character) ?? 0;
-    if (shared < 2) {
-      problems.push(
-        `data/overlay/shared/components.tsv: "${row.character}" (${row.name}) occurs in ${shared} kanji of the level, so it is not worth teaching as a component`
-      );
-      continue;
-    }
-    taught.push(row.character);
-  }
-
+  const named = new Set(rows.map((row) => row.character));
+  const problems = Object.entries(parts).flatMap(([character, cut]) =>
+    cut.length < 2
+      ? []
+      : cut
+          .filter((part) => !named.has(part.element))
+          .map(
+            (part) => `data/overlay/shared/components.tsv: "${part.element}", a piece of "${character}", has no row`
+          )
+  );
   if (problems.length > 0) {
     throw new Error(problems.join("\n"));
   }
-  return taught.sort(byCodePoint);
+  return [...named].sort(byCodePoint);
 }
 
 function toSource(source: Source): Source {
@@ -269,6 +291,7 @@ export function buildContent(
   sources: readonly Source[],
   kanji: Kanji[],
   words: Word[],
+  parts: Record<string, Part[]>,
   taughtComponents: string[],
   generated: string
 ): Content {
@@ -278,6 +301,7 @@ export function buildContent(
     sources: sources.map(toSource),
     kanji,
     words,
+    parts,
     taughtComponents
   };
 }
@@ -291,7 +315,9 @@ function buildPack(
   manifest: ReturnType<typeof loadManifest>,
   index: Lookup,
   kradfile: Kradfile,
-  kanjidic: Kanjidic
+  kanjidic: Kanjidic,
+  kanjivg: Kanjivg,
+  animcjk: Animcjk
 ): PackMeta {
   const info = loadPackInfo(pack);
   const out = packOutput(pack);
@@ -305,13 +331,21 @@ function buildPack(
     throw new Error(`data/overlay/packs/${pack}/words.tsv: ${offLevel.length} row(s) are not ${info.level}, the level pack.json names`);
   }
 
-  const characters = kanjiRows.map((row) => row.character);
+  const words = buildWords(pack, wordRows, index, levelKanji, kanjidic, clipExists);
+  const pieceRows = loadComponentList();
+  const parts = buildParts(
+    words.map((word) => word.written),
+    kanjivg,
+    animcjk,
+    new Set(pieceRows.map((row) => row.character))
+  );
   const content = buildContent(
     info.level,
     manifest.sources,
     buildKanji(kanjiRows, kradfile, kanjidic),
-    buildWords(pack, wordRows, index, levelKanji, kanjidic, clipExists),
-    buildTaughtComponents(loadComponentList(), kradfile, characters),
+    words,
+    parts,
+    buildTaughtComponents(pieceRows, parts),
     today()
   );
   const meta = packMeta(info, content, copyDescription(pack));
@@ -336,7 +370,9 @@ function main(): void {
   const index = indexByWrittenForm(parseJmdict(readCached("jmdict-eng-common.json")));
   const kradfile = parseKradfile(readCached("kradfile.json"));
   const kanjidic = parseKanjidic(readCached("kanjidic2.json"));
-  const packs = packIds().map((pack) => buildPack(pack, manifest, index, kradfile, kanjidic));
+  const kanjivg = parseKanjivg(readCachedText("kanjivg.xml"));
+  const animcjk = parseAnimcjk(readCachedText("animcjk-ja.txt"));
+  const packs = packIds().map((pack) => buildPack(pack, manifest, index, kradfile, kanjidic, kanjivg, animcjk));
   writeFileSync(join(PACKS_DIR, "index.json"), `${JSON.stringify(packs.map((pack) => pack.id), null, 2)}\n`);
   process.stdout.write(`${packs.length} pack(s) built, 0 unresolved rows\n`);
 }
@@ -600,33 +636,35 @@ if (import.meta.vitest) {
   });
 
   describe("buildTaughtComponents", () => {
-    const characters = ["明", "時", "本", "林"];
+    const piece = (element: string): Part => ({ element, rect: [0, 0, 2, 4], strokes: [] });
+    const kanji = (character: string, elements: string[]): Record<string, Part[]> => ({
+      [character]: elements.map(piece)
+    });
 
-    test("keeps a component two kanji of the level share", () => {
+    test("ships every curated piece, sorted by code point", () => {
       expect(
-        buildTaughtComponents([{ character: "日", name: "sun" }], kradfile, characters)
-      ).toEqual(["日"]);
+        buildTaughtComponents(
+          [
+            { character: "木", name: "tree" },
+            { character: "亻", name: "person" }
+          ],
+          kanji("休", ["亻", "木"])
+        )
+      ).toEqual(["亻", "木"]);
     });
 
-    test("refuses a component only one kanji of the level uses", () => {
-      expect(() =>
-        buildTaughtComponents([{ character: "寸", name: "measure" }], kradfile, characters)
-      ).toThrow(/"寸" \(measure\) occurs in 1 kanji of the level/);
-    });
-
-    test("refuses a component no kanji of the level uses", () => {
-      expect(() =>
-        buildTaughtComponents([{ character: "魚", name: "fish" }], kradfile, characters)
-      ).toThrow(/occurs in 0 kanji of the level/);
-    });
-
-    test("ships only the characters, never the curator's English name", () => {
-      const taught = buildTaughtComponents(
-        [{ character: "木", name: "tree" }, { character: "日", name: "sun" }],
-        kradfile,
-        characters
+    test("fails on a piece of a cut kanji that has no row, naming both", () => {
+      expect(() => buildTaughtComponents([{ character: "木", name: "tree" }], kanji("休", ["亻", "木"]))).toThrow(
+        /"亻", a piece of "休", has no row/
       );
-      expect(taught).toEqual(["日", "木"]);
+    });
+
+    test("asks no row for a kanji that stays one block", () => {
+      expect(buildTaughtComponents([], kanji("一", ["一"]))).toEqual([]);
+    });
+
+    test("lists the pieces of cut kanji only", () => {
+      expect(piecesOf({ ...kanji("休", ["亻", "木"]), ...kanji("一", ["一"]) })).toEqual(["亻", "木"]);
     });
 
     test("orders by code point, which no locale data can shift under us", () => {
@@ -637,7 +675,7 @@ if (import.meta.vitest) {
   describe("buildContent", () => {
     test("carries only the six published fields of each source", () => {
       const manifest = loadManifest();
-      const content = buildContent("N5", manifest.sources, [], [], [], "2026-09-19");
+      const content = buildContent("N5", manifest.sources, [], [], {}, [], "2026-09-19");
       expect(Object.keys(content.sources[0]).sort()).toEqual([
         "id",
         "licence",

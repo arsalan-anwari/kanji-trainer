@@ -15,7 +15,8 @@
     "audio-kanji": "Which word did you hear?",
     "kanji-audio": "Which recording is this word?",
     "replay": "Play the word again",
-    "imageAlt": "A picture illustrating the word"
+    "imageAlt": "A picture illustrating the word",
+    "kana-assemble": "Build this word"
   },
   "choices": "Answers",
   "soundTile": "Recording {slot}",
@@ -44,7 +45,8 @@
       "romaji": "How it sounds",
       "clue": "A clue",
       "look": "How it is written",
-      "image": "A picture"
+      "image": "A picture",
+      "ghost": "Some pieces"
     }
   },
   "next": "Next",
@@ -61,5 +63,29 @@
     "warning": "Five seconds left",
     "questionLeft": "Time left on this question",
     "runLeft": "Time left in the run"
+  },
+  "assemble": {
+    "slots": "Slots",
+    "pile": "Blocks",
+    "tray": "{kind} {index}",
+    "kanji": "kanji",
+    "kana": "kana",
+    "empty": "empty",
+    "slot": "{tray}, {position}, {content}",
+    "placed": "Placed {block} in {slot}",
+    "lifted": "Took {block} out of {slot}",
+    "done": "{character} is complete",
+    "position": {
+      "whole": "whole",
+      "center": "center",
+      "left": "left",
+      "right": "right",
+      "top": "top",
+      "bottom": "bottom",
+      "top-left": "top left",
+      "top-right": "top right",
+      "bottom-left": "bottom left",
+      "bottom-right": "bottom right"
+    }
   }
 }
