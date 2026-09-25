@@ -10,19 +10,22 @@
     tree,
     openByDefault,
     isOn,
+    isUsable = () => true,
     ontoggle,
     onset
   }: {
     tree: SetGroup<Word>[];
     openByDefault: boolean;
     isOn: (id: string) => boolean;
+    /** False for a word shown but switched off: it can be neither kept nor dropped. */
+    isUsable?: (id: string) => boolean;
     ontoggle: (id: string) => void;
     onset: (ids: string[], on: boolean) => void;
   } = $props();
 </script>
 
 {#each tree as branch (branch.set)}
-  {@const ids = branch.groups.flatMap((group) => group.words.map((word) => word.id))}
+  {@const ids = branch.groups.flatMap((group) => group.words.map((word) => word.id)).filter(isUsable)}
   {@const taken = ids.filter(isOn).length}
   {@const label = t(`common.set.${branch.set}`)}
   <details data-section use:openWhen={openByDefault} class="rounded-2xl border-2 border-border bg-surface">
@@ -39,7 +42,7 @@
 
     <div class="flex flex-col gap-4 border-t-2 border-border px-4 py-4">
       {#each branch.groups as group (group.subcategory)}
-        {@const groupIds = group.words.map((word) => word.id)}
+        {@const groupIds = group.words.map((word) => word.id).filter(isUsable)}
         {@const groupLabel = t(`common.subcategory.${group.subcategory}`)}
         <details use:openWhen={openByDefault} class="rounded-xl border-2 border-border bg-surface">
           <summary
@@ -76,13 +79,18 @@
             class="grid grid-cols-[repeat(auto-fill,minmax(7.5rem,1fr))] gap-2 border-t border-wire p-3"
           >
             {#each group.words as word (word.id)}
-              {@const on = isOn(word.id)}
+              {@const usable = isUsable(word.id)}
+              {@const on = usable && isOn(word.id)}
               <button
                 type="button"
                 aria-pressed={on}
-                class="flex cursor-pointer flex-col gap-0.5 rounded-lg border px-3 py-2 text-left transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none {on
-                  ? 'border-selected bg-selected-soft'
-                  : 'border-wire bg-surface opacity-50 hover:bg-accent'}"
+                disabled={!usable}
+                title={usable ? undefined : t("setup.words.unsuitedWord")}
+                class="flex flex-col gap-0.5 rounded-lg border px-3 py-2 text-left transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none {!usable
+                  ? 'cursor-not-allowed border-dashed border-wire bg-surface opacity-30'
+                  : on
+                    ? 'cursor-pointer border-selected bg-selected-soft'
+                    : 'cursor-pointer border-wire bg-surface opacity-50 hover:bg-accent'}"
                 onclick={() => ontoggle(word.id)}
               >
                 <span class="flex flex-col">

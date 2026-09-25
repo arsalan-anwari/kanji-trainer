@@ -2,7 +2,7 @@ import { SUBCATEGORIES, subcategoryKey } from "../content/sets";
 import type { Word } from "../content/types";
 import { audioUrl, imageUrl } from "./hints";
 import { normalizeReading } from "./romaji";
-import { answerSurface, DEFAULT_SETTINGS, DIFFICULTIES, isAssembly, promptSurface, usesAudio } from "./settings";
+import { answerSurface, DEFAULT_SETTINGS, DIFFICULTIES, FORMATS, isAssembly, promptSurface, showsWritten, usesAudio } from "./settings";
 import { buildPuzzle, canAssemble, shapesOf, type Puzzle, type Shapes } from "./assemble";
 import type { Difficulty, Format, RunSettings, Surface, WordShape } from "./settings";
 import { similarity, type ComponentIndex } from "./similarity";
@@ -54,37 +54,52 @@ export function atLevel(words: readonly Word[], level: string): Word[] {
   return words.filter((word) => word.level.toLowerCase() === wanted);
 }
 
-/**
- * The one shape a word has. A word with kana after its kanji is okurigana even
- * when it carries two kanji, so the three shapes never overlap.
- */
-export function wordShape(word: Word): WordShape {
-  if (word.hasOkurigana) return "okurigana";
-  return word.kanjiCount === 1 ? "1-kanji" : "2-kanji";
+/** Whether the format can ask the word at all, whatever else the run picked. */
+export function suitsFormat(word: Word, format: Format, cuts: Shapes = new Map()): boolean {
+  if (word.shape === "kana" && showsWritten(format)) return false;
+  if (isAssembly(format) && !canAssemble(word, cuts)) return false;
+  return word.hasAudio || !usesAudio(format);
+}
+
+/** The packs among `words` the format can ask none of. */
+export function unsuitedPacks(words: readonly Word[], format: Format, cuts: Shapes = new Map()): string[] {
+  const suited = new Set(words.filter((word) => suitsFormat(word, format, cuts)).map((word) => word.pack));
+  return [...new Set(words.map((word) => word.pack))].filter((pack) => !suited.has(pack));
 }
 
 /**
- * A word is in play when its set is chosen, its subcategory is chosen, and its
- * shape is one of the shapes asked for.
+ * The words the learner picked: set, subcategory, shape and pack chosen, not
+ * held back by hand. Some of them the format may still be unable to ask.
  */
-export function eligibleWords(
-  settings: RunSettings,
-  words: readonly Word[],
-  cuts: Shapes = new Map()
-): Word[] {
+export function pickedWords(settings: RunSettings, words: readonly Word[]): Word[] {
   const sets = new Set(settings.sets);
   const subcategories = new Set(settings.subcategories);
   const shapes = new Set(settings.wordShapes);
+  const packs = new Set(settings.packs);
   const excluded = new Set(settings.excludedWords);
   return atLevel(words, settings.level).filter((word) => {
     if (excluded.has(word.id)) return false;
     if (!sets.has(word.set)) return false;
     if (subcategories.size > 0 && !subcategories.has(subcategoryKey(word.set, word.subcategory)))
       return false;
-    if (shapes.size > 0 && !shapes.has(wordShape(word))) return false;
-    if (isAssembly(settings.format) && !canAssemble(word, cuts)) return false;
-    return word.hasAudio || !usesAudio(settings.format);
+    if (packs.size > 0 && !packs.has(word.pack)) return false;
+    return shapes.size === 0 || shapes.has(word.shape);
   });
+}
+
+/** The picked words the format can ask: what a run draws from. */
+export function eligibleWords(
+  settings: RunSettings,
+  words: readonly Word[],
+  cuts: Shapes = new Map()
+): Word[] {
+  return pickedWords(settings, words).filter((word) => suitsFormat(word, settings.format, cuts));
+}
+
+export function startHint(settings: RunSettings, words: readonly Word[]): string {
+  const chosen = pickedWords(settings, words);
+  const onlyKana = chosen.length > 0 && chosen.every((word) => word.shape === "kana");
+  return onlyKana && showsWritten(settings.format) ? "setup.kanaHint" : "setup.startHint";
 }
 
 export function similarCount(difficulty: Difficulty): number {
@@ -125,7 +140,7 @@ function byScore(
 
 function crossable(word: Word): string[] | null {
   const glyphs = [...word.written];
-  if (glyphs.length !== 2 || word.kanjiCount !== 2 || word.hasOkurigana) return null;
+  if (glyphs.length !== 2 || word.shape !== "2-kanji") return null;
   return glyphs;
 }
 
@@ -302,8 +317,7 @@ if (import.meta.vitest) {
       meaning,
       clue: "",
       kanji: [id],
-      kanjiCount: 1,
-      hasOkurigana: false,
+      shape: "1-kanji",
       hasAudio: true,
       set,
       subcategory: SUBCATEGORIES[set][0],
@@ -346,8 +360,8 @@ if (import.meta.vitest) {
     test("keeps the three shapes apart, so okurigana is not a single kanji", () => {
       const pool = [
         word("上", "position"),
-        word("学校", "places", { kanji: ["学", "校"], kanjiCount: 2 }),
-        word("上げる", "actions", { kanji: ["上"], hasOkurigana: true })
+        word("学校", "places", { kanji: ["学", "校"], shape: "2-kanji" }),
+        word("上げる", "actions", { kanji: ["上"], shape: "okurigana" })
       ];
       const sets = ["position", "places", "actions"] as const;
       const settings = { ...DEFAULT_SETTINGS, sets: [...sets] };
@@ -357,6 +371,30 @@ if (import.meta.vitest) {
       expect(writtenOf("2-kanji")).toEqual(["学校"]);
       expect(writtenOf("okurigana")).toEqual(["上げる"]);
       expect(eligibleWords(settings, pool)).toHaveLength(3);
+    });
+
+    test("offers a kana word only where neither side is the written form", () => {
+      const kana = word("とても", "describing", { kanji: [], shape: "kana" });
+      const settings = { ...DEFAULT_SETTINGS, sets: ["describing" as const] };
+      const offered = FORMATS.filter((format) => eligibleWords({ ...settings, format }, [kana]).length === 1);
+      expect(offered).toEqual(["kana-meaning", "meaning-kana", "image-kana", "audio-kana"]);
+    });
+
+    test("draws only from the packs asked for, and names a pack the format can ask none of", () => {
+      const kana = word("とても", "describing", { kanji: [], shape: "kana", pack: "n5-kana" });
+      const hill = word("山", "describing");
+      const settings = { ...DEFAULT_SETTINGS, sets: ["describing" as const] };
+      expect(eligibleWords({ ...settings, packs: ["n5-kana"], format: "kana-meaning" }, [kana, hill])).toEqual([kana]);
+      expect(eligibleWords({ ...settings, packs: [hill.pack], format: "kana-meaning" }, [kana, hill])).toEqual([hill]);
+      expect(unsuitedPacks([kana, hill], "kana-kanji")).toEqual(["n5-kana"]);
+      expect(unsuitedPacks([kana, hill], "kana-meaning")).toEqual([]);
+    });
+
+    test("explains an empty pool of kana words by the format, not the sets", () => {
+      const kana = word("とても", "describing", { kanji: [], shape: "kana" });
+      const settings = { ...DEFAULT_SETTINGS, sets: ["describing" as const] };
+      expect(startHint({ ...settings, format: "kanji-kana" }, [kana])).toBe("setup.kanaHint");
+      expect(startHint({ ...DEFAULT_SETTINGS, format: "kanji-kana" }, [kana])).toBe("setup.startHint");
     });
 
     test("holds back a word the learner deselected by hand", () => {
@@ -472,7 +510,7 @@ test("asks the written form and answers the reading on kanji to kana", () => {
         pool,
         seeded(3)
       );
-      expect(question.prompt).toBe("/packs/n5-base/images/light/nature/elements/water.webp");
+      expect(question.prompt).toBe("/packs/n5-base/images/nature/elements/water.webp");
       expect(question.answer).toBe("水");
     });
 
@@ -519,10 +557,10 @@ test("asks the written form and answers the reading on kanji to kana", () => {
 
   describe("choosing distractors by difficulty", () => {
     const schools = [
-      word("学校", "places", { kanji: ["学", "校"], kanjiCount: 2 }),
-      word("学生", "places", { kanji: ["学", "生"], kanjiCount: 2 }),
-      word("大学", "places", { kanji: ["大", "学"], kanjiCount: 2 }),
-      word("高校", "places", { kanji: ["高", "校"], kanjiCount: 2 }),
+      word("学校", "places", { kanji: ["学", "校"], shape: "2-kanji" }),
+      word("学生", "places", { kanji: ["学", "生"], shape: "2-kanji" }),
+      word("大学", "places", { kanji: ["大", "学"], shape: "2-kanji" }),
+      word("高校", "places", { kanji: ["高", "校"], shape: "2-kanji" }),
       word("山", "nature"),
       word("川", "nature"),
       word("木", "nature")
@@ -561,7 +599,7 @@ test("asks the written form and answers the reading on kanji to kana", () => {
 
     test("crosses nothing into a word that is not two kanji", () => {
       expect(crossings(schools[4], schools, real)).toEqual([]);
-      const tail = word("上げる", "actions", { hasOkurigana: true });
+      const tail = word("上げる", "actions", { shape: "okurigana" });
       expect(crossings(tail, schools, real)).toEqual([]);
     });
 

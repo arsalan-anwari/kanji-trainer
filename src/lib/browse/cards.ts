@@ -1,6 +1,6 @@
 import { subcategoryKey, type SetId } from "../content/sets";
 import type { Kanji, Word } from "../content/types";
-import { atLevel, wordShape } from "../quiz/questions";
+import { atLevel } from "../quiz/questions";
 import { toRomajiHint } from "../quiz/romaji";
 import type { WordShape } from "../quiz/settings";
 
@@ -9,6 +9,8 @@ export type WordFilter = {
   shapes: WordShape[];
   sets: SetId[];
   subcategories: string[];
+  /** Pack ids to show. Empty means every enabled pack. */
+  packs: string[];
   search: string;
 };
 
@@ -27,7 +29,7 @@ export type CardFace = {
 };
 
 export function emptyFilter(level: string): WordFilter {
-  return { level, shapes: [], sets: [], subcategories: [], search: "" };
+  return { level, shapes: [], sets: [], subcategories: [], packs: [], search: "" };
 }
 
 export function toggled<T>(items: readonly T[], item: T): T[] {
@@ -43,7 +45,7 @@ export function toggleFilterSet(filter: WordFilter, set: SetId): WordFilter {
 }
 
 export function activeFilterCount(filter: WordFilter): number {
-  return [filter.search.trim(), filter.shapes, filter.sets, filter.subcategories].filter(
+  return [filter.search.trim(), filter.shapes, filter.sets, filter.subcategories, filter.packs].filter(
     (part) => part.length > 0
   ).length;
 }
@@ -52,6 +54,7 @@ export function filterWords(words: readonly Word[], filter: WordFilter): Word[] 
   const shapes = new Set(filter.shapes);
   const sets = new Set(filter.sets);
   const subcategories = new Set(filter.subcategories);
+  const packs = new Set(filter.packs);
   const narrowedSets = new Set(filter.subcategories.map((key) => key.split("/")[0]));
   const needle = filter.search.trim().toLowerCase();
   return atLevel(words, filter.level).filter((word) => {
@@ -61,7 +64,8 @@ export function filterWords(words: readonly Word[], filter: WordFilter): Word[] 
       !subcategories.has(subcategoryKey(word.set, word.subcategory))
     )
       return false;
-    if (shapes.size > 0 && !shapes.has(wordShape(word))) return false;
+    if (shapes.size > 0 && !shapes.has(word.shape)) return false;
+    if (packs.size > 0 && !packs.has(word.pack)) return false;
     if (needle === "") return true;
     return [word.written, ...word.readings, ...word.glosses].some((text) =>
       text.toLowerCase().includes(needle)
@@ -116,8 +120,7 @@ if (import.meta.vitest) {
       meaning: id,
       clue: "",
       kanji: [id[0] ?? ""],
-      kanjiCount: 1,
-      hasOkurigana: false,
+      shape: "1-kanji",
       hasAudio: true,
       set,
       subcategory,
@@ -130,8 +133,8 @@ if (import.meta.vitest) {
 
   const one = word("一", "numbers", "digits");
   const monday = word("月", "calendar", "days");
-  const month = word("月曜", "calendar", "months", { kanjiCount: 2, kanji: ["月", "曜"] });
-  const raise = word("上げる", "actions", "movement", { hasOkurigana: true });
+  const month = word("月曜", "calendar", "months", { shape: "2-kanji", kanji: ["月", "曜"] });
+  const raise = word("上げる", "actions", "movement", { shape: "okurigana" });
   const words = [one, monday, month, raise];
   const all = emptyFilter("N5");
 
@@ -189,6 +192,11 @@ if (import.meta.vitest) {
         kun: ["あ.げる", "うえ"]
       }
     ]);
+
+    test("prints a kana word with no on and kun block", () => {
+      const kana = word("とても", "describing", "degree", { kanji: [], shape: "kana" });
+      expect(cardFace(kana, new Map()).kanji).toEqual([]);
+    });
 
     test("writes a kun reading's okurigana in brackets", () => {
       expect(kunForDisplay("あ.げる")).toBe("あ(げる)");

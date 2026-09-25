@@ -1,4 +1,6 @@
-export const THEMES = ["base", "travel", "food", "work", "school", "culture", "media"] as const;
+import { TAXONOMY_VERSION } from "../content/sets.ts";
+
+export const THEMES = ["base", "plus", "extra", "kana", "travel", "food", "work", "school", "culture", "media"] as const;
 
 export type Theme = (typeof THEMES)[number];
 
@@ -8,6 +10,7 @@ export type PackInfo = {
   theme: Theme;
   version: string;
   title: string;
+  taxonomy: number;
 };
 
 export type PackMeta = PackInfo & {
@@ -63,15 +66,20 @@ export function isBase(pack: Pick<PackInfo, "theme">): boolean {
   return pack.theme === "base";
 }
 
+export function isSupported(pack: Pick<PackInfo, "taxonomy">): boolean {
+  return pack.taxonomy <= TAXONOMY_VERSION;
+}
+
 export function parsePackInfo(value: unknown): PackInfo | null {
   if (!isRecord(value)) return null;
   const id = text(value.id);
   const level = text(value.level);
   const version = text(value.version);
   const title = text(value.title);
+  const taxonomy = value.taxonomy === undefined ? 1 : count(value.taxonomy);
   if (id === null || !isPackId(id) || level === null || version === null || title === null) return null;
-  if (!isTheme(value.theme)) return null;
-  return { id, level, theme: value.theme, version, title };
+  if (!isTheme(value.theme) || taxonomy === null || taxonomy < 1) return null;
+  return { id, level, theme: value.theme, version, title, taxonomy };
 }
 
 export function parsePackMeta(value: unknown): PackMeta | null {
@@ -156,7 +164,7 @@ export function enabledPacks(
   disabled: readonly string[]
 ): string[] {
   return installed
-    .filter((pack) => isBase(pack) || !disabled.includes(pack.id))
+    .filter((pack) => isSupported(pack) && (isBase(pack) || !disabled.includes(pack.id)))
     .map((pack) => pack.id);
 }
 
@@ -170,6 +178,7 @@ if (import.meta.vitest) {
     theme,
     version: "1.0.0",
     title: id,
+    taxonomy: 1,
     words: 1,
     kanji: 1,
     description: "",
@@ -206,6 +215,13 @@ if (import.meta.vitest) {
       for (const odd of ["../secret.md", "notes/description.md", "# JLPT N5", "description.txt"]) {
         expect(parseCatalogEntry({ ...entry("n5-base"), description: odd })?.description).toBe("");
       }
+    });
+
+    test("reads a pack written before the taxonomy was versioned as version 1", () => {
+      const { taxonomy, ...rest } = entry("n5-base");
+      expect(taxonomy).toBe(1);
+      expect(parseCatalogEntry(rest)?.taxonomy).toBe(1);
+      expect(parseCatalogEntry({ ...rest, taxonomy: 0 })).toBeNull();
     });
 
     test("refuses a file that is not a catalog", () => {
@@ -263,6 +279,12 @@ if (import.meta.vitest) {
       const packs = [held(entry("n5-base")), held(entry("n5-food", "food"))];
       expect(enabledPacks(packs, ["n5-base", "n5-food"])).toEqual(["n5-base"]);
       expect(enabledPacks(packs, [])).toEqual(["n5-base", "n5-food"]);
+    });
+
+    test("never loads a pack filed under a newer taxonomy than the app knows", () => {
+      const newer = held({ ...entry("n5-plus", "plus"), taxonomy: TAXONOMY_VERSION + 1 });
+      expect(isSupported(newer)).toBe(false);
+      expect(enabledPacks([held(entry("n5-base")), newer], [])).toEqual(["n5-base"]);
     });
   });
 }

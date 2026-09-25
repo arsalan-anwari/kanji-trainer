@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./run";
 
 test("flips a flashcard from the keyboard and shows its back", async ({ page }) => {
   await page.goto("/");
@@ -108,6 +108,18 @@ test("prints every word of the level at the largest grid", async ({ page }) => {
   await page.getByRole("button", { name: "Start export" }).click();
 
   await expect(page.getByText("The flashcard PDF is ready.")).toBeVisible({ timeout: 60_000 });
+});
+
+test("prints every word of every pack at the largest grid", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("kanji-trainer-disabled-packs", "[]"));
+  await page.goto("/");
+  await page.getByRole("tab", { name: "Chart" }).click();
+  await page.getByRole("button", { name: "Export flashcards" }).click();
+  await page.getByRole("button", { name: "Download as PDF" }).click();
+  await page.getByRole("group", { name: "Cards per page" }).getByRole("button", { name: "4×4" }).click();
+  await page.getByRole("button", { name: "Start export" }).click();
+
+  await expect(page.getByText("The flashcard PDF is ready.")).toBeVisible({ timeout: 90_000 });
 });
 
 test("expands and collapses every set at once", async ({ page }) => {

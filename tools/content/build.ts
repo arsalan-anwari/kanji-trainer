@@ -29,7 +29,8 @@ import type { Kradfile } from "./kradfile.ts";
 import type { ComponentRow, KanjiRow, WordRow } from "./validate.ts";
 import type { Content, Kanji, Part, Source, Word } from "../../src/lib/content/types.ts";
 import { audioPath } from "../../src/lib/packs/url.ts";
-import { parsePackInfo, type PackInfo, type PackMeta } from "../../src/lib/packs/catalog.ts";
+import { shapeOf } from "../../src/lib/content/sets.ts";
+import { isBase, parsePackInfo, type PackInfo, type PackMeta } from "../../src/lib/packs/catalog.ts";
 
 export function byCodePoint(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;
@@ -140,8 +141,6 @@ export function buildWords(
         ? readingClassOf(kanjidic.get(row.written) ?? NO_READINGS, row.reading)
         : null;
     const kanji = kanjiIn(row.written).filter((character) => levelKanji.has(character));
-    const kanjiCount = (kanji.length >= 2 ? 2 : 1) as 1 | 2;
-    const hasOkurigana = row.written.length > kanji.length;
     const meaning = row.meaning === "" ? shortGloss(result.glosses[0]) : row.meaning;
     const label = `${row.level}|${meaning}`;
     const twin = labelled.get(label);
@@ -179,8 +178,7 @@ export function buildWords(
       meaning,
       clue: row.clue,
       kanji,
-      kanjiCount,
-      hasOkurigana,
+      shape: shapeOf(row.written),
       hasAudio: false,
       set: row.set,
       subcategory: row.subcategory,
@@ -310,28 +308,73 @@ export function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+export function levelClashes(words: readonly Word[]): string[] {
+  const problems: string[] = [];
+  const ids = new Map<string, Word>();
+  const labels = new Map<string, Word>();
+  for (const word of words) {
+    const twin = ids.get(`${word.level}|${word.id}`);
+    if (twin !== undefined && twin.pack !== word.pack) {
+      problems.push(`${word.id} is in both ${twin.pack} and ${word.pack}; a word lives in exactly one pack`);
+    }
+    const namesake = labels.get(`${word.level}|${word.meaning}`);
+    if (namesake !== undefined && namesake.pack !== word.pack) {
+      problems.push(
+        `${word.id} (${word.pack}) and ${namesake.id} (${namesake.pack}) both mean "${word.meaning}" — give one of them its own meaning column`
+      );
+    }
+    ids.set(`${word.level}|${word.id}`, word);
+    labels.set(`${word.level}|${word.meaning}`, word);
+  }
+  return problems;
+}
+
+export type BuiltPack = { info: PackInfo; content: Content };
+
+export function kanjiClashes(packs: readonly BuiltPack[]): string[] {
+  const problems: string[] = [];
+  const shipped = new Map<string, { pack: PackInfo; row: string }>();
+  for (const { info, content } of [...packs].sort((a, b) => Number(isBase(b.info)) - Number(isBase(a.info)))) {
+    for (const entry of content.kanji) {
+      const key = `${info.level}|${entry.character}`;
+      const row = JSON.stringify(entry);
+      const first = shipped.get(key);
+      if (first === undefined) {
+        shipped.set(key, { pack: info, row });
+      } else if (isBase(first.pack)) {
+        problems.push(`data/overlay/packs/${info.id}/kanji.tsv: "${entry.character}" already ships in ${first.pack.id}`);
+      } else if (first.row !== row) {
+        problems.push(
+          `data/overlay/packs/${info.id}/kanji.tsv: "${entry.character}" differs from its row in ${first.pack.id}; copy the level and look across`
+        );
+      }
+    }
+  }
+  return problems;
+}
+
 function buildPack(
-  pack: string,
+  info: PackInfo,
   manifest: ReturnType<typeof loadManifest>,
   index: Lookup,
   kradfile: Kradfile,
   kanjidic: Kanjidic,
   kanjivg: Kanjivg,
-  animcjk: Animcjk
-): PackMeta {
-  const info = loadPackInfo(pack);
-  const out = packOutput(pack);
-  mkdirSync(out, { recursive: true });
+  animcjk: Animcjk,
+  baseKanji: ReadonlySet<string>
+): BuiltPack {
+  const pack = info.id;
+  mkdirSync(packOutput(pack), { recursive: true });
   applyOverrides(pack);
   const kanjiRows = loadKanjiList(pack);
-  const levelKanji = new Set(kanjiRows.map((row) => row.character));
-  const wordRows = loadWordList(pack, levelKanji);
+  const tags = new Set([...baseKanji, ...kanjiRows.map((row) => row.character)]);
+  const wordRows = loadWordList(pack, tags, info.theme === "kana");
   const offLevel = wordRows.filter((row) => row.level !== info.level);
   if (offLevel.length > 0) {
     throw new Error(`data/overlay/packs/${pack}/words.tsv: ${offLevel.length} row(s) are not ${info.level}, the level pack.json names`);
   }
 
-  const words = buildWords(pack, wordRows, index, levelKanji, kanjidic, clipExists);
+  const words = buildWords(pack, wordRows, index, tags, kanjidic, clipExists);
   const pieceRows = loadComponentList();
   const parts = buildParts(
     words.map((word) => word.written),
@@ -348,21 +391,30 @@ function buildPack(
     buildTaughtComponents(pieceRows, parts),
     today()
   );
-  const meta = packMeta(info, content, copyDescription(pack));
+  return { info, content };
+}
 
+function writePack({ info, content }: BuiltPack): PackMeta {
+  const out = packOutput(info.id);
+  const meta = packMeta(info, content, copyDescription(info.id));
   writeFileSync(join(out, "content.json"), `${JSON.stringify(content, null, 2)}\n`);
   writeFileSync(join(out, "pack.json"), `${JSON.stringify(meta, null, 2)}\n`);
   writeFileSync(join(out, "ATTRIBUTION.md"), renderAttribution(content.sources));
   writeFileSync(join(out, "LICENSE"), renderLicence(content.sources));
 
-  const sizes = countBySet(wordRows);
+  const sizes = countBySet(content.words);
   process.stdout.write(
-    `${pack}: ${content.kanji.length} kanji, ${content.words.length} words, ${content.taughtComponents.length} taught components\n`
+    `${info.id}: ${content.kanji.length} kanji, ${content.words.length} words, ${content.taughtComponents.length} taught components\n`
   );
   for (const id of SET_IDS) {
-    process.stdout.write(`  ${id.padEnd(12)} ${String(sizes[id]).padStart(3)}\n`);
+    if (sizes[id] > 0) process.stdout.write(`  ${id.padEnd(12)} ${String(sizes[id]).padStart(3)}\n`);
   }
   return meta;
+}
+
+export function baseKanjiOf(infos: readonly PackInfo[], level: string): Set<string> {
+  const base = infos.find((info) => isBase(info) && info.level === level);
+  return new Set(base === undefined ? [] : loadKanjiList(base.id).map((row) => row.character));
 }
 
 function main(): void {
@@ -372,7 +424,13 @@ function main(): void {
   const kanjidic = parseKanjidic(readCached("kanjidic2.json"));
   const kanjivg = parseKanjivg(readCachedText("kanjivg.xml"));
   const animcjk = parseAnimcjk(readCachedText("animcjk-ja.txt"));
-  const packs = packIds().map((pack) => buildPack(pack, manifest, index, kradfile, kanjidic, kanjivg, animcjk));
+  const infos = packIds().map(loadPackInfo);
+  const built = infos.map((info) =>
+    buildPack(info, manifest, index, kradfile, kanjidic, kanjivg, animcjk, baseKanjiOf(infos, info.level))
+  );
+  const problems = [...levelClashes(built.flatMap((pack) => pack.content.words)), ...kanjiClashes(built)];
+  if (problems.length > 0) throw new Error(problems.join("\n"));
+  const packs = built.map(writePack);
   writeFileSync(join(PACKS_DIR, "index.json"), `${JSON.stringify(packs.map((pack) => pack.id), null, 2)}\n`);
   process.stdout.write(`${packs.length} pack(s) built, 0 unresolved rows\n`);
 }
@@ -669,6 +727,61 @@ if (import.meta.vitest) {
 
     test("orders by code point, which no locale data can shift under us", () => {
       expect(["本", "日", "明"].sort(byCodePoint)).toEqual(["日", "明", "本"]);
+    });
+  });
+
+  describe("building the packs of one level together", () => {
+    const pack = (id: string, theme: PackInfo["theme"], words: Word[], kanji: Kanji[] = []): BuiltPack => ({
+      info: { id, level: "N5", theme, version: "1.0.0", title: id, taxonomy: 1 },
+      content: buildContent("N5", [], kanji, words, {}, [], "2026-09-25")
+    });
+    const built = (id: string, rows: WordRow[], tags: Set<string>) => buildWords(id, rows, index, tags);
+    const kanjiRow = (character: string, look = ""): Kanji => ({
+      character,
+      level: "N3",
+      look,
+      components: [character],
+      on: [],
+      kun: []
+    });
+
+    test("tags an optional pack's word with the base kanji and its own", () => {
+      const [word] = built("n5-plus", [row("お菓子", "おかし")], new Set(["子", "菓"]));
+      expect(word?.kanji).toEqual(["菓", "子"]);
+    });
+
+    test("refuses one word in two packs of a level", () => {
+      const base = built("n5-base", [row("日本", "にほん")], levelKanji);
+      const plus = built("n5-plus", [row("日本", "にほん", "Nippon")], levelKanji);
+      expect(levelClashes([...base, ...plus])).toEqual([
+        "日本|にほん is in both n5-base and n5-plus; a word lives in exactly one pack"
+      ]);
+    });
+
+    test("refuses one meaning label in two packs of a level", () => {
+      const base = built("n5-base", [row("日本", "にほん", "sweets")], levelKanji);
+      const plus = built("n5-plus", [row("お菓子", "おかし")], levelKanji);
+      expect(levelClashes([...base, ...plus])).toEqual([
+        'お菓子|おかし (n5-plus) and 日本|にほん (n5-base) both mean "sweets" — give one of them its own meaning column'
+      ]);
+    });
+
+    test("lets plus and extra ship the same kanji row, and nothing else", () => {
+      const plus = pack("n5-plus", "plus", [], [kanjiRow("家", "a roof")]);
+      const extra = pack("n5-extra", "extra", [], [kanjiRow("家", "a roof")]);
+      expect(kanjiClashes([plus, extra])).toEqual([]);
+      const other = pack("n5-extra", "extra", [], [kanjiRow("家", "a house")]);
+      expect(kanjiClashes([plus, other])).toEqual([
+        'data/overlay/packs/n5-extra/kanji.tsv: "家" differs from its row in n5-plus; copy the level and look across'
+      ]);
+    });
+
+    test("never repeats a base kanji in another pack of the level", () => {
+      const base = pack("n5-base", "base", [], [kanjiRow("日")]);
+      const plus = pack("n5-plus", "plus", [], [kanjiRow("日")]);
+      expect(kanjiClashes([plus, base])).toEqual([
+        'data/overlay/packs/n5-plus/kanji.tsv: "日" already ships in n5-base'
+      ]);
     });
   });
 

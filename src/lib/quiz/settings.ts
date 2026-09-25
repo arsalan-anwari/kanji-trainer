@@ -1,5 +1,7 @@
-import { isSetId, isSubcategoryKey } from "../content/sets";
-import type { SetId } from "../content/sets";
+import { isSetId, isSubcategoryKey, migrateSelection, TAXONOMY_VERSION, WORD_SHAPES } from "../content/sets";
+import type { SetId, WordShape } from "../content/sets";
+
+export { WORD_SHAPES, type WordShape };
 
 export type Format =
   | "kanji-kana"
@@ -17,7 +19,6 @@ export type Format =
 export type Surface = "written" | "reading" | "meaning" | "image" | "audio";
 export type Category = "reading" | "meaning" | "visualize" | "listening" | "assemble";
 export type AnswerStyle = "choice" | "typing";
-export type WordShape = "1-kanji" | "2-kanji" | "okurigana";
 export type Difficulty = "beginner" | "advanced" | "expert";
 
 export type RunSettings = {
@@ -35,12 +36,15 @@ export type RunSettings = {
   questionCount: number;
   /** Word shape filters. Empty array means allow all. */
   wordShapes: WordShape[];
+  /** Pack ids the run draws from. Empty means every enabled pack. */
+  packs: string[];
   /** Word ids held back by hand. Empty means every word the filters allow. */
   excludedWords: string[];
   /** How believable the wrong answers are. */
   difficulty: Difficulty;
   perQuestionSeconds: number;
   totalSeconds: number;
+  taxonomy: number;
 };
 
 export const DIFFICULTIES: readonly Difficulty[] = ["beginner", "advanced", "expert"];
@@ -88,6 +92,10 @@ export function promptSurface(format: Format): Surface {
 
 export function answerSurface(format: Format): Surface {
   return SIDES[format].answer;
+}
+
+export function showsWritten(format: Format): boolean {
+  return promptSurface(format) === "written" || answerSurface(format) === "written";
 }
 
 export function usesAudio(format: Format): boolean {
@@ -161,10 +169,12 @@ export const DEFAULT_SETTINGS: RunSettings = {
   choiceCount: 4,
   questionCount: 20,
   wordShapes: [],
+  packs: [],
   excludedWords: [],
   difficulty: "beginner",
   perQuestionSeconds: 0,
-  totalSeconds: 0
+  totalSeconds: 0,
+  taxonomy: TAXONOMY_VERSION
 };
 
 export function isCustomCount(count: number): boolean {
@@ -230,6 +240,15 @@ export function pickSubcategories(value: unknown): string[] {
   return pickText(value, isSubcategoryKey);
 }
 
+export function pickSelection(
+  record: Record<string, unknown>
+): Pick<RunSettings, "sets" | "subcategories"> {
+  if (record.taxonomy !== undefined) {
+    return { sets: pickSets(record.sets), subcategories: pickSubcategories(record.subcategories) };
+  }
+  return migrateSelection(pickText(record.sets, () => true), pickText(record.subcategories, () => true));
+}
+
 export function pickWordIds(value: unknown): string[] {
   return pickText(value, (entry) => entry !== "");
 }
@@ -237,8 +256,6 @@ export function pickWordIds(value: unknown): string[] {
 function pick<T extends string>(value: unknown, allowed: readonly T[], fallback: T): T {
   return allowed.find((option) => option === value) ?? fallback;
 }
-
-export const WORD_SHAPES: readonly WordShape[] = ["1-kanji", "2-kanji", "okurigana"];
 
 function pickWordShapes(value: unknown): WordShape[] {
   if (!Array.isArray(value)) return [];
@@ -260,17 +277,18 @@ export function parseSettings(stored: unknown): RunSettings {
       typeof stored.level === "string" && stored.level !== ""
         ? stored.level
         : DEFAULT_SETTINGS.level,
-    sets: pickSets(stored.sets),
-    subcategories: pickSubcategories(stored.subcategories),
+    ...pickSelection(stored),
     format: pick(stored.format, FORMATS, DEFAULT_SETTINGS.format),
     answerStyle: pick(stored.answerStyle, ANSWER_STYLES, DEFAULT_SETTINGS.answerStyle),
     choiceCount: typeof choices === "number" ? choices : DEFAULT_SETTINGS.choiceCount,
     questionCount: typeof count === "number" ? count : DEFAULT_SETTINGS.questionCount,
     wordShapes: pickWordShapes(stored.wordShapes),
+    packs: pickWordIds(stored.packs),
     excludedWords: pickWordIds(stored.excludedWords),
     difficulty: pick(stored.difficulty, DIFFICULTIES, DEFAULT_SETTINGS.difficulty),
     perQuestionSeconds: typeof perQuestion === "number" ? perQuestion : 0,
-    totalSeconds: typeof total === "number" ? total : 0
+    totalSeconds: typeof total === "number" ? total : 0,
+    taxonomy: TAXONOMY_VERSION
   }).settings;
 }
 
@@ -337,12 +355,28 @@ if (import.meta.vitest) {
       choiceCount: 4,
       questionCount: 50,
       wordShapes: ["1-kanji"],
+      packs: ["n5-base"],
       excludedWords: ["一|いち"],
       difficulty: "expert",
       perQuestionSeconds: 10,
-      totalSeconds: 120
+      totalSeconds: 120,
+      taxonomy: TAXONOMY_VERSION
     };
     expect(parseSettings(wanted)).toEqual(wanted);
+  });
+
+  test("moves the pairs of settings stored before the taxonomy froze to where their words went", () => {
+    const { taxonomy, ...legacy } = DEFAULT_SETTINGS;
+    expect(taxonomy).toBe(TAXONOMY_VERSION);
+    const read = parseSettings({ ...legacy, sets: ["places"], subcategories: ["places/transport"] });
+    expect(read.sets).toEqual(["places", "travel"]);
+    expect(read.subcategories).toEqual(["travel/vehicles"]);
+    expect(read.taxonomy).toBe(TAXONOMY_VERSION);
+  });
+
+  test("never migrates settings stored under the current taxonomy twice", () => {
+    const current = { ...DEFAULT_SETTINGS, sets: ["describing" as const], subcategories: ["describing/condition"] };
+    expect(parseSettings(current).subcategories).toEqual(["describing/condition"]);
   });
 
   test("leaves both clocks off for settings stored before timing existed", () => {

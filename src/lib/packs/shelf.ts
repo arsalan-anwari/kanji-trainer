@@ -10,6 +10,9 @@ const LEVEL_GLYPHS: Record<string, string> = { N5: "五", N4: "四", N3: "三", 
 
 const THEME_LOOK: Record<Theme, { glyph: string; tone: Tone }> = {
   base: { glyph: "字", tone: "brand" },
+  plus: { glyph: "手", tone: "success" },
+  extra: { glyph: "猫", tone: "seal" },
+  kana: { glyph: "あ", tone: "gold" },
   travel: { glyph: "旅", tone: "success" },
   food: { glyph: "食", tone: "seal" },
   work: { glyph: "働", tone: "gold" },
@@ -64,7 +67,7 @@ if (import.meta.vitest) {
   const { describe, test, expect } = import.meta.vitest;
 
   const offer = (id: string, theme: Theme, level: string, state: Offer["state"]): Offer => ({
-    meta: { id, level, theme, version: "1", title: id, words: 1, kanji: 1, description: "" },
+    meta: { id, level, theme, version: "1", title: id, taxonomy: 1, words: 1, kanji: 1, description: "" },
     entry: null,
     installed: null,
     state

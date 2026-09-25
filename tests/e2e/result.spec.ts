@@ -1,5 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
-import { moveOn } from "./run";
+import { expect, test, moveOn } from "./run";
+import type { Page } from "@playwright/test";
 
 async function runThrough(page: Page, questions: number): Promise<void> {
   await page.goto("/");

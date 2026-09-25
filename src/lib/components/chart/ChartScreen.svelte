@@ -4,8 +4,7 @@
   import { app } from "../../state.svelte";
   import { groupWordsBySet } from "../../content/sets";
   import { cardFace } from "../../browse/cards";
-  import { audioUrl, darkImageUrl, imageUrl } from "../../quiz/hints";
-  import { isDarkTheme } from "../../theme.svelte";
+  import { audioUrl, imageUrl } from "../../quiz/hints";
   import { printJob } from "../../print/job.svelte";
   import { savePdf } from "../../storage";
   import FlashCard from "./FlashCard.svelte";
@@ -14,7 +13,6 @@
   import { n, t } from "../../i18n.svelte";
 
   const tree = $derived(groupWordsBySet(app.charted));
-  const dark = $derived(isDarkTheme());
   const openByDefault = $derived(tree.length === 1);
 
   let opened = $state<Record<string, boolean>>({});
@@ -157,10 +155,9 @@
                 class="columns-[15rem] gap-3 [&>*]:mb-3 [&>*]:break-inside-avoid"
               >
                 {#each group.words as word (word.id)}
-                  {@const image = imageUrl(word)}
                   <FlashCard
                     face={cardFace(word, app.kanjiByCharacter)}
-                    image={dark ? darkImageUrl(image) : image}
+                    image={imageUrl(word)}
                     audio={word.hasAudio ? audioUrl(word) : null}
                   />
                 {/each}

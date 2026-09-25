@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "./run";
+import type { Page } from "@playwright/test";
 
 const food = {
   id: "n5-food",
@@ -28,7 +29,7 @@ const foodContent = {
       kanji: ["寿"],
       hasAudio: false,
       set: "food",
-      subcategory: "general",
+      subcategory: "meals",
       level: "N5",
       pack: "n5-food",
       file: "sushi"
@@ -55,7 +56,7 @@ test("reads a pack's details with the keyboard and closes them with Escape", asy
 
   const dialog = page.getByRole("dialog", { name: "JLPT N5" });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole("listitem").first()).toContainText("79 kanji");
+  await expect(dialog.getByRole("listitem").first()).toContainText("80 kanji");
   await expect(dialog.locator("script")).toHaveCount(0);
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();

@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "./run";
+import type { Page } from "@playwright/test";
 
 async function tabTo(page: Page, selector: string): Promise<void> {
   for (let press = 0; press < 40; press += 1) {

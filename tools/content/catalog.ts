@@ -71,6 +71,7 @@ if (import.meta.vitest) {
     theme: "base",
     version: "1.0.0",
     title: "JLPT N5",
+    taxonomy: 1,
     words: 184,
     kanji: 79,
     description: "description.md"

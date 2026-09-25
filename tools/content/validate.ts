@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseTsv } from "./tsv.ts";
-import type { Kanji, Word } from "../../src/lib/content/types.ts";
+import type { Kanji, SetId, Word } from "../../src/lib/content/types.ts";
 import {
   countBySet,
   isSetId,
@@ -202,7 +202,8 @@ export function parseWordList(
   text: string,
   where: string,
   levelKanji: ReadonlySet<string>,
-  bound: readonly BoundRow[] = []
+  bound: readonly BoundRow[] = [],
+  kana = false
 ): WordRow[] {
   const rows = parseTsv(text, WORD_COLUMNS, where);
   const problems: string[] = [];
@@ -224,7 +225,15 @@ export function parseWordList(
     }
     const kanji = kanjiIn(written);
     const offLevel = kanji.filter((character) => !levelKanji.has(character));
-    if (kanji.length === offLevel.length) {
+    if (kana && kanji.length > 0) {
+      say(`"${written}" is written with kanji, so it belongs in a kanji pack`);
+      return;
+    }
+    if (kana && written !== reading) {
+      say(`"${written}" is a kana word, so its reading must be the same text, not "${reading}"`);
+      return;
+    }
+    if (!kana && kanji.length === offLevel.length) {
       say(`"${written}" contains no kanji from the level list`);
       return;
     }
@@ -274,13 +283,14 @@ export function parseWordList(
   return words;
 }
 
-export function loadWordList(pack: string, levelKanji: ReadonlySet<string>): WordRow[] {
+export function loadWordList(pack: string, levelKanji: ReadonlySet<string>, kana = false): WordRow[] {
   const where = `data/overlay/packs/${pack}/words.tsv`;
   return parseWordList(
     readOverlay(join(packSource(pack), "words.tsv")),
     where,
     levelKanji,
-    loadBoundReadings()
+    loadBoundReadings(),
+    kana
   );
 }
 
@@ -349,8 +359,8 @@ if (import.meta.vitest) {
   describe("the committed N5 kanji list", () => {
     const kanji = loadKanjiList("n5-base");
 
-    test("holds the 79 kanji of the reconstruction", () => {
-      expect(kanji.length).toBe(79);
+    test("holds the 79 kanji of the reconstruction plus 分", () => {
+      expect(kanji.length).toBe(80);
     });
 
     test("tags every row N5", () => {
@@ -429,6 +439,24 @@ if (import.meta.vitest) {
       );
     });
 
+    test("accepts a kana-only word in a kana pack", () => {
+      expect(
+        parseWordList(list("とても\tとても\tdescribing\tdegree\tN5\t\tvery\t\t\n"), "t", levelKanji, [], true)
+      ).toHaveLength(1);
+    });
+
+    test("rejects a word written with kanji in a kana pack", () => {
+      expect(() =>
+        parseWordList(list("日本\tにほん\tplaces\tregions\tN5\t\tjapan\t\t\n"), "t", levelKanji, [], true)
+      ).toThrow(/"日本" is written with kanji, so it belongs in a kanji pack/);
+    });
+
+    test("rejects a kana word whose reading is not its written form", () => {
+      expect(() =>
+        parseWordList(list("カメラ\tかめら\tobjects\tdevices\tN5\t\tcamera\t\t\n"), "t", levelKanji, [], true)
+      ).toThrow(/its reading must be the same text/);
+    });
+
     test("rejects an unknown set id", () => {
       expect(() => parseWordList(list("日本\tにほん\tcountries\tbuildings\tN5\t\tw5\t\t\n"), "t", levelKanji)).toThrow(
         /names unknown set "countries"/
@@ -483,7 +511,7 @@ if (import.meta.vitest) {
     test("refuses two words of one pack sharing a file, whatever their subcategory", () => {
       expect(() =>
         parseWordList(
-          list("日本\tにほん\tplaces\tbuildings\tN5\t\tsame\t\t\n食堂\tしょくどう\tfood\tgeneral\tN5\t\tsame\t\t\n"),
+          list("日本\tにほん\tplaces\tbuildings\tN5\t\tsame\t\t\n食堂\tしょくどう\tfood\tmeals\tN5\t\tsame\t\t\n"),
           "t",
           levelKanji
         )
@@ -544,35 +572,129 @@ if (import.meta.vitest) {
   describe("the committed component list", () => {
     test("names every component it teaches", () => {
       const components = loadComponentList();
-      expect(components.length).toBe(126);
+      expect(components.length).toBe(319);
       expect(components.every((row) => row.name !== "")).toBe(true);
     });
   });
 
-  describe("the committed N5 word list", () => {
-    const levelKanji = new Set(loadKanjiList("n5-base").map((row) => row.character));
-    const words = loadWordList("n5-base", levelKanji);
-    const sizes = countBySet(words);
+  const PINS: Record<string, { words: number; sizes: Partial<Record<SetId, number>> }> = {
+    "n5-base": {
+      words: 214,
+      sizes: {
+        numbers: 25,
+        calendar: 54,
+        time: 20,
+        position: 12,
+        people: 24,
+        body: 4,
+        mind: 2,
+        language: 10,
+        home: 4,
+        food: 3,
+        clothing: 3,
+        objects: 1,
+        money: 2,
+        places: 12,
+        travel: 7,
+        nature: 6,
+        concepts: 1,
+        actions: 9,
+        describing: 15
+      }
+    },
+    "n5-plus": {
+      words: 154,
+      sizes: {
+        numbers: 5,
+        calendar: 6,
+        time: 7,
+        position: 3,
+        people: 13,
+        body: 11,
+        mind: 3,
+        language: 8,
+        home: 5,
+        food: 9,
+        clothing: 3,
+        objects: 1,
+        money: 6,
+        "school-work": 8,
+        places: 9,
+        travel: 5,
+        nature: 11,
+        leisure: 5,
+        concepts: 2,
+        actions: 11,
+        describing: 23
+      }
+    },
+    "n5-extra": {
+      words: 166,
+      sizes: {
+        numbers: 8,
+        time: 4,
+        position: 4,
+        people: 7,
+        body: 9,
+        mind: 6,
+        language: 6,
+        home: 14,
+        food: 17,
+        clothing: 6,
+        objects: 5,
+        money: 1,
+        "school-work": 4,
+        places: 6,
+        travel: 8,
+        nature: 12,
+        leisure: 7,
+        concepts: 5,
+        actions: 15,
+        describing: 21,
+        expressions: 1
+      }
+    },
+    "n5-kana": {
+      words: 164,
+      sizes: {
+        numbers: 8,
+        time: 5,
+        position: 1,
+        people: 5,
+        mind: 1,
+        language: 6,
+        home: 10,
+        food: 11,
+        clothing: 12,
+        objects: 8,
+        money: 1,
+        "school-work": 2,
+        places: 5,
+        travel: 3,
+        nature: 1,
+        leisure: 6,
+        society: 1,
+        concepts: 35,
+        actions: 5,
+        describing: 14,
+        expressions: 24
+      }
+    }
+  };
+  const baseKanji = new Set(loadKanjiList("n5-base").map((row) => row.character));
 
-    test("parses every row against the committed kanji list", () => {
-      expect(words.length).toBe(197);
+  describe.each(Object.keys(PINS))("the committed %s word list", (pack) => {
+    const own = pack === "n5-base" ? [] : loadKanjiList(pack).map((row) => row.character);
+    const words = loadWordList(pack, new Set([...baseKanji, ...own]), pack === "n5-kana");
+    const sizes = countBySet(words);
+    const pinned = PINS[pack];
+
+    test("parses every row against the level's kanji lists", () => {
+      expect(words.length).toBe(pinned?.words);
     });
 
     test("holds the set sizes the curator last agreed to", () => {
-      expect(sizes).toEqual({
-        numbers: 23,
-        calendar: 55,
-        time: 12,
-        people: 19,
-        position: 14,
-        body: 0,
-        actions: 19,
-        places: 19,
-        nature: 6,
-        describing: 18,
-        objects: 10,
-        food: 2
-      });
+      expect(Object.fromEntries(Object.entries(sizes).filter(([, size]) => size > 0))).toEqual(pinned?.sizes);
     });
 
     test("files every word under a subcategory of its own set", () => {
@@ -586,5 +708,24 @@ if (import.meta.vitest) {
     test("tags every row N5", () => {
       expect([...new Set(words.map((row) => row.level))]).toEqual(["N5"]);
     });
+  });
+
+  test("files each N5 word in exactly one pack", () => {
+    const owners = new Map<string, string[]>();
+    for (const pack of Object.keys(PINS)) {
+      const own = pack === "n5-base" ? [] : loadKanjiList(pack).map((row) => row.character);
+      for (const row of loadWordList(pack, new Set([...baseKanji, ...own]), pack === "n5-kana")) {
+        const id = wordId(row.written, row.reading);
+        owners.set(id, [...(owners.get(id) ?? []), pack]);
+      }
+    }
+    expect([...owners].filter(([, packs]) => packs.length > 1)).toEqual([]);
+  });
+
+  test("never repeats a base kanji in another N5 pack", () => {
+    const repeated = ["n5-plus", "n5-extra", "n5-kana"].flatMap((pack) =>
+      loadKanjiList(pack).filter((row) => baseKanji.has(row.character))
+    );
+    expect(repeated).toEqual([]);
   });
 }

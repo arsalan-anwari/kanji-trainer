@@ -57,9 +57,9 @@ function distractorScores(
     const target = words.find((word) => word.id === question.wordId) as Word;
     for (const choice of question.choices) {
       if (choice === question.answer) continue;
-      const candidate = words.find((word) => answerOf(word, format) === choice);
-      if (candidate !== undefined) {
-        scores.push(similarity(target, candidate, surface, components));
+      const candidates = words.filter((word) => answerOf(word, format) === choice);
+      if (candidates.length > 0) {
+        scores.push(Math.max(...candidates.map((candidate) => similarity(target, candidate, surface, components))));
         continue;
       }
       scores.push(isCrossing(target, choice) ? SHARED_KANJI : 0);

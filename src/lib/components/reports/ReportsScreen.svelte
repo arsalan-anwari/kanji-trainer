@@ -53,7 +53,7 @@
   const allPicked = $derived(
     shown.length > 0 && shown.every((report) => picked.includes(report.id))
   );
-  const tags = $derived(queryLabels(query));
+  const tags = $derived(queryLabels(query, (id) => app.packTitle(id)));
 
   const perPage = 4;
   let page = $state(1);

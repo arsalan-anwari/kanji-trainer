@@ -1,5 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
-import { wasWrong } from "./run";
+import { expect, test, wasWrong } from "./run";
+import type { Page } from "@playwright/test";
 
 async function tabTo(page: Page, selector: string): Promise<void> {
   for (let press = 0; press < 60; press += 1) {
@@ -89,7 +89,7 @@ test("lifts a block back out of a character it already finished", async ({ page 
   await page.evaluate((settings) => {
     localStorage.setItem(
       "kanji-trainer-settings",
-      JSON.stringify({ ...settings, sets: ["objects"], subcategories: ["objects/money"], excludedWords: [] })
+      JSON.stringify({ ...settings, sets: ["objects"], subcategories: ["objects/money"], excludedWords: ["円|えん"] })
     );
   }, THREE_WORDS);
   await page.reload();

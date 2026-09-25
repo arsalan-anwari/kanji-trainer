@@ -50,7 +50,8 @@
     "1-kanji": "Single kanji (一)",
     "2-kanji": "Compound (学校)",
     "okurigana": "Kanji with okurigana (上げる)",
-    "hint": "Leave blank for all."
+    "hint": "Leave blank for all.",
+    "kana": "Kana only (これ)"
   },
   "difficulty": {
     "title": "Difficulty",
@@ -110,7 +111,10 @@
     "search": "Search words",
     "category": "Category",
     "subcategory": "Sub-category",
-    "noMatch": "No word matches this search."
+    "noMatch": "No word matches this search.",
+    "packs": "Packs",
+    "unsuited": "Can't use {packs} for this quiz type",
+    "unsuitedWord": "This quiz type can't ask this word"
   },
   "time": {
     "perQuestion": "Time per question",
@@ -119,5 +123,6 @@
     "minutes": "Minutes for the run",
     "secondsShort": "{count}s",
     "minutesShort": "{count}m"
-  }
+  },
+  "kanaHint": "Kana words have no kanji form. Pick a meaning, picture or listening format that does not show the kanji."
 }

@@ -1,4 +1,4 @@
-import { isSetId, isSubcategoryOf } from "./sets";
+import { isSetId, isSubcategoryOf, shapeOf } from "./sets";
 import type { Content, Kanji, Part, ReadingClass, Rect, Source, Word } from "./types";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -60,8 +60,6 @@ function parseWord(value: unknown): Word | null {
   if (kanji === null || set === null || level === null || !isSetId(set)) return null;
   if (subcategory === null || !isSubcategoryOf(set, subcategory)) return null;
   const readingClass = parseReadingClass(value.readingClass);
-  const kanjiCount = (kanji.length >= 2 ? 2 : 1) as 1 | 2;
-  const hasOkurigana = written.length > kanji.length;
   return {
     id,
     written,
@@ -72,8 +70,7 @@ function parseWord(value: unknown): Word | null {
     meaning,
     clue: optionalText(value.clue),
     kanji,
-    kanjiCount,
-    hasOkurigana,
+    shape: shapeOf(written),
     hasAudio: value.hasAudio === true,
     set,
     subcategory,
@@ -195,8 +192,7 @@ if (import.meta.vitest) {
     meaning: "one",
     clue: "",
     kanji: ["一"],
-    kanjiCount: 1 as const,
-    hasOkurigana: false,
+    shape: "1-kanji",
     hasAudio: true,
     set: "numbers",
     subcategory: "digits",
@@ -335,8 +331,8 @@ if (import.meta.vitest) {
       const raw = await readFile(new URL("../../../data/packs/n5-base/content.json", import.meta.url), "utf8");
       const content = parseContent(JSON.parse(raw));
       expect(content?.level).toBe("N5");
-      expect(content?.words).toHaveLength(197);
-      expect(content?.kanji).toHaveLength(79);
+      expect(content?.words).toHaveLength(214);
+      expect(content?.kanji).toHaveLength(80);
     });
   });
 }

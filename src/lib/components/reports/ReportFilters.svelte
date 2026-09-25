@@ -200,6 +200,23 @@
         </div>
       </div>
 
+      <div class="flex flex-col gap-1.5">
+        <span class="text-[0.625rem] font-bold tracking-wide text-muted-foreground uppercase">
+          {t("reports.filters.packs")}
+        </span>
+        <div class="flex flex-wrap gap-1.5">
+          {#each app.enabledPackIds as pack (pack)}
+            <Chip
+              size="sm"
+              active={query.packs.includes(pack)}
+              onclick={() => (query = { ...query, packs: toggle(query.packs, pack) })}
+            >
+              {app.packTitle(pack)}
+            </Chip>
+          {/each}
+        </div>
+      </div>
+
       {#if active > 0}
         <button
           type="button"

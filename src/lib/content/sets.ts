@@ -2,54 +2,115 @@ const EMPTY_COUNTS = {
   numbers: 0,
   calendar: 0,
   time: 0,
-  people: 0,
   position: 0,
+  people: 0,
   body: 0,
-  actions: 0,
-  places: 0,
-  nature: 0,
-  describing: 0,
+  mind: 0,
+  language: 0,
+  home: 0,
+  food: 0,
+  clothing: 0,
   objects: 0,
-  food: 0
+  money: 0,
+  "school-work": 0,
+  places: 0,
+  travel: 0,
+  nature: 0,
+  leisure: 0,
+  society: 0,
+  concepts: 0,
+  actions: 0,
+  describing: 0,
+  expressions: 0
 };
 
 export type SetId = keyof typeof EMPTY_COUNTS;
 
-/**
- * The second axis: what a word is about inside its set. A subcategory belongs
- * to exactly one set, so the pair (set, subcategory) names it; the same id may
- * be reused under another set when it means the same thing there.
- */
+export const TAXONOMY_VERSION = 1;
+
+export const WORD_SHAPES = ["1-kanji", "2-kanji", "okurigana", "kana"] as const;
+
+export type WordShape = (typeof WORD_SHAPES)[number];
+
+const HAN = /\p{Script=Han}/u;
+
+export function shapeOf(written: string): WordShape {
+  const glyphs = [...written];
+  const han = glyphs.filter((glyph) => HAN.test(glyph)).length;
+  if (han === 0) return "kana";
+  const firstHan = glyphs.findIndex((glyph) => HAN.test(glyph));
+  if (glyphs.slice(firstHan).some((glyph) => !HAN.test(glyph))) return "okurigana";
+  return han === 1 ? "1-kanji" : "2-kanji";
+}
+
 export const SUBCATEGORIES = {
-  numbers: ["digits", "counters", "frequency"],
-  calendar: ["weekdays", "days", "weeks", "months", "years", "events", "age"],
-  time: ["clock", "duration", "day-parts", "moments", "frequency"],
+  numbers: ["digits", "counters", "units", "quantity", "order", "frequency"],
+  calendar: ["weekdays", "days", "weeks", "months", "years", "seasons", "events"],
+  time: ["clock", "day-parts", "duration", "moments", "sequence", "frequency"],
+  position: ["spatial", "compass", "distance", "shape"],
   people: [
     "family",
+    "pronouns",
     "person-types",
-    "school-roles",
+    "roles",
     "social",
     "nationality",
     "counts",
     "identity"
   ],
-  position: ["compass", "spatial", "sequence"],
-  body: ["body-parts", "senses", "health"],
-  actions: [
-    "movement",
-    "transfer",
-    "communication",
-    "perception",
-    "literacy",
-    "daily-routine",
-    "life-events"
+  body: ["body-parts", "senses", "health", "life-cycle"],
+  mind: ["feelings", "thinking", "preference", "character"],
+  language: ["speaking", "reading", "writing", "languages", "mail"],
+  home: ["rooms", "furniture", "appliances", "housework", "routine"],
+  food: ["meals", "ingredients", "produce", "drinks", "sweets", "tableware", "eating", "taste"],
+  clothing: ["garments", "footwear", "accessories", "wearing"],
+  objects: ["stationery", "tools", "containers", "devices", "materials"],
+  money: ["money", "shopping", "prices", "finance"],
+  "school-work": ["school", "study", "subjects", "work", "industry"],
+  places: ["buildings", "shops", "building-parts", "town", "regions"],
+  travel: ["vehicles", "stations", "navigation", "trips"],
+  nature: ["weather", "sky", "landscape", "plants", "animals", "elements"],
+  leisure: ["music", "arts", "sports", "play"],
+  society: ["government", "law", "media", "culture", "incidents", "international"],
+  concepts: ["things", "questions", "relations", "cause", "change", "method", "state"],
+  actions: ["movement", "transfer", "handling", "existence", "change"],
+  describing: [
+    "size",
+    "colors",
+    "quality",
+    "condition",
+    "speed",
+    "temperature",
+    "difficulty",
+    "skill",
+    "degree",
+    "manner"
   ],
-  places: ["buildings", "building-parts", "transport", "geography", "travel"],
-  nature: ["landscape", "weather", "plants", "elements"],
-  describing: ["size", "colors", "skill", "condition", "value", "manner", "languages"],
-  objects: ["clothing", "stationery", "reading-material", "furniture", "money", "household"],
-  food: ["general", "sweets"]
+  expressions: ["greetings", "courtesy", "set-phrases", "idioms", "yojijukugo"]
 } as const satisfies Record<SetId, readonly string[]>;
+
+export type SubcategoryId = (typeof SUBCATEGORIES)[SetId][number];
+
+export const FAMILIES = {
+  quantity: ["numbers", "calendar", "time", "position"],
+  people: ["people", "body", "mind", "language"],
+  daily: ["home", "food", "clothing", "objects", "money", "school-work"],
+  world: ["places", "travel", "nature", "leisure", "society"],
+  general: ["concepts", "actions", "describing", "expressions"]
+} as const satisfies Record<string, readonly SetId[]>;
+
+export type FamilyId = keyof typeof FAMILIES;
+
+export const FAMILY_IDS: readonly FamilyId[] = ["quantity", "people", "daily", "world", "general"];
+
+export type FamilyGroup = { family: FamilyId; sets: SetId[] };
+
+export function groupSetsByFamily(sets: readonly SetId[]): FamilyGroup[] {
+  return FAMILY_IDS.flatMap((family) => {
+    const held = (FAMILIES[family] as readonly SetId[]).filter((set) => sets.includes(set));
+    return held.length === 0 ? [] : [{ family, sets: held }];
+  });
+}
 
 /** Every subcategory id, once, in the order the sets declare them. */
 export const SUBCATEGORY_IDS: readonly string[] = [
@@ -69,6 +130,48 @@ export function subcategoryKey(set: SetId, subcategory: string): string {
 export function isSubcategoryKey(value: string): boolean {
   const [set, subcategory, ...rest] = value.split("/");
   return rest.length === 0 && subcategory !== undefined && isSubcategoryOf(set, subcategory);
+}
+
+const LEGACY_PAIRS: Record<string, readonly string[]> = {
+  "actions/communication": ["language/speaking"],
+  "actions/literacy": ["language/reading", "language/writing"],
+  "actions/perception": ["actions/transfer"],
+  "actions/daily-routine": ["home/routine", "food/eating"],
+  "actions/life-events": ["body/life-cycle"],
+  "calendar/age": ["body/life-cycle"],
+  "position/sequence": ["time/sequence"],
+  "places/transport": ["travel/vehicles"],
+  "places/travel": ["travel/trips"],
+  "places/geography": ["places/regions"],
+  "describing/value": ["describing/quality", "mind/preference"],
+  "describing/languages": ["language/languages"],
+  "describing/condition": ["describing/condition", "body/health"],
+  "objects/reading-material": ["language/reading"],
+  "objects/money": ["money/money"],
+  "objects/clothing": ["clothing/garments", "clothing/accessories", "clothing/footwear"],
+  "objects/furniture": ["home/furniture"],
+  "objects/household": ["home/appliances"],
+  "people/school-roles": ["people/roles"],
+  "food/general": ["food/meals"]
+};
+
+export type Selection = { sets: SetId[]; subcategories: string[] };
+
+export function migrateSelection(sets: readonly string[], subcategories: readonly string[]): Selection {
+  const held = sets.filter(isSetId);
+  const pairs =
+    subcategories.length > 0
+      ? subcategories
+      : held.flatMap((set) => [
+          ...SUBCATEGORIES[set].map((subcategory) => subcategoryKey(set, subcategory)),
+          ...Object.keys(LEGACY_PAIRS).filter((key) => key.startsWith(`${set}/`))
+        ]);
+  if (!pairs.some((key) => Object.hasOwn(LEGACY_PAIRS, key))) {
+    return { sets: held, subcategories: subcategories.filter(isSubcategoryKey) };
+  }
+  const moved = [...new Set(pairs.flatMap((key) => LEGACY_PAIRS[key] ?? [key]))].filter(isSubcategoryKey);
+  const owners = moved.map((key) => key.split("/")[0]).filter(isSetId);
+  return { sets: [...new Set([...held, ...owners])], subcategories: moved };
 }
 
 export function isSetId(value: string): value is SetId {
@@ -219,8 +322,53 @@ if (import.meta.vitest) {
 
   test("lists set ids in the order they are declared", () => {
     expect(SET_IDS[0]).toBe("numbers");
-    expect(SET_IDS.at(-1)).toBe("food");
-    expect(SET_IDS).toHaveLength(12);
+    expect(SET_IDS.at(-1)).toBe("expressions");
+    expect(SET_IDS).toHaveLength(23);
+  });
+
+  test("derives a word's shape from its written form alone", () => {
+    expect(["山", "学校", "日曜日", "時々", "上げる", "食べ物", "お菓子", "とても", "カメラ"].map(shapeOf)).toEqual([
+      "1-kanji",
+      "2-kanji",
+      "2-kanji",
+      "2-kanji",
+      "okurigana",
+      "okurigana",
+      "2-kanji",
+      "kana",
+      "kana"
+    ]);
+  });
+
+  test("freezes 127 (set, subcategory) pairs", () => {
+    expect(SET_IDS.reduce((total, set) => total + SUBCATEGORIES[set].length, 0)).toBe(127);
+  });
+
+  test("files every set under exactly one family, in set order", () => {
+    expect(FAMILY_IDS.flatMap((family) => FAMILIES[family])).toEqual(SET_IDS);
+  });
+
+  test("hides a family none of whose sets has words", () => {
+    expect(groupSetsByFamily(["actions", "numbers", "time"])).toEqual([
+      { family: "quantity", sets: ["numbers", "time"] },
+      { family: "general", sets: ["actions"] }
+    ]);
+  });
+
+  test("names every set, subcategory and family in every locale", async () => {
+    const { readdirSync, readFileSync } = await import("node:fs");
+    const root = new URL("../assets/local/", import.meta.url);
+    for (const locale of readdirSync(root)) {
+      const common = JSON.parse(readFileSync(new URL(`${locale}/common.json`, root), "utf8"));
+      const missing = [
+        ...SET_IDS.filter((set) => typeof common.set?.[set] !== "string").map((set) => `set.${set}`),
+        ...SUBCATEGORY_IDS.filter((id) => typeof common.subcategory?.[id] !== "string").map(
+          (id) => `subcategory.${id}`
+        ),
+        ...FAMILY_IDS.filter((id) => typeof common.family?.[id] !== "string").map((id) => `family.${id}`)
+      ];
+      expect({ locale, missing }).toEqual({ locale, missing: [] });
+    }
   });
 
   test("rejects verbs as it was renamed to actions", () => {
@@ -254,6 +402,34 @@ if (import.meta.vitest) {
     expect(grouped.numbers).toEqual([]);
   });
 
+  describe("migrateSelection", () => {
+    test("moves an explicit old pair to where its words went, with their sets", () => {
+      expect(migrateSelection(["actions", "numbers"], ["actions/literacy", "numbers/digits"])).toEqual({
+        sets: ["actions", "numbers", "language"],
+        subcategories: ["language/reading", "language/writing", "numbers/digits"]
+      });
+    });
+
+    test("spells out a whole old set whose words now live in several sets", () => {
+      const migrated = migrateSelection(["objects"], []);
+      expect(migrated.sets).toEqual(["objects", "language", "money", "clothing", "home"]);
+      expect(migrated.subcategories).toContain("objects/stationery");
+      expect(migrated.subcategories).toContain("clothing/footwear");
+      expect(migrated.subcategories).toContain("home/appliances");
+    });
+
+    test("leaves a selection no word moved out of as it was", () => {
+      expect(migrateSelection(["numbers"], [])).toEqual({ sets: ["numbers"], subcategories: [] });
+    });
+
+    test("drops a set or pair that never existed", () => {
+      expect(migrateSelection(["kitchen", "numbers"], ["numbers/weather", "numbers/digits"])).toEqual({
+        sets: ["numbers"],
+        subcategories: ["numbers/digits"]
+      });
+    });
+  });
+
   test("lists a subcategory under exactly one set, and never an unknown one", () => {
     expect(isSubcategoryOf("nature", "weather")).toBe(true);
     expect(isSubcategoryOf("nature", "buildings")).toBe(false);
@@ -266,16 +442,16 @@ if (import.meta.vitest) {
 
     test("groups in set order, then in the order the set declares them", () => {
       const grouped = groupWordsBySubcategory([
-        word("雨", "nature", "weather"),
-        word("一", "numbers", "digits"),
         word("山", "nature", "landscape"),
+        word("一", "numbers", "digits"),
+        word("雨", "nature", "weather"),
         word("一つ", "numbers", "counters")
       ]);
       expect(grouped.map((group) => group.subcategory)).toEqual([
         "digits",
         "counters",
-        "landscape",
-        "weather"
+        "weather",
+        "landscape"
       ]);
       expect(grouped[0].words).toEqual([word("一", "numbers", "digits")]);
     });
@@ -296,23 +472,23 @@ if (import.meta.vitest) {
 
   test("lists only the subcategories a set has words in", () => {
     const counted = subcategoriesBySet([
-      { set: "nature", subcategory: "weather" },
       { set: "nature", subcategory: "landscape" },
-      { set: "nature", subcategory: "weather" }
+      { set: "nature", subcategory: "weather" },
+      { set: "nature", subcategory: "landscape" }
     ]);
-    expect(counted.nature).toEqual(["landscape", "weather"]);
+    expect(counted.nature).toEqual(["weather", "landscape"]);
     expect(counted.numbers).toEqual([]);
     expect(countBySubcategory([{ set: "nature", subcategory: "weather" }])["nature/weather"]).toBe(1);
   });
 
   test("folds the subcategory groups under their set", () => {
     const folded = groupWordsBySet([
-      { set: "nature", subcategory: "weather" },
+      { set: "nature", subcategory: "landscape" },
       { set: "numbers", subcategory: "digits" },
-      { set: "nature", subcategory: "landscape" }
+      { set: "nature", subcategory: "weather" }
     ]);
     expect(folded.map((entry) => entry.set)).toEqual(["numbers", "nature"]);
-    expect(folded[1].groups.map((group) => group.subcategory)).toEqual(["landscape", "weather"]);
+    expect(folded[1].groups.map((group) => group.subcategory)).toEqual(["weather", "landscape"]);
   });
 
   describe("groupWordsByKanji", () => {

@@ -26,13 +26,16 @@ export type ReportQuery = {
   formats: Format[];
   answerStyles: AnswerStyle[];
   levels: string[];
+  /** A run matches when it drew on any of these packs. */
+  packs: string[];
 };
 
 export const ANY_QUERY: ReportQuery = {
   window: "all",
   formats: [],
   answerStyles: [],
-  levels: []
+  levels: [],
+  packs: []
 };
 
 export const ANSWER_STYLE_TAGS = ANSWER_STYLES;
@@ -77,11 +80,12 @@ export function rangeLabel(range: DateRange): string {
     : t("reports.window.range", { from: range.from, to: range.to });
 }
 
-export function queryLabels(query: ReportQuery): string[] {
+export function queryLabels(query: ReportQuery, packTitle: (id: string) => string = (id) => id): string[] {
   return [
     ...query.formats.map((format) => t(`common.format.${format}`)),
     ...query.answerStyles.map((style) => t(`common.answerStyle.${style}`)),
-    ...query.levels
+    ...query.levels,
+    ...query.packs.map(packTitle)
   ];
 }
 
@@ -98,13 +102,14 @@ export function queryReports(
     if (!withinWindow(report.createdAt, query.window, now)) return false;
     if (!matches(query.formats, report.settings.format)) return false;
     if (!matches(query.answerStyles, report.settings.answerStyle)) return false;
+    if (query.packs.length > 0 && !report.packs.some((pack) => query.packs.includes(pack))) return false;
     return matches(query.levels, report.settings.level);
   });
 }
 
 export function activeFilters(query: ReportQuery): number {
   return (
-    query.formats.length + query.answerStyles.length + query.levels.length
+    query.formats.length + query.answerStyles.length + query.levels.length + query.packs.length
   );
 }
 
@@ -175,6 +180,13 @@ if (import.meta.vitest) {
         formats: ["kana-kanji" as const]
       };
       expect(queryReports(runs, query, now)).toEqual([]);
+    });
+
+    test("keeps a run that drew on any chosen pack", () => {
+      const mixed = { ...report("2026-09-19T10:00:00.000Z"), packs: ["n5-base", "n5-kana"] };
+      const query = { ...ANY_QUERY, packs: ["n5-kana"] };
+      expect(queryReports([...runs, mixed], query, now)).toEqual([mixed]);
+      expect(activeFilters(query)).toBe(1);
     });
 
     test("ignores a run with an unreadable date once a window is set", () => {

@@ -1,5 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
-import { moveOn } from "./run";
+import { expect, test, moveOn } from "./run";
+import type { Page } from "@playwright/test";
 
 async function startListeningRun(page: Page, direction: string): Promise<string[]> {
   const clips: string[] = [];

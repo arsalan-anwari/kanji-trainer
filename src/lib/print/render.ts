@@ -1,15 +1,6 @@
 import type { Kanji, Word } from "../content/types";
-import {
-  cardFace,
-  kanjiIndex,
-  listed,
-  separated,
-  type CardFace,
-  type KanjiReadings
-} from "../browse/cards";
+import { cardFace, kanjiIndex, separated, type CardFace } from "../browse/cards";
 import { imageUrl } from "../quiz/hints";
-import cnFlag from "../assets/flags/cn.svg";
-import jpFlag from "../assets/flags/jp.svg";
 import {
   assemblePdf,
   cardsPerSheet,
@@ -31,8 +22,6 @@ const MUTED = "#6b665c";
 const CUT_LINE = "#a8a193";
 const JPEG_QUALITY = 0.88;
 const LINE_HEIGHT = 1.35;
-const ENTRY_SPACE = 0.35;
-const READING_SPACE = 0.25;
 const MEASURE_PX = 100;
 
 export type RenderOptions = {
@@ -40,12 +29,10 @@ export type RenderOptions = {
   onpage: (done: number, total: number) => void;
 };
 
-type Part = { text: string; weight: 400 | 700; color: string } | { image: HTMLImageElement | null };
+type Part = { text: string; weight: 400 | 700; color: string };
 
 type BackRow = {
   size: number;
-  space: number;
-  lead: Part[];
   items: string[];
   weight: 400 | 700;
   color: string;
@@ -53,8 +40,6 @@ type BackRow = {
 };
 
 type Back = { rows: BackRow[]; shapes: Row[] };
-
-type Flags = { on: HTMLImageElement | null; kun: HTMLImageElement | null };
 
 function loadImage(url: string): Promise<HTMLImageElement | null> {
   return new Promise((resolve) => {
@@ -87,13 +72,8 @@ function font(weight: number, size: number): string {
 }
 
 function partWidth(ctx: CanvasRenderingContext2D, part: Part, size: number): number {
-  if ("image" in part) return part.image === null ? 0 : size * 1.5 + size * 0.35;
   ctx.font = font(part.weight, size);
   return ctx.measureText(part.text).width;
-}
-
-function lineWidth(ctx: CanvasRenderingContext2D, parts: readonly Part[], size: number): number {
-  return parts.reduce((sum, part) => sum + partWidth(ctx, part, size), 0);
 }
 
 function drawParts(
@@ -106,14 +86,6 @@ function drawParts(
   let at = x;
   ctx.textBaseline = "alphabetic";
   for (const part of parts) {
-    if ("image" in part) {
-      if (part.image !== null) {
-        const height = size * 0.75;
-        ctx.drawImage(part.image, at, baseline - height * 0.95, height * 1.5, height);
-      }
-      at += partWidth(ctx, part, size);
-      continue;
-    }
     ctx.font = font(part.weight, size);
     ctx.fillStyle = part.color;
     ctx.fillText(part.text, at, baseline);
@@ -185,27 +157,14 @@ function textRow(
   color: string,
   spaced = false
 ): BackRow {
-  return { size, space: 0, lead: [], items, weight, color, spaced };
+  return { size, items, weight, color, spaced };
 }
 
-function readingRow(space: number, lead: Part[], items: string[]): BackRow {
-  return { size: 1, space, lead, items, weight: 400, color: INK, spaced: false };
-}
-
-function kanjiRows(entry: KanjiReadings, flags: Flags): BackRow[] {
-  return [
-    readingRow(ENTRY_SPACE, [{ text: entry.character, weight: 700, color: INK }], []),
-    readingRow(READING_SPACE, [{ image: flags.on }], listed(entry.on)),
-    readingRow(READING_SPACE, [{ image: flags.kun }], listed(entry.kun))
-  ];
-}
-
-function backRows(face: CardFace, flags: Flags): BackRow[] {
+function backRows(face: CardFace): BackRow[] {
   return [
     textRow(1.5, [face.kana], 700, INK),
     textRow(1, separated(face.romaji.split("-"), "-"), 400, MUTED),
-    textRow(1.1, face.meaning.split(" "), 400, INK, true),
-    ...face.kanji.flatMap((entry) => kanjiRows(entry, flags))
+    textRow(1.1, face.meaning.split(" "), 400, INK, true)
   ];
 }
 
@@ -214,19 +173,15 @@ function measured(ctx: CanvasRenderingContext2D, row: BackRow): Row {
     partWidth(ctx, { text: value, weight: row.weight, color: row.color }, MEASURE_PX) / MEASURE_PX;
   return {
     size: row.size,
-    space: row.space,
-    lead: lineWidth(ctx, row.lead, MEASURE_PX) / MEASURE_PX,
+    space: 0,
+    lead: 0,
     items: row.items.map(text),
     gap: row.spaced ? text(" ") : 0
   };
 }
 
-function measureBack(
-  ctx: CanvasRenderingContext2D,
-  face: CardFace,
-  flags: Flags
-): Back {
-  const rows = backRows(face, flags);
+function measureBack(ctx: CanvasRenderingContext2D, face: CardFace): Back {
+  const rows = backRows(face);
   return { rows, shapes: rows.map((row) => measured(ctx, row)) };
 }
 
@@ -253,17 +208,11 @@ function drawBack(ctx: CanvasRenderingContext2D, rect: Rect, back: Back, unit: n
   let top = inner.y;
   back.rows.forEach((row, index) => {
     const size = row.size * unit;
-    top += row.space * size;
-    const textX = inner.x + (back.shapes[index]?.lead ?? 0) * size;
-    const lines = placed[index] ?? [];
-    (lines.length === 0 ? [[]] : lines).forEach((line, lineIndex) => {
+    for (const line of placed[index] ?? []) {
       top += size * LINE_HEIGHT;
-      const baseline = top - size * 0.3;
-      if (lineIndex === 0) drawParts(ctx, row.lead, inner.x, baseline, size);
-      if (line.length === 0) return;
       const text = line.map((item) => row.items[item] ?? "").join(row.spaced ? " " : "");
-      drawParts(ctx, [{ text, weight: row.weight, color: row.color }], textX, baseline, size);
-    });
+      drawParts(ctx, [{ text, weight: row.weight, color: row.color }], inner.x, top - size * 0.3, size);
+    }
   });
 }
 
@@ -282,13 +231,12 @@ async function workbench(
     document.fonts.load(font(400, 32), "漢あア"),
     document.fonts.load(font(700, 32), "漢あア")
   ]);
-  const [on, kun] = await Promise.all([loadImage(cnFlag), loadImage(jpFlag)]);
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (ctx === null) throw new Error("no 2d canvas");
   const index = kanjiIndex(kanji);
   const faces = words.map((word) => cardFace(word, index));
-  const backs = faces.map((face) => measureBack(ctx, face, { on, kun }));
+  const backs = faces.map((face) => measureBack(ctx, face));
   return { canvas, ctx, backs, faces };
 }
 

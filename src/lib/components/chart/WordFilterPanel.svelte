@@ -16,6 +16,7 @@
     toggleFilterSet,
     type WordFilter
   } from "../../browse/cards";
+  import { app } from "../../state.svelte";
   import { t } from "../../i18n.svelte";
 
   const LEVELS = ["N5", "N4", "N3", "N2", "N1"];
@@ -37,6 +38,7 @@
   const levelWords = $derived(atLevel(words, filter.level));
   const setCounts = $derived(countBySet(levelWords));
   const offered = $derived(subcategoriesBySet(levelWords));
+  const packs = $derived([...new Set(levelWords.map((word) => word.pack))]);
   const active = $derived(activeFilterCount(filter));
 </script>
 
@@ -76,7 +78,7 @@
             disabled={!known}
             active={filter.level === level}
             title={known ? level : t("setup.level.unavailable", { level })}
-            onclick={() => onchange({ ...filter, level, sets: [], subcategories: [] })}
+            onclick={() => onchange({ ...filter, level, sets: [], subcategories: [], packs: [] })}
           >
             {level}
           </Chip>
@@ -95,6 +97,21 @@
             onclick={() => onchange({ ...filter, shapes: toggled(filter.shapes, shape) })}
           >
             {t(`common.wordShapes.${shape}`)}
+          </Chip>
+        {/each}
+      </div>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="text-xs font-bold text-muted-foreground">{t("setup.words.packs")}</span>
+      <div role="group" aria-label={t("setup.words.packs")} class="flex flex-wrap gap-2">
+        {#each packs as pack (pack)}
+          <Chip
+            size="sm"
+            active={filter.packs.includes(pack)}
+            onclick={() => onchange({ ...filter, packs: toggled(filter.packs, pack) })}
+          >
+            {app.packTitle(pack)}
           </Chip>
         {/each}
       </div>

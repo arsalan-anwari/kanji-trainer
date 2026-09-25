@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Badge, Button, IconButton, Progress, ShelfCard, Switch } from "kaizen-ui";
-  import { isBase, type Offer } from "../../packs/catalog";
+  import { isBase, isSupported, type Offer } from "../../packs/catalog";
   import { lookOf, megabytes, share } from "../../packs/shelf";
   import type { Progress as Download } from "../../packs/store";
   import { n, t } from "../../i18n.svelte";
@@ -39,7 +39,8 @@
     ...(size === null ? [] : [t("market.meta.size", { size: megabytes(size) })]),
     t("market.meta.version", { version: meta.version })
   ]);
-  const canFetch = $derived(installable && online && offer.entry !== null);
+  const supported = $derived(isSupported(meta));
+  const canFetch = $derived(installable && online && offer.entry !== null && supported);
 </script>
 
 <ShelfCard
@@ -76,6 +77,8 @@
         {t("market.progress", { done: megabytes(progress.done), total: megabytes(progress.total) })}
       </span>
     </div>
+  {:else if !supported}
+    <p class="text-sm text-muted-foreground">{t("market.newerApp")}</p>
   {:else if failed}
     <p class="text-sm text-danger" role="alert">{t("market.failed")}</p>
   {:else if offer.state !== "installed" && !installable}
@@ -84,7 +87,7 @@
     <p class="text-sm text-muted-foreground">{t("market.needsNetwork")}</p>
   {/if}
 
-  {#if offer.state !== "available"}
+  {#if offer.state !== "available" && supported}
     {#if base}
       <p class="text-sm text-muted-foreground">{t("market.action.alwaysOn")}</p>
     {:else}

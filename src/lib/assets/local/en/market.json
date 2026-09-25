@@ -19,6 +19,9 @@
   },
   "theme": {
     "base": "Base level",
+    "plus": "More kanji",
+    "extra": "Harder kanji",
+    "kana": "Kana words",
     "travel": "Travel",
     "food": "Food and drink",
     "work": "Work",
@@ -80,5 +83,6 @@
   "description": {
     "loading": "Loading the description…",
     "missing": "The description could not be loaded. Connect to the internet to read it before downloading."
-  }
+  },
+  "newerApp": "This pack needs a newer version of Kanji Trainer. Update the app to use it."
 }

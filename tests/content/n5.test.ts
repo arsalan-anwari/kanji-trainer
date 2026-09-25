@@ -1,5 +1,5 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
-import { join, sep } from "node:path";
+import { join } from "node:path";
 import { describe, expect, test } from "vitest";
 import { renderAttribution, renderLicence } from "../../tools/content/attribution.ts";
 import {
@@ -175,7 +175,12 @@ describe("the shipped N5 content", () => {
     for (const word of content.words) {
       sizes.set(word.set, (sizes.get(word.set) ?? 0) + 1);
     }
-    expect([...sizes].filter(([, size]) => size === 0).map(([id]) => id)).toEqual(["body"]);
+    expect([...sizes].filter(([, size]) => size === 0).map(([id]) => id)).toEqual([
+      "school-work",
+      "leisure",
+      "society",
+      "expressions"
+    ]);
   });
 
   test("gives every word a clue that never names the answer", () => {
@@ -187,12 +192,11 @@ describe("the shipped N5 content", () => {
     expect(content.kanji.filter((entry) => entry.look === "")).toEqual([]);
   });
 
-  test("names a picture file for every word, in both themes", () => {
+  test("names a picture file for every word", () => {
     const paths = content.words.map((word) => imagePath(word));
     expect(new Set(paths).size).toBe(content.words.length);
     for (const path of paths) {
       expect(existsSync(join(OUTPUT_DIR, path))).toBe(true);
-      expect(existsSync(join(OUTPUT_DIR, path.replace("images/light/", "images/dark/")))).toBe(true);
     }
   });
 
@@ -229,15 +233,13 @@ describe("the shipped N5 content", () => {
     expect(size(AUDIO_DIR)).toBeLessThan(5 * 1024 * 1024);
   });
 
-  test("ships one light WebP per word and no leftover png", () => {
-    const isLightWebp = (path: string) => path.includes(`${sep}light${sep}`) && path.endsWith(".webp");
-    expect(countFiles(IMAGE_DIR, isLightWebp)).toBe(content.words.length);
+  test("ships one WebP per word and no leftover png", () => {
+    expect(countFiles(IMAGE_DIR, (path) => path.endsWith(".webp"))).toBe(content.words.length);
     expect(countFiles(IMAGE_DIR, (path) => path.endsWith(".png"))).toBe(0);
   });
 
   test("keeps the whole pack small enough for a first-start download on mobile", () => {
-    const pictures = countFiles(IMAGE_DIR, () => true);
-    expect(pictures).toBe(content.words.length * 2);
+    expect(countFiles(IMAGE_DIR, () => true)).toBe(content.words.length);
     const size = (dir: string): number =>
       readdirSync(dir, { withFileTypes: true }).reduce(
         (total, entry) =>

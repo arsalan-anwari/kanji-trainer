@@ -21,10 +21,11 @@
 - Downloadable content packs instead of everything bundled.
 - Timed runs.
 - Allow multiple words using the same kanji and handle this in quizes. 
+- Add kanji component-building quiz mode.
+- Add full 700 N5 vocab as multiple packs. 
 
 ## Next
 
-- A kanji component-building quiz mode.
 - Full platform support + accessibility polish.
 - More JLPT levels and packs.
 - Later: on-device handwriting and speech tutoring (v2.0+).

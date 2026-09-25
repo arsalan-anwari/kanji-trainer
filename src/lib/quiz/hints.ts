@@ -40,11 +40,6 @@ export function audioUrl(word: Word): string {
   return packUrl(word.pack, audioPath(word));
 }
 
-/** Swaps a light image url for its pre-rendered dark counterpart. */
-export function darkImageUrl(url: string): string {
-  return url.replace("/images/light/", "/images/dark/");
-}
-
 function looksOf(word: Word, looks: LookIndex): string {
   return word.kanji
     .map((character) => looks.get(character) ?? "")
@@ -88,8 +83,7 @@ if (import.meta.vitest) {
     meaning: "school",
     clue: "Where children go on a weekday morning to be taught.",
     kanji: ["学", "校"],
-    kanjiCount: 2,
-    hasOkurigana: false,
+    shape: "2-kanji",
     hasAudio: true,
     set: "places",
     subcategory: "buildings",
@@ -182,7 +176,7 @@ if (import.meta.vitest) {
     test("points at the picture the word's meaning names", () => {
       expect(hintFor(word, "kana-kanji", "advanced", looks)).toEqual({
         kind: "image",
-        text: "/packs/n5-base/images/light/places/buildings/school.webp"
+        text: "/packs/n5-base/images/places/buildings/school.webp"
       });
     });
 
@@ -192,19 +186,13 @@ if (import.meta.vitest) {
 
     test("keeps a word's media put when its label changes", () => {
       expect(imageUrl({ ...word, meaning: "place of learning" })).toBe(
-        "/packs/n5-base/images/light/places/buildings/school.webp"
+        "/packs/n5-base/images/places/buildings/school.webp"
       );
     });
 
     test("files a word's media under the pack it came from", () => {
       expect(audioUrl({ ...word, pack: "n5-travel" })).toBe(
         "/packs/n5-travel/audio/places/buildings/school.mp3"
-      );
-    });
-
-    test("swaps the light image url for its dark counterpart", () => {
-      expect(darkImageUrl("/packs/n5-base/images/light/places/buildings/school.webp")).toBe(
-        "/packs/n5-base/images/dark/places/buildings/school.webp"
       );
     });
 

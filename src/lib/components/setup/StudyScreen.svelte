@@ -5,6 +5,7 @@
   import { groupWordsByKanji, SET_IDS, type SetId } from "../../content/sets";
   import { n, t } from "../../i18n.svelte";
   import SetIcon from "./SetIcon.svelte";
+  import UnsuitedWarning from "./UnsuitedWarning.svelte";
 
   // Grouped the way the picker groups them, so a study pass reads like the set
   // it was built from, and by kanji under that, so a long set stays scannable.
@@ -28,7 +29,8 @@
       <span class="text-h2 leading-tight font-bold">{t("setup.study.title")}</span>
       <span class="text-sm text-muted-foreground">{t("setup.study.description")}</span>
     </div>
-    <div class="flex shrink-0 flex-wrap gap-2">
+    <div class="flex shrink-0 flex-wrap items-center gap-2">
+      <UnsuitedWarning />
       <ExpandAllButton />
       <Button variant="outline" onclick={() => app.go("setup")}>
         <Icon name="chevron-left" />

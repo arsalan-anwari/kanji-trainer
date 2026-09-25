@@ -81,11 +81,11 @@ def from_kanji_alive(word, index, archive):
     return archive.read(name), KA_LICENCE, f"{KA_AUDIO}#{name}"
 
 
-def from_jpod(word):
-    path = CACHE / "jpod" / f"{word['written']}_{word['reading']}.mp3"
-    source = CACHE / "jpod" / f"{word['written']}_{word['reading']}.url"
+def jpod_clip(kanji, kana):
+    path = CACHE / "jpod" / f"{kanji}_{kana}.mp3"
+    source = CACHE / "jpod" / f"{kanji}_{kana}.url"
     if not path.exists():
-        url, body = get(JPOD, {"kanji": word["written"], "kana": word["reading"]})
+        url, body = get(JPOD, {"kanji": kanji, "kana": kana})
         path.parent.mkdir(parents=True, exist_ok=True)
         if len(body) == 0 or hashlib.sha256(body).hexdigest() == JPOD_UNAVAILABLE:
             body, url = b"", ""
@@ -95,6 +95,22 @@ def from_jpod(word):
     if len(body) == 0:
         return None
     return body, JPOD_LICENCE, source.read_text()
+
+
+def kanji_forms_by_kana():
+    forms = {}
+    words = json.loads((ROOT / ".cache" / "content" / "jmdict-eng-common.json").read_text())["words"]
+    for entry in words:
+        for kana in entry["kana"]:
+            forms.setdefault(kana["text"], []).extend(form["text"] for form in entry["kanji"])
+    return forms
+
+
+def from_jpod(word, forms):
+    spellings = [word["written"]]
+    if word["written"] == word["reading"]:
+        spellings += forms.get(word["reading"], [])
+    return next((clip for kanji in dict.fromkeys(spellings) if (clip := jpod_clip(kanji, word["reading"]))), None)
 
 
 def lingua_libre_title(word):
@@ -150,11 +166,12 @@ def main():
     pack = sys.argv[1] if len(sys.argv) > 1 else "n5-base"
     words = json.loads((PACKS / pack / "content.json").read_text())["words"]
     index = kanji_alive_index()
+    forms = kanji_forms_by_kana()
     archive = zipfile.ZipFile(cached("audio-mp3.zip", KA_AUDIO))
     fetchers = [
         ("local", lambda word: from_local(word, pack)),
         ("kanjialive", lambda word: from_kanji_alive(word, index, archive)),
-        ("jpod101", from_jpod),
+        ("jpod101", lambda word: from_jpod(word, forms)),
         ("lingualibre", from_lingua_libre),
         ("commons", from_commons),
     ]

@@ -1,7 +1,7 @@
 import { decodeReportFile, encodeReportFile, FILE_EXTENSION } from "./quiz/ktreport";
 import { parseReport, type Report } from "./quiz/report";
-import { pickSets, pickSubcategories, pickWordIds } from "./quiz/settings";
-import type { SetId } from "./content/sets";
+import { pickSelection, pickWordIds } from "./quiz/settings";
+import { TAXONOMY_VERSION, type SetId } from "./content/sets";
 import { loadJson, storeJson } from "kaizen-ui";
 import { t } from "./i18n.svelte";
 
@@ -14,6 +14,8 @@ const REPORT_LIMIT = 50;
 export type PresetSelection = {
   sets: SetId[];
   subcategories: string[];
+  /** Pack ids to draw from. Empty means every enabled pack. */
+  packs: string[];
   excludedWords: string[];
 };
 
@@ -25,10 +27,17 @@ export type Preset = {
 function parseSelection(value: unknown): PresetSelection {
   const record = typeof value === "object" && value !== null ? (value as Record<string, unknown>) : {};
   return {
-    sets: pickSets(record.sets),
-    subcategories: pickSubcategories(record.subcategories),
+    ...pickSelection(record),
+    packs: pickWordIds(record.packs),
     excludedWords: pickWordIds(record.excludedWords)
   };
+}
+
+function storePresets(presets: readonly Preset[]): void {
+  storeJson(
+    PRESETS_KEY,
+    presets.map((preset) => ({ ...preset, selection: { ...preset.selection, taxonomy: TAXONOMY_VERSION } }))
+  );
 }
 
 export function listPresets(): Preset[] {
@@ -49,13 +58,13 @@ export function savePreset(name: string, selection: PresetSelection): Preset[] {
     ...listPresets().filter((preset) => preset.name !== name),
     { name, selection: { ...selection } }
   ].sort((left, right) => left.name.localeCompare(right.name));
-  storeJson(PRESETS_KEY, kept);
+  storePresets(kept);
   return kept;
 }
 
 export function deletePreset(name: string): Preset[] {
   const kept = listPresets().filter((preset) => preset.name !== name);
-  storeJson(PRESETS_KEY, kept);
+  storePresets(kept);
   return kept;
 }
 
@@ -285,15 +294,30 @@ if (import.meta.vitest) {
       savePreset("numbers only", {
         sets: ["numbers"],
         subcategories: ["numbers/digits"],
+        packs: ["n5-kana"],
         excludedWords: []
       });
       expect(listPresets()).toEqual([
         {
           name: "numbers only",
-          selection: { sets: ["numbers"], subcategories: ["numbers/digits"], excludedWords: [] }
+          selection: { sets: ["numbers"], subcategories: ["numbers/digits"], packs: ["n5-kana"], excludedWords: [] }
         }
       ]);
       expect(deletePreset("numbers only")).toEqual([]);
+    });
+
+    test("reads a preset saved before the taxonomy froze with its words still selected", () => {
+      storeJson("kanji-trainer-presets", [
+        { name: "old", selection: { sets: ["people"], subcategories: ["people/school-roles"], excludedWords: [] } }
+      ]);
+      expect(listPresets()[0]?.selection).toEqual({
+        sets: ["people"],
+        subcategories: ["people/roles"],
+        packs: [],
+        excludedWords: []
+      });
+      savePreset("new", { sets: ["numbers"], subcategories: [], packs: [], excludedWords: [] });
+      expect(listPresets().map((preset) => preset.selection.subcategories)).toEqual([[], ["people/roles"]]);
     });
 
     test("skips anything stored under the key that is not a run", async () => {

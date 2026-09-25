@@ -1,8 +1,8 @@
-"""Turn each light and dark png of a pack into the 512 px WebP the app loads.
+"""Turn each png of a pack into the 512 px WebP the app loads.
 
 The png is deleted once its WebP is written. Same --pack/--category/--all flags
 and skiplist handling as generate.py: by default only pictures not yet judged
-good are converted, which is what a fresh generate/invert run produced.
+good are converted, which is what a fresh generate run produced.
 
     python3 tools/images/convert.py --all                        # every png of every pack
     python3 tools/images/convert.py --pack=n5-base --category=numbers
@@ -36,15 +36,14 @@ def main():
         for w in words(pack, category):
             if w["file"] in skip:
                 continue
-            for theme in ("light", "dark"):
-                png = png_dir(pack, category, w["subcategory"], theme) / w["file"]
-                if png.exists():
-                    todo.append((pack, theme, png))
+            png = png_dir(pack, category, w["subcategory"]) / w["file"]
+            if png.exists():
+                todo.append(png)
     if args.limit:
         todo = todo[: args.limit]
 
     if args.dry_run:
-        for pack, theme, png in todo:
+        for png in todo:
             print(f"{png} -> {png.with_suffix('.webp')}")
         return
     if not todo:
@@ -52,7 +51,7 @@ def main():
         return
 
     before = after = 0
-    for i, (pack, theme, png) in enumerate(todo, 1):
+    for i, png in enumerate(todo, 1):
         webp = png.with_suffix(".webp")
         before += png.stat().st_size
         convert(png, webp)

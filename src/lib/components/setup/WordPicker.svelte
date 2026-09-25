@@ -2,6 +2,7 @@
   import ExpandAllButton from "./ExpandAllButton.svelte";
   import { Button, Chip, EmptyState, Icon } from "kaizen-ui";
   import WordToggleTree from "./WordToggleTree.svelte";
+  import UnsuitedWarning from "./UnsuitedWarning.svelte";
   import { app } from "../../state.svelte";
   import {
     countBySet,
@@ -12,6 +13,7 @@
     type SetId
   } from "../../content/sets";
   import { WORD_SHAPES } from "../../quiz/settings";
+  import { toggled } from "../../browse/cards";
   import { n, t } from "../../i18n.svelte";
 
   const LEVELS = ["N5", "N4", "N3", "N2", "N1"];
@@ -52,7 +54,8 @@
 
   // One collapsed row per set instead of one card per subcategory: the long
   // list is what makes this page crawl on WebKitGTK.
-  const visibleIds = $derived(visible.map((word) => word.id));
+  // Words the format cannot ask stay listed but out of every bulk toggle.
+  const visibleIds = $derived(visible.map((word) => word.id).filter((id) => !app.unsuitedWords.has(id)));
   const tree = $derived(groupWordsBySet(visible));
 
   // Nothing to hunt through when a search is on or a single set is in play.
@@ -117,7 +120,8 @@
           {activeFilters}
         </span>
       {/if}
-      <div class="ml-auto flex flex-wrap gap-2 font-normal">
+      <div class="ml-auto flex flex-wrap items-center gap-2 font-normal">
+        <UnsuitedWarning />
         <Button
           size="sm"
           variant="outline"
@@ -183,6 +187,25 @@
       </div>
 
       <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs font-bold text-muted-foreground">{t("setup.words.packs")}</span>
+        <div role="group" aria-label={t("setup.words.packs")} class="flex flex-wrap gap-2">
+          {#each app.levelPacks as pack (pack)}
+            {@const active = app.settings.packs.includes(pack)}
+            {@const unsuited = app.unsuitedPacks.includes(pack)}
+            <Chip
+              size="sm"
+              disabled={unsuited && !active}
+              {active}
+              title={unsuited ? t("setup.words.unsuited", { packs: app.packTitle(pack) }) : undefined}
+              onclick={() => app.updateSettings({ packs: toggled(app.settings.packs, pack) })}
+            >
+              {app.packTitle(pack)}
+            </Chip>
+          {/each}
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
         <span class="text-xs font-bold text-muted-foreground">{t("setup.words.category")}</span>
         <div role="group" aria-label={t("setup.words.category")} class="flex flex-wrap gap-2">
           {#each SET_IDS.filter((id) => categoryCounts[id] > 0) as id (id)}
@@ -225,6 +248,7 @@
     {tree}
     {openByDefault}
     isOn={(id) => !app.excludedWords.has(id)}
+    isUsable={(id) => !app.unsuitedWords.has(id)}
     ontoggle={(id) => app.toggleWord(id)}
     onset={(ids, on) => (on ? app.selectWords(ids) : app.clearWords(ids))}
   />

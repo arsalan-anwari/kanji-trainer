@@ -1,6 +1,6 @@
-import type { SetId } from "./sets";
+import type { SetId, WordShape } from "./sets";
 
-export type { SetId };
+export type { SetId, WordShape };
 
 export type ReadingClass = "on" | "kun";
 
@@ -21,10 +21,7 @@ export type Word = {
   /** A sentence or two describing the word without naming it. */
   clue: string;
   kanji: string[];
-  /** How many kanji characters are in the word (1, 2+). */
-  kanjiCount: 1 | 2;
-  /** True if word has hiragana suffix after kanji (okurigana). */
-  hasOkurigana: boolean;
+  shape: WordShape;
   hasAudio: boolean;
   set: SetId;
   /** What the word is about inside its set. One of SUBCATEGORIES[set]. */

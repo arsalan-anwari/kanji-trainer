@@ -38,6 +38,13 @@ const EXCLUDED_KANA_TAGS = ["ok", "ik", "rk", "sk"];
 
 const HIRAGANA = /^[\p{Script=Hiragana}ー]+$/u;
 
+const HAN = /\p{Script=Han}/u;
+
+function isKanaOnly(entry: JmdictEntry): boolean {
+  const rare = entry.kanji.every((form) => form.tags.some((tag) => EXCLUDED_KANJI_TAGS.includes(tag)));
+  return rare || entry.sense.some((meaning) => meaning.misc.includes("uk"));
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -97,15 +104,14 @@ export function parseJmdict(value: unknown): Jmdict {
 
 export function indexByWrittenForm(dictionary: Jmdict): Lookup {
   const index = new Map<string, JmdictEntry[]>();
+  const add = (written: string, entry: JmdictEntry) => {
+    const entries = index.get(written);
+    if (entries === undefined) index.set(written, [entry]);
+    else if (!entries.includes(entry)) entries.push(entry);
+  };
   for (const entry of dictionary.words) {
-    for (const form of entry.kanji) {
-      const entries = index.get(form.text);
-      if (entries === undefined) {
-        index.set(form.text, [entry]);
-      } else {
-        entries.push(entry);
-      }
-    }
+    for (const form of entry.kanji) add(form.text, entry);
+    if (isKanaOnly(entry)) for (const form of entry.kana) add(form.text, entry);
   }
   return index;
 }
@@ -151,7 +157,8 @@ export function lookupWord(
     };
   }
   const senses = entry.sense.filter((meaning) => appliesTo(meaning.appliesToKanji, written));
-  if (senses.length > 0 && senses.every((meaning) => meaning.misc.includes("uk"))) {
+  const kana = !HAN.test(written);
+  if (!kana && senses.length > 0 && senses.every((meaning) => meaning.misc.includes("uk"))) {
     return {
       reason: "uk",
       detail: `JMdict marks "${written}" usually kana, so there is no form to test`
@@ -283,6 +290,31 @@ if (import.meta.vitest) {
       );
       const result = lookupWord(index, "葉書", "はがき");
       expect(!isMatch(result) && result.reason).toBe("uk");
+    });
+
+    test("finds a usually-kana word by its kana, with the glosses of its senses", () => {
+      const index = fixture(
+        entry([["葉書", []]], [["はがき", []]], [{ misc: ["uk"], gloss: ["postcard"] }])
+      );
+      const result = lookupWord(index, "はがき", "はがき");
+      expect(isMatch(result) && result.glosses).toEqual(["postcard"]);
+    });
+
+    test("finds a word JMdict writes with no kanji at all", () => {
+      const index = fixture(entry([], [["カメラ", []]], [{ gloss: ["camera"] }]));
+      expect(isMatch(lookupWord(index, "カメラ", "カメラ"))).toBe(true);
+    });
+
+    test("finds a word whose only kanji forms are rare", () => {
+      const index = fixture(entry([["其れから", ["rK"]]], [["それから", []]], [{ gloss: ["and then"] }]));
+      expect(isMatch(lookupWord(index, "それから", "それから"))).toBe(true);
+    });
+
+    test("never finds a word by the kana of an entry normally written in kanji", () => {
+      const index = fixture(entry([["橋", []]], [["はし", []]], [{ gloss: ["bridge"] }]));
+      expect(!isMatch(lookupWord(index, "はし", "はし")) && lookupWord(index, "はし", "はし")).toMatchObject({
+        reason: "absent"
+      });
     });
 
     test("keeps a word only some senses of which are usually kana", () => {

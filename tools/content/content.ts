@@ -1,6 +1,7 @@
 import type { Content, Kanji, Part, ReadingClass, Source, Word } from "../../src/lib/content/types.ts";
 import { isSetId, isSingleKanji, isSubcategoryOf, isKana, kanjiIn, wordId } from "./validate.ts";
 import { parsePart } from "../../src/lib/content/load.ts";
+import { shapeOf } from "../../src/lib/content/sets.ts";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -99,8 +100,6 @@ function parseWord(value: unknown, where: string): Word {
     throw new Error(`${where}: "${written}" is a compound, so it has no reading class`);
   }
   const kanji = characters(value, "kanji", where);
-  const kanjiCount = (kanji.length >= 2 ? 2 : 1) as 1 | 2;
-  const hasOkurigana = written.length > kanji.length;
   return {
     id,
     written,
@@ -111,8 +110,7 @@ function parseWord(value: unknown, where: string): Word {
     meaning: text(value, "meaning", where),
     clue: optionalText(value, "clue", where),
     kanji,
-    kanjiCount,
-    hasOkurigana,
+    shape: shapeOf(written),
     hasAudio: value.hasAudio === true,
     set,
     subcategory,
@@ -213,15 +211,19 @@ export function parseContent(value: unknown, where: string): Content {
   if (content.sources.length === 0) {
     throw new Error(`${where}: has no sources, so it cannot be attributed`);
   }
-  if (content.kanji.length === 0 || content.words.length === 0) {
-    throw new Error(`${where}: has no kanji or no words`);
+  if (content.words.length === 0) {
+    throw new Error(`${where}: has no words`);
   }
   return content;
 }
 
-export function contentProblems(content: Content, where: string): string[] {
+export function contentProblems(
+  content: Content,
+  where: string,
+  baseKanji: ReadonlySet<string> = new Set()
+): string[] {
   const problems: string[] = [];
-  const levelKanji = new Set(content.kanji.map((entry) => entry.character));
+  const levelKanji = new Set([...baseKanji, ...content.kanji.map((entry) => entry.character)]);
   const seenKanji = new Set<string>();
   const seenWords = new Set<string>();
 
@@ -241,6 +243,10 @@ export function contentProblems(content: Content, where: string): string[] {
       if (!levelKanji.has(character)) {
         problems.push(`${where}: "${word.id}" is tagged "${character}", which the level does not teach`);
       }
+    }
+    if (word.shape === "kana") {
+      if (word.kanji.length > 0) problems.push(`${where}: "${word.id}" is a kana word tagged with a kanji`);
+      continue;
     }
     if (word.kanji.length === 0) {
       problems.push(`${where}: "${word.id}" is tagged with no kanji of the level`);

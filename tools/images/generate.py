@@ -5,10 +5,9 @@ as a words.json (the entries) plus a skiplist.txt (files already judged good,
 skipped by default) and a shared data/overlay/packs/{pack}/prompts/style.json. Edit
 those files to change what gets drawn; this script adds no wording.
 
-Images are written to data/packs/{pack}/images/light/{category}/{subcategory}/{file}.png:
-the light-theme picture, which is the one this API is asked to draw. The dark
-variant is a separate step, see invert.py, and convert.py then turns both into
-the WebP the app loads. Neither the subcategory nor the file name is curated
+Images are written to data/packs/{pack}/images/{category}/{subcategory}/{file}.png,
+one picture used under every theme; convert.py then turns it into the WebP the
+app loads. Neither the subcategory nor the file name is curated
 here — both are read from the "subcategory" and "file" columns of
 data/overlay/packs/{pack}/words.tsv, keyed by written form and reading, so the
 pictures cannot drift from the word list or from the paths the app asks for.
@@ -83,8 +82,8 @@ def curated(pack):
     return {(row[written], row[reading]): {"subcategory": row[sub], "file": f"{row[file]}.png"} for row in rows}
 
 
-def png_dir(pack, category, subcategory, theme="light"):
-    return OUT / pack / "images" / theme / category / subcategory
+def png_dir(pack, category, subcategory):
+    return OUT / pack / "images" / category / subcategory
 
 
 def skiplist(pack, category):
@@ -96,9 +95,11 @@ def skiplist(pack, category):
 
 
 def prompt(word, style_data):
-    # Words that ask for text in the picture need the style line that permits it.
-    text = style_data["style_text"] if word.get("text") else style_data["style"]
-    return f"{word['prompt']}. {text}"
+    # Words that ask for text in the picture need the style line that permits it:
+    # "text": true for Latin letters and digits, "text": "japanese" for kana and kanji.
+    text = word.get("text")
+    key = "style_japanese" if text == "japanese" else "style_text" if text else "style"
+    return f"{word['prompt']}. {style_data[key]}"
 
 
 def plan(args):
@@ -203,18 +204,17 @@ def check():
             rows = words(pack, category)
             total += len(rows)
             assert len({w["file"] for w in rows}) == len(rows), f"duplicate file name in {pack}/{category}"
-            for theme in ("light", "dark"):
-                absent = [
-                    w["file"]
-                    for w in rows
-                    if not (png_dir(pack, category, w["subcategory"], theme) / w["file"]).with_suffix(".webp").exists()
-                ]
-                assert not absent, f"{pack}/{theme}/{category}: missing {absent}"
+            absent = [
+                w["file"]
+                for w in rows
+                if not (png_dir(pack, category, w["subcategory"]) / w["file"]).with_suffix(".webp").exists()
+            ]
+            assert not absent, f"{pack}/{category}: missing {absent}"
             assert all(w["prompt"] and w["word"] and w["name"] for w in rows), "empty field"
-            assert style_data["style"] and style_data["style_text"]
+            assert style_data["style"] and style_data["style_text"] and style_data["style_japanese"]
             skip = skiplist(pack, category)
             assert skip <= {w["file"] for w in rows}, sorted(skip - {w["file"] for w in rows})
-    assert total == 197, total
+    assert total == 698, total
     print(f"ok, {total} words parsed across {len(packs())} pack(s)")
 
 

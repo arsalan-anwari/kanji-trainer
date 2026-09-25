@@ -45,7 +45,7 @@ function writtenScore(target: Word, candidate: Word, components: ComponentIndex)
   if (shareAnything(componentsOf(target, components), componentsOf(candidate, components))) {
     return SHARED_COMPONENT;
   }
-  return target.kanjiCount === candidate.kanjiCount ? SAME_LENGTH : 0;
+  return target.shape === candidate.shape ? SAME_LENGTH : 0;
 }
 
 const ECHO = 2;
@@ -90,8 +90,7 @@ if (import.meta.vitest) {
       meaning: written,
       clue: "",
       kanji,
-      kanjiCount: kanji.length >= 2 ? 2 : 1,
-      hasOkurigana: false,
+      shape: kanji.length >= 2 ? "2-kanji" : "1-kanji",
       hasAudio: true,
       set: "places",
     subcategory: "buildings",

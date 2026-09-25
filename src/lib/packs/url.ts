@@ -11,7 +11,7 @@ export function packUrl(pack: string, path: string): string {
 }
 
 export function imagePath(word: Media): string {
-  return `images/light/${word.set}/${word.subcategory}/${word.file}.webp`;
+  return `images/${word.set}/${word.subcategory}/${word.file}.webp`;
 }
 
 export function audioPath(word: Media): string {

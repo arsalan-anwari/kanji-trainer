@@ -82,7 +82,7 @@ fn installs_a_pack_and_records_its_catalog_entry() {
     let root = scratch("install");
     let bytes = pack_tar(&[
         ("./content.json", "{}"),
-        ("./images/light/a.webp", "picture"),
+        ("./images/a.webp", "picture"),
     ]);
     let archive = archive_for("n5-food", "food", &bytes);
     let mut steps = Vec::new();
@@ -93,7 +93,7 @@ fn installs_a_pack_and_records_its_catalog_entry() {
 
     assert_eq!(names(&root), ["n5-food"]);
     assert_eq!(
-        fs::read_to_string(root.join("n5-food/images/light/a.webp")).expect("file"),
+        fs::read_to_string(root.join("n5-food/images/a.webp")).expect("file"),
         "picture"
     );
     let listed = list_installed(&root);

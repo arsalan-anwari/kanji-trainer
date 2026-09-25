@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "./run";
+import type { Page } from "@playwright/test";
 
 // Wide layouts put the preset actions beside the select; a phone hides them in
 // the sheet the select opens.
@@ -56,7 +57,7 @@ test("remembers the run it was set up with across a reload", async ({ page }) =>
 test("offers no set that has no words at this level", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("button", { name: /^Numbers/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: /^Body/ })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /^Society/ })).toHaveCount(0);
 });
 
 test("switches to a single pass over the words in play", async ({ page }) => {
@@ -198,4 +199,24 @@ test("keeps the loaded preset selected while the run is edited", async ({ page }
 
   await page.reload();
   await expect(picker).toContainText("editable");
+});
+
+test("skips a preset's pack once it is switched off, instead of emptying the run", async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "kanji-trainer-presets",
+      JSON.stringify([
+        { name: "extras only", selection: { sets: ["nature"], subcategories: [], packs: ["n5-extra"], excludedWords: [], taxonomy: 1 } }
+      ])
+    );
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: /^Nature/ }).click();
+  const inPlay = page.getByText("Words in play").locator("..");
+  const all = ((await inPlay.textContent()) ?? "").replace(/\D+/g, "");
+
+  await page.getByRole("button", { name: "Saved runs" }).click();
+  await page.getByRole("option", { name: "extras only" }).click();
+  await expect(inPlay).toContainText(all);
+  await expect(page.getByRole("button", { name: "Start" })).toBeEnabled();
 });

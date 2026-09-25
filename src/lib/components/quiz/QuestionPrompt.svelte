@@ -3,8 +3,6 @@
   import { clips } from "../../audio/clips.svelte";
   import { isAssembly, isJapanese, promptSurface } from "../../quiz/settings";
   import type { Question } from "../../quiz/questions";
-  import { darkImageUrl } from "../../quiz/hints";
-  import { isDarkTheme } from "../../theme.svelte";
   import { app } from "../../state.svelte";
   import { t } from "../../i18n.svelte";
 
@@ -12,13 +10,11 @@
 
   const surface = $derived(promptSurface(app.settings.format));
   const japanese = $derived(isJapanese(surface));
-  const dark = $derived(isDarkTheme());
 
   // A phone in portrait has height to spare and no width; everything else is
   // the other way round.
   const compact = $derived(!viewport.wide && viewport.short);
 
-  const imgSrc = $derived(dark ? darkImageUrl(question.prompt) : question.prompt);
   const playing = $derived(clips.playing === question.prompt);
   const meaning = $derived(isAssembly(app.settings.format) ? (app.currentWord?.meaning ?? "") : "");
 </script>
@@ -42,7 +38,7 @@
   {:else if surface === "image"}
     <Projector size="lg" {compact}>
       <img
-        src={imgSrc}
+        src={question.prompt}
         alt={t("quiz.prompt.imageAlt")}
         class="aspect-square w-full max-w-full rounded-xl object-contain p-2"
       />

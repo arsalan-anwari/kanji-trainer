@@ -32,7 +32,12 @@ import {
   buildQuestions,
   checkChoice,
   checkTyped,
+  atLevel,
   eligibleWords,
+  pickedWords,
+  startHint,
+  suitsFormat,
+  unsuitedPacks,
   type Answer,
   type Question
 } from "./quiz/questions";
@@ -173,10 +178,6 @@ class AppState {
   kanjiInSet = $derived(kanjiBySet(this.words));
   excludedWords = $derived<Set<string>>(new Set(this.settings.excludedWords));
   subcategoriesInSet = $derived(subcategoriesBySet(this.words));
-  /** How many words each (set, subcategory) pair still holds, for the badges. */
-  subcategoryCounts = $derived(
-    countBySubcategory(this.words.filter((word) => !this.excludedWords.has(word.id)))
-  );
 
   /** Every subcategory the chosen sets hold — what an empty selection stands for. */
   subcategoriesOfChosenSets = $derived<string[]>(
@@ -194,12 +195,30 @@ class AppState {
 
   kanjiByCharacter = $derived(kanjiIndex(this.kanji));
   shapes = $derived(shapesOf(this.merged.parts, this.kanji));
+  /** How many words each (set, subcategory) pair still holds, for the badges. */
+  subcategoryCounts = $derived(
+    countBySubcategory(
+      eligibleWords({ ...this.settings, sets: [...SET_IDS], subcategories: [] }, this.words, this.shapes)
+    )
+  );
   charted = $derived<Word[]>(filterWords(this.words, this.chartFilter));
   printWords = $derived<Word[]>(this.charted.filter((word) => !this.printExcluded.has(word.id)));
 
   pickerOrder = $derived<string[]>(SET_IDS.flatMap((id) => this.kanjiInSet[id]));
-  selectableWords = $derived<Word[]>(
-    eligibleWords({ ...this.settings, excludedWords: [] }, this.words, this.shapes)
+  /** What the word picker lists, including words the format cannot ask. */
+  selectableWords = $derived<Word[]>(pickedWords({ ...this.settings, excludedWords: [] }, this.words));
+  /** Listed words the picker shows switched off: the format cannot ask them. */
+  unsuitedWords = $derived<Set<string>>(
+    new Set(
+      this.selectableWords
+        .filter((word) => !suitsFormat(word, this.settings.format, this.shapes))
+        .map((word) => word.id)
+    )
+  );
+  levelPacks = $derived<string[]>([...new Set(atLevel(this.words, this.settings.level).map((word) => word.pack))]);
+  /** Packs of the level the chosen format can ask none of. */
+  unsuitedPacks = $derived<string[]>(
+    unsuitedPacks(atLevel(this.words, this.settings.level), this.settings.format, this.shapes)
   );
   pool = $derived<Word[]>(eligibleWords(this.settings, this.words, this.shapes));
   eligibleCount = $derived(this.pool.length);
@@ -207,6 +226,7 @@ class AppState {
     this.settings.questionCount === ONE_PASS ? this.eligibleCount : this.settings.questionCount
   );
   canStart = $derived(this.eligibleCount > 0);
+  startHint = $derived(startHint(this.settings, this.words));
 
   current = $derived<Question | null>(this.questions[this.index] ?? null);
   currentWord = $derived(
@@ -246,6 +266,10 @@ class AppState {
           return word === undefined ? [] : [word];
         })
   );
+
+  packTitle(id: string): string {
+    return this.installed.find((pack) => pack.id === id)?.title ?? id;
+  }
 
   get chosenPreset(): string {
     return this.#chosenPreset;
@@ -331,8 +355,19 @@ class AppState {
 
   async removePack(id: string): Promise<boolean> {
     const ok = await deletePack(id);
-    if (ok) await this.#reloadPack(id);
+    if (ok) {
+      this.#forgetPack(id);
+      await this.#reloadPack(id);
+    }
     return ok;
+  }
+
+  /** A pack gone from the app can no longer narrow a filter to itself. */
+  #forgetPack(id: string): void {
+    if (this.settings.packs.includes(id)) {
+      this.updateSettings({ packs: this.settings.packs.filter((entry) => entry !== id) });
+    }
+    this.chartFilter = { ...this.chartFilter, packs: this.chartFilter.packs.filter((entry) => entry !== id) };
   }
 
   setPackEnabled(id: string, on: boolean): void {
@@ -340,6 +375,7 @@ class AppState {
     const rest = this.disabledPacks.filter((entry) => entry !== id);
     this.disabledPacks = on ? rest : [...rest, id];
     storeJson(DISABLED_PACKS_KEY, this.disabledPacks);
+    if (!on) this.#forgetPack(id);
   }
 
   updateSettings(patch: Partial<RunSettings>): void {
@@ -430,6 +466,7 @@ class AppState {
     this.presets = savePreset(name, {
       sets: this.settings.sets,
       subcategories: this.settings.subcategories,
+      packs: this.settings.packs,
       excludedWords: this.settings.excludedWords
     });
     this.chosenPreset = name;
@@ -440,7 +477,12 @@ class AppState {
     const preset = this.presets.find((entry) => entry.name === name);
     if (preset === undefined) return;
     this.chosenPreset = name;
-    this.updateSettings(preset.selection);
+    // A pack switched off or removed since the preset was saved is skipped, not
+    // an error; it counts again once it is back.
+    this.updateSettings({
+      ...preset.selection,
+      packs: preset.selection.packs.filter((id) => this.enabledPackIds.includes(id))
+    });
   }
 
   removePreset(name: string): void {
