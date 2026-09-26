@@ -165,14 +165,29 @@ export const WORD_COLUMNS = [
   "meaning",
   "file",
   "clue",
-  "note"
+  "note",
+  "example",
+  "example_kana",
+  "example_english"
 ] as const;
+
+export type ExampleRow = { japanese: string; kana: string; english: string };
 
 export type WordRow = Pick<Word, "written" | "reading" | "set" | "subcategory" | "level" | "clue"> & {
   meaning: string;
   file: string;
   note: string;
+  example: ExampleRow | null;
 };
+
+const SENTENCE_KANA = /^[\p{Script=Hiragana}\p{Script=Katakana}ー 。、？！]+$/u;
+
+/** The part of a written form every inflection keeps: the kanji before the okurigana, or all but the last kana. */
+export function stemOf(written: string): string {
+  const kanjiStem = written.replace(/\p{Script=Hiragana}+$/u, "");
+  if (kanjiStem !== "") return kanjiStem;
+  return [...written].length > 1 ? [...written].slice(0, -1).join("") : written;
+}
 
 const KANA = /^[\p{Script=Hiragana}\p{Script=Katakana}ー]+$/u;
 
@@ -211,7 +226,7 @@ export function parseWordList(
   const named = new Map<string, number>();
   const words: WordRow[] = [];
 
-  rows.forEach(([written, reading, set, subcategory, level, meaning, file, clue, note], index) => {
+  rows.forEach(([written, reading, set, subcategory, level, meaning, file, clue, note, japanese, sentenceKana, english], index) => {
     const line = index + 2;
     const say = (message: string) => problems.push(`${where} line ${line}: ${message}`);
 
@@ -272,9 +287,23 @@ export function parseWordList(
       say(`"${written}" has file "${file}", already used on line ${other}`);
       return;
     }
+    const filled = [japanese, sentenceKana, english].filter((cell) => cell !== "").length;
+    if (filled !== 0 && filled !== 3) {
+      say(`"${written}" needs all three of example, example_kana and example_english, or none`);
+      return;
+    }
+    if (filled === 3 && !SENTENCE_KANA.test(sentenceKana)) {
+      say(`"${written}" has example_kana "${sentenceKana}", which must be kana, spaces and 。、？！ only`);
+      return;
+    }
+    if (filled === 3 && !japanese.includes(stemOf(written))) {
+      say(`"${written}" has an example that does not use it: "${japanese}"`);
+      return;
+    }
     seen.set(id, line);
     named.set(file, line);
-    words.push({ written, reading, set, subcategory, level, meaning, file, clue, note });
+    const example = filled === 3 ? { japanese, kana: sentenceKana, english } : null;
+    words.push({ written, reading, set, subcategory, level, meaning, file, clue, note, example });
   });
 
   if (problems.length > 0) {
@@ -403,7 +432,7 @@ if (import.meta.vitest) {
   describe("parseWordList", () => {
     const levelKanji = new Set(["日", "本", "食"]);
     const list = (body: string) =>
-      `written\treading\tset\tsubcategory\tlevel\tmeaning\tfile\tclue\tnote\n${body}`;
+      `written\treading\tset\tsubcategory\tlevel\tmeaning\tfile\tclue\tnote\texample\texample_kana\texample_english\n${body.replace(/\n/g, "\t\t\t\n")}`;
 
     test("returns one row per word, keeping the curator's note", () => {
       expect(
@@ -418,9 +447,34 @@ if (import.meta.vitest) {
           meaning: "",
           file: "w1",
           clue: "",
-          note: "country"
+          note: "country",
+          example: null
         }
       ]);
+    });
+
+    const withExample = (japanese: string, kana: string) =>
+      `written\treading\tset\tsubcategory\tlevel\tmeaning\tfile\tclue\tnote\texample\texample_kana\texample_english\n食べる\tたべる\tactions\thandling\tN5\t\tw9\t\t\t${japanese}\t${kana}\tI eat bread.\n`;
+
+    test("reads an example sentence, and lets it inflect the word", () => {
+      const [row] = parseWordList(withExample("パンを食べます。", "パン を たべます。"), "t", levelKanji);
+      expect(row?.example).toEqual({ japanese: "パンを食べます。", kana: "パン を たべます。", english: "I eat bread." });
+    });
+
+    test("rejects an example that never uses its word, or whose reading is not kana", () => {
+      expect(() => parseWordList(withExample("パンが好きです。", "パン が すきです。"), "t", levelKanji)).toThrow(
+        /example that does not use it/
+      );
+      expect(() => parseWordList(withExample("パンを食べます。", "パン を 食べます。"), "t", levelKanji)).toThrow(
+        /must be kana/
+      );
+    });
+
+    test("keeps a word's stem through inflection", () => {
+      expect(stemOf("食べる")).toBe("食");
+      expect(stemOf("学校")).toBe("学校");
+      expect(stemOf("する")).toBe("す");
+      expect(stemOf("コーヒー")).toBe("コーヒー");
     });
 
     test("accepts a word whose other kanji is outside the level list", () => {

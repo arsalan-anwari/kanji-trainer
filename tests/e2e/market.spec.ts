@@ -50,11 +50,11 @@ async function withFoodInstalled(page: Page): Promise<void> {
 test("reads a pack's details with the keyboard and closes them with Escape", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("tab", { name: "Marketplace" }).click();
-  const details = page.getByRole("button", { name: "Details of JLPT N5" });
+  const details = page.getByRole("button", { name: "Details of N5 Base" });
   await details.focus();
   await page.keyboard.press("Enter");
 
-  const dialog = page.getByRole("dialog", { name: "JLPT N5" });
+  const dialog = page.getByRole("dialog", { name: "N5 Base" });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("listitem").first()).toContainText("80 kanji");
   await expect(dialog.locator("script")).toHaveCount(0);
@@ -86,7 +86,7 @@ test("never lets a base pack be switched off or removed", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("tab", { name: "Marketplace" }).click();
   await expect(page.getByRole("switch")).toHaveCount(1);
-  await expect(page.getByRole("article", { name: "JLPT N5" }).getByRole("button", { name: /Remove/ })).toHaveCount(0);
+  await expect(page.getByRole("article", { name: "N5 Base" }).getByRole("button", { name: /Remove/ })).toHaveCount(0);
 });
 
 test("blocks the app behind the gate while a listed base level is missing", async ({ page }) => {

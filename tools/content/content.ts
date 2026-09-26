@@ -1,4 +1,4 @@
-import type { Content, Kanji, Part, ReadingClass, Source, Word } from "../../src/lib/content/types.ts";
+import type { Content, Example, Kanji, Part, ReadingClass, Source, Word } from "../../src/lib/content/types.ts";
 import { isSetId, isSingleKanji, isSubcategoryOf, isKana, kanjiIn, wordId } from "./validate.ts";
 import { parsePart } from "../../src/lib/content/load.ts";
 import { shapeOf } from "../../src/lib/content/sets.ts";
@@ -70,6 +70,18 @@ function parseReadingClass(value: unknown, where: string): ReadingClass | null {
   return value;
 }
 
+function parseExample(value: unknown, where: string): Example | null {
+  if (value === undefined) return null;
+  if (!isRecord(value)) {
+    throw new Error(`${where}: example must be an object`);
+  }
+  return {
+    japanese: text(value, "japanese", where),
+    romaji: text(value, "romaji", where),
+    english: text(value, "english", where)
+  };
+}
+
 function parseWord(value: unknown, where: string): Word {
   if (!isRecord(value)) {
     throw new Error(`${where}: must be an object`);
@@ -100,6 +112,7 @@ function parseWord(value: unknown, where: string): Word {
     throw new Error(`${where}: "${written}" is a compound, so it has no reading class`);
   }
   const kanji = characters(value, "kanji", where);
+  const example = parseExample(value.example, where);
   return {
     id,
     written,
@@ -116,7 +129,8 @@ function parseWord(value: unknown, where: string): Word {
     subcategory,
     level: text(value, "level", where),
     pack: text(value, "pack", where),
-    file: text(value, "file", where)
+    file: text(value, "file", where),
+    ...(example === null ? {} : { example })
   };
 }
 

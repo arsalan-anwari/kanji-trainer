@@ -38,14 +38,14 @@ test("shows kana words switched off, with a warning, on a format that shows the 
   await page.goto("/");
   await page.getByRole("button", { name: "Advanced settings" }).click();
 
-  await expect(page.getByRole("status").filter({ hasText: "Can't use N5 Kana words for this quiz type" })).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Can't use N5 Kana for this quiz type" })).toBeVisible();
   await expect(page.getByRole("button", { name: /^はい.*yes/ })).toBeDisabled();
-  await expect(page.getByRole("group", { name: "Packs" }).getByRole("button", { name: "N5 Kana words" })).toBeDisabled();
+  await expect(page.getByRole("group", { name: "Packs" }).getByRole("button", { name: "N5 Kana" })).toBeDisabled();
 
   await page.getByRole("button", { name: "Back to setup" }).click();
   await page.getByRole("button", { name: /^Meaning/ }).first().click();
   await page.getByRole("button", { name: /^Kana to romaji/ }).click();
   await page.getByRole("button", { name: "Advanced settings" }).click();
   await expect(page.getByRole("button", { name: /^はい.*yes/ })).toBeEnabled();
-  await expect(page.getByText("Can't use N5 Kana words", { exact: false })).toHaveCount(0);
+  await expect(page.getByText("Can't use N5 Kana", { exact: false })).toHaveCount(0);
 });

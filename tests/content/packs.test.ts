@@ -55,6 +55,10 @@ describe.each(OPTIONAL)("the shipped %s pack", (id) => {
     expect(content.words.filter((word) => word.clue === "" || clueNames(word.clue, word.meaning))).toEqual([]);
   });
 
+  test("shows every word in an example sentence", () => {
+    expect(content.words.filter((word) => word.example === undefined).map((word) => word.id)).toEqual([]);
+  });
+
   test("describes the shape of every kanji it ships", () => {
     expect(content.kanji.filter((entry) => entry.look === "")).toEqual([]);
   });

@@ -1,5 +1,5 @@
 import { isSetId, isSubcategoryOf, shapeOf } from "./sets";
-import type { Content, Kanji, Part, ReadingClass, Rect, Source, Word } from "./types";
+import type { Content, Example, Kanji, Part, ReadingClass, Rect, Source, Word } from "./types";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -39,6 +39,14 @@ function parseReadingClass(value: unknown): ReadingClass | null {
   return value === "on" || value === "kun" ? value : null;
 }
 
+function parseExample(value: unknown): Example | null {
+  if (!isRecord(value)) return null;
+  const japanese = text(value.japanese);
+  const romaji = text(value.romaji);
+  const english = text(value.english);
+  return japanese === null || romaji === null || english === null ? null : { japanese, romaji, english };
+}
+
 function parseWord(value: unknown): Word | null {
   if (!isRecord(value)) return null;
   const id = text(value.id);
@@ -60,6 +68,7 @@ function parseWord(value: unknown): Word | null {
   if (kanji === null || set === null || level === null || !isSetId(set)) return null;
   if (subcategory === null || !isSubcategoryOf(set, subcategory)) return null;
   const readingClass = parseReadingClass(value.readingClass);
+  const example = parseExample(value.example);
   return {
     id,
     written,
@@ -76,7 +85,8 @@ function parseWord(value: unknown): Word | null {
     subcategory,
     level,
     pack,
-    file
+    file,
+    ...(example === null ? {} : { example })
   };
 }
 

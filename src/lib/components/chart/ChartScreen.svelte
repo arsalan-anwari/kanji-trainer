@@ -5,8 +5,8 @@
   import { groupWordsBySet } from "../../content/sets";
   import { cardFace } from "../../browse/cards";
   import { audioUrl, imageUrl } from "../../quiz/hints";
-  import { printJob } from "../../print/job.svelte";
-  import { savePdf } from "../../storage";
+  import { printJob, type PrintFile } from "../../print/job.svelte";
+  import { savePdf, savePdfs } from "../../storage";
   import FlashCard from "./FlashCard.svelte";
   import WordFilterPanel from "./WordFilterPanel.svelte";
   import SetIcon from "../setup/SetIcon.svelte";
@@ -21,11 +21,17 @@
 
   const job = $derived(printJob.job);
 
-  async function download(pdf: Uint8Array, size: number): Promise<void> {
-    const stamp = new Date().toISOString().slice(0, 10);
+  const fileName = (size: number): string =>
+    `kanji-flashcards-${new Date().toISOString().slice(0, 10)}-${size}x${size}.pdf`;
+
+  async function download(files: readonly PrintFile[]): Promise<void> {
     try {
-      if (await savePdf(pdf, `kanji-flashcards-${stamp}-${size}x${size}.pdf`)) {
-        saveMessage = "chart.export.saved";
+      const saved =
+        files.length === 1
+          ? await savePdf(files[0].pdf, fileName(files[0].size))
+          : await savePdfs(files.map((file) => ({ name: fileName(file.size), bytes: file.pdf })));
+      if (saved) {
+        saveMessage = files.length === 1 ? "chart.export.saved" : "chart.export.savedAll";
         saveFailed = false;
       }
     } catch {
@@ -58,7 +64,13 @@
       class="flex flex-col gap-3 rounded-2xl border-2 border-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between"
     >
       <div class="flex min-w-0 flex-1 flex-col gap-2">
-        <span class="font-bold" aria-live="polite">{t(`chart.export.state.${job.state}`)}</span>
+        <span class="font-bold" aria-live="polite">
+          {t(
+            job.state === "ready" && job.files.length > 1
+              ? "chart.export.state.readyAll"
+              : `chart.export.state.${job.state}`
+          )}
+        </span>
         {#if job.state === "running"}
           <Progress
             value={job.total === 0 ? 0 : job.done / job.total}
@@ -69,11 +81,19 @@
           </span>
         {:else if job.state === "ready"}
           <span class="text-sm text-muted-foreground">
-            {t("chart.export.summary", {
-              cards: n(job.cards),
-              pages: n(job.pages),
-              size: job.size
-            })}
+            {#if job.files.length === 1}
+              {t("chart.export.summary", {
+                cards: n(job.cards),
+                pages: n(job.files[0].pages),
+                size: job.files[0].size
+              })}
+            {:else}
+              {t("chart.export.summaryAll", {
+                cards: n(job.cards),
+                files: n(job.files.length),
+                grids: job.files.map((file) => t("chart.export.grid.size", { size: file.size })).join(", ")
+              })}
+            {/if}
           </span>
           {#if saveMessage !== ""}
             <span
@@ -93,9 +113,9 @@
           </Button>
         {:else}
           {#if job.state === "ready"}
-            <Button variant="brand" onclick={() => download(job.pdf, job.size)}>
+            <Button variant="brand" onclick={() => download(job.files)}>
               <Icon name="download" />
-              {t("chart.export.download")}
+              {t(job.files.length === 1 ? "chart.export.download" : "chart.export.downloadAll")}
             </Button>
           {/if}
           <Button
@@ -152,11 +172,11 @@
                 use:roving
                 role="group"
                 aria-label={groupLabel}
-                class="columns-[15rem] gap-3 [&>*]:mb-3 [&>*]:break-inside-avoid"
+                class="grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-3"
               >
                 {#each group.words as word (word.id)}
                   <FlashCard
-                    face={cardFace(word, app.kanjiByCharacter)}
+                    face={cardFace(word)}
                     image={imageUrl(word)}
                     audio={word.hasAudio ? audioUrl(word) : null}
                   />

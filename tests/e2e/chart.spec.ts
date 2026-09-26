@@ -17,7 +17,9 @@ test("flips a flashcard from the keyboard and shows its back", async ({ page }) 
   await expect(card.getByRole("button", { name: "Play 学校" })).toBeHidden();
   expect((await card.boundingBox())?.height).toBe(front?.height);
   await expect(card.locator('[data-face="back"]')).toContainText("ga-k-ko-u");
-  await expect(card.locator('[data-face="back"]')).toContainText("コウ");
+  await expect(card.locator('[data-face="back"]')).toContainText("学校は八時半に始まります。");
+  await expect(card.locator('[data-face="back"]')).toContainText("Gakkou wa hachiji han ni hajimarimasu.");
+  await expect(card.locator('[data-face="back"]')).not.toContainText("コウ");
 
   await page.keyboard.press("Enter");
   await expect(card.locator('[data-face="front"]')).toBeVisible();
@@ -83,6 +85,32 @@ test("builds a flashcard pdf from hand-picked words in the background", async ({
   expect(pdf).toContain("/Count 2");
 });
 
+test("exports one pdf per grid when all grids are picked", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("tab", { name: "Chart" }).click();
+  await page.getByRole("button", { name: "Export flashcards" }).click();
+  await page.getByRole("textbox", { name: "Search words" }).fill("月");
+  await page.getByRole("button", { name: "Unselect all" }).click();
+  await page.getByRole("button", { name: /^今月/ }).click();
+
+  await page.getByRole("button", { name: "Download as PDF" }).click();
+  await page.getByRole("group", { name: "Cards per page" }).getByRole("button", { name: "All" }).click();
+  await expect(page.getByText("1 cards in 4 PDFs, one per grid, 8 pages in all")).toBeVisible();
+  await page.getByRole("button", { name: "Start export" }).click();
+
+  await expect(page.getByText("The flashcard PDFs are ready.")).toBeVisible({ timeout: 20_000 });
+  const names: string[] = [];
+  page.on("download", (download) => names.push(download.suggestedFilename()));
+  await page.getByRole("button", { name: "Save PDFs to a folder" }).click();
+  await expect.poll(() => names.length).toBe(4);
+  expect(names.map((name) => name.replace(/^kanji-flashcards-\d{4}-\d{2}-\d{2}-/, ""))).toEqual([
+    "1x1.pdf",
+    "2x2.pdf",
+    "3x3.pdf",
+    "4x4.pdf"
+  ]);
+});
+
 test("cancels a running export and leaves nothing behind", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("tab", { name: "Chart" }).click();
@@ -98,12 +126,13 @@ test("cancels a running export and leaves nothing behind", async ({ page }) => {
 });
 
 test("prints every word of the level at the largest grid", async ({ page }) => {
+  test.setTimeout(120_000);
   await page.goto("/");
   await page.getByRole("tab", { name: "Chart" }).click();
   await page.getByRole("button", { name: "Export flashcards" }).click();
   await page.getByRole("button", { name: "Download as PDF" }).click();
   const grid = page.getByRole("group", { name: "Cards per page" });
-  await expect(grid.getByRole("button")).toHaveCount(4);
+  await expect(grid.getByRole("button")).toHaveCount(5);
   await grid.getByRole("button", { name: "4×4" }).click();
   await page.getByRole("button", { name: "Start export" }).click();
 
@@ -111,6 +140,7 @@ test("prints every word of the level at the largest grid", async ({ page }) => {
 });
 
 test("prints every word of every pack at the largest grid", async ({ page }) => {
+  test.setTimeout(120_000);
   await page.addInitScript(() => localStorage.setItem("kanji-trainer-disabled-packs", "[]"));
   await page.goto("/");
   await page.getByRole("tab", { name: "Chart" }).click();

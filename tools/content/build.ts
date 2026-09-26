@@ -30,6 +30,7 @@ import type { ComponentRow, KanjiRow, WordRow } from "./validate.ts";
 import type { Content, Kanji, Part, Source, Word } from "../../src/lib/content/types.ts";
 import { audioPath } from "../../src/lib/packs/url.ts";
 import { shapeOf } from "../../src/lib/content/sets.ts";
+import { sentenceRomaji } from "../../src/lib/quiz/romaji.ts";
 import { isBase, parsePackInfo, type PackInfo, type PackMeta } from "../../src/lib/packs/catalog.ts";
 
 export function byCodePoint(a: string, b: string): number {
@@ -184,7 +185,16 @@ export function buildWords(
       subcategory: row.subcategory,
       level: row.level,
       pack,
-      file: row.file
+      file: row.file,
+      ...(row.example === null
+        ? {}
+        : {
+            example: {
+              japanese: row.example.japanese,
+              romaji: sentenceRomaji(row.example.kana),
+              english: row.example.english
+            }
+          })
     };
     words.push({ ...word, hasAudio: hasClip(word) });
   });
@@ -308,6 +318,23 @@ export function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+/**
+ * Keeps the date of the content already on disk when nothing else changed, so
+ * a rebuild of the same overlay writes the same bytes and the pack's archive
+ * keeps its sha256: an untouched pack never shows as an update.
+ */
+export function keptDate(content: Content, previous: unknown): Content {
+  if (typeof previous !== "object" || previous === null || !("generated" in previous)) return content;
+  const generated = previous.generated;
+  if (typeof generated !== "string") return content;
+  const same = JSON.stringify({ ...previous, generated: "" }) === JSON.stringify({ ...content, generated: "" });
+  return same ? { ...content, generated } : content;
+}
+
+function previousContent(path: string): unknown {
+  return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : null;
+}
+
 export function levelClashes(words: readonly Word[]): string[] {
   const problems: string[] = [];
   const ids = new Map<string, Word>();
@@ -394,8 +421,9 @@ function buildPack(
   return { info, content };
 }
 
-function writePack({ info, content }: BuiltPack): PackMeta {
+function writePack({ info, content: built }: BuiltPack): PackMeta {
   const out = packOutput(info.id);
+  const content = keptDate(built, previousContent(join(out, "content.json")));
   const meta = packMeta(info, content, copyDescription(info.id));
   writeFileSync(join(out, "content.json"), `${JSON.stringify(content, null, 2)}\n`);
   writeFileSync(join(out, "pack.json"), `${JSON.stringify(meta, null, 2)}\n`);
@@ -476,7 +504,8 @@ if (import.meta.vitest) {
     meaning,
     file: "w",
     clue: "",
-    note: ""
+    note: "",
+    example: null
   });
 
   describe("shortGloss", () => {
@@ -797,6 +826,21 @@ if (import.meta.vitest) {
         "url",
         "version"
       ]);
+    });
+  });
+
+  describe("keptDate", () => {
+    const content = buildContent("N5", [], [], [], {}, [], "2026-09-26");
+
+    test("keeps the old date when the rest of the content is unchanged", () => {
+      const previous = JSON.parse(JSON.stringify({ ...content, generated: "2026-09-19" }));
+      expect(keptDate(content, previous).generated).toBe("2026-09-19");
+    });
+
+    test("takes the new date when anything else changed, or nothing was built before", () => {
+      const previous = JSON.parse(JSON.stringify({ ...content, level: "N4", generated: "2026-09-19" }));
+      expect(keptDate(content, previous).generated).toBe("2026-09-26");
+      expect(keptDate(content, null).generated).toBe("2026-09-26");
     });
   });
 }

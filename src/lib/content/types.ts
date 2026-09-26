@@ -33,7 +33,11 @@ export type Word = {
    * never derived from `meaning`, so relabelling a word leaves its media put.
    */
   file: string;
+  /** One sentence that shows the word in use. Never asked; shown on the back of a flashcard. */
+  example?: Example;
 };
+
+export type Example = { japanese: string; romaji: string; english: string };
 
 export type Rect = [x: number, y: number, w: number, h: number];
 

@@ -7,7 +7,6 @@ const PAGE_HEIGHT_PT = (297 / 25.4) * 72;
 const MARGIN_PX = Math.round((10 / 25.4) * DPI);
 const GAP_PX = Math.round((3 / 25.4) * DPI);
 const CARD_PADDING = 0.08;
-const UNITS_ACROSS = 11;
 
 export const MIN_TEXT_PX = (7 / 72) * DPI;
 
@@ -44,10 +43,6 @@ export function cardInner(rect: Rect): Rect {
     width: rect.width - 2 * by,
     height: rect.height - 2 * by
   };
-}
-
-export function largestTextUnit(size: number): number {
-  return cardInner(cellRect(0, size, false)).width / UNITS_ACROSS;
 }
 
 export const GRID_SIZES: readonly number[] = [1, 2, 3, 4];
@@ -153,11 +148,6 @@ if (import.meta.vitest) {
           expect(back.x + back.width).toBeCloseTo(PAGE_WIDTH_PX - front.x, 6);
         }
       }
-    });
-
-    test("offers only grids whose cards can hold text at the smallest printable size", () => {
-      for (const size of GRID_SIZES)
-        expect(largestTextUnit(size)).toBeGreaterThanOrEqual(MIN_TEXT_PX);
     });
 
     test("keeps every card inside the page", () => {

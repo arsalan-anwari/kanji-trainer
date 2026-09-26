@@ -1,12 +1,11 @@
-import type { Kanji, Word } from "../content/types";
-import { cardFace, kanjiIndex, separated, type CardFace } from "../browse/cards";
+import type { Word } from "../content/types";
+import { cardFace, separated, type CardFace } from "../browse/cards";
 import { imageUrl } from "../quiz/hints";
 import {
   assemblePdf,
   cardsPerSheet,
   cardInner,
   cellRect,
-  largestTextUnit,
   MIN_TEXT_PX,
   pageCount,
   PAGE_HEIGHT_PX,
@@ -37,6 +36,8 @@ type BackRow = {
   weight: 400 | 700;
   color: string;
   spaced: boolean;
+  /** Room above the row, in lines of its own size; a rule is drawn in it. */
+  space: number;
 };
 
 type Back = { rows: BackRow[]; shapes: Row[] };
@@ -155,16 +156,32 @@ function textRow(
   items: string[],
   weight: 400 | 700,
   color: string,
-  spaced = false
+  spaced = false,
+  space = 0
 ): BackRow {
-  return { size, items, weight, color, spaced };
+  return { size, items, weight, color, spaced, space };
+}
+
+// One item per character, so Japanese wraps anywhere, except that small kana,
+// the long vowel mark and punctuation stay on the line of the character before.
+const GLYPH = /.[ぁぃぅぇぉゃゅょっゎァィゥェォャュョッヮー。、？！]*/gu;
+
+function glyphs(text: string): string[] {
+  return text.match(GLYPH) ?? [];
 }
 
 function backRows(face: CardFace): BackRow[] {
-  return [
-    textRow(1.5, [face.kana], 700, INK),
+  const rows = [
+    textRow(1.5, glyphs(face.kana), 700, INK),
     textRow(1, separated(face.romaji.split("-"), "-"), 400, MUTED),
     textRow(1.1, face.meaning.split(" "), 400, INK, true)
+  ];
+  if (face.example === null) return rows;
+  return [
+    ...rows,
+    textRow(1, glyphs(face.example.japanese), 400, INK, false, 0.6),
+    textRow(0.85, face.example.romaji.split(" "), 400, MUTED, true),
+    textRow(0.85, face.example.english.split(" "), 400, INK, true)
   ];
 }
 
@@ -173,7 +190,7 @@ function measured(ctx: CanvasRenderingContext2D, row: BackRow): Row {
     partWidth(ctx, { text: value, weight: row.weight, color: row.color }, MEASURE_PX) / MEASURE_PX;
   return {
     size: row.size,
-    space: 0,
+    space: row.space,
     lead: 0,
     items: row.items.map(text),
     gap: row.spaced ? text(" ") : 0
@@ -190,6 +207,8 @@ function textRoom(size: number): { width: number; height: number } {
   return { width: inner.width * 0.98, height: inner.height };
 }
 
+// The largest text size at which the fullest back of this export still fits:
+// every card shares it, so the text grows to fill the cells it is printed on.
 function textUnit(backs: readonly Back[], size: number): number {
   const { width, height } = textRoom(size);
   return sharedUnit(
@@ -197,7 +216,7 @@ function textUnit(backs: readonly Back[], size: number): number {
     width,
     height,
     LINE_HEIGHT,
-    largestTextUnit(size)
+    height
   );
 }
 
@@ -208,6 +227,16 @@ function drawBack(ctx: CanvasRenderingContext2D, rect: Rect, back: Back, unit: n
   let top = inner.y;
   back.rows.forEach((row, index) => {
     const size = row.size * unit;
+    if (row.space > 0) {
+      top += row.space * size;
+      const y = top - (row.space * size) / 2;
+      ctx.beginPath();
+      ctx.moveTo(inner.x, y);
+      ctx.lineTo(inner.x + inner.width, y);
+      ctx.lineWidth = Math.max(1, size * 0.04);
+      ctx.strokeStyle = CUT_LINE;
+      ctx.stroke();
+    }
     for (const line of placed[index] ?? []) {
       top += size * LINE_HEIGHT;
       const text = line.map((item) => row.items[item] ?? "").join(row.spaced ? " " : "");
@@ -223,10 +252,7 @@ type Workbench = {
   faces: CardFace[];
 };
 
-async function workbench(
-  words: readonly Word[],
-  kanji: readonly Kanji[]
-): Promise<Workbench> {
+async function workbench(words: readonly Word[]): Promise<Workbench> {
   await Promise.all([
     document.fonts.load(font(400, 32), "漢あア"),
     document.fonts.load(font(700, 32), "漢あア")
@@ -234,21 +260,19 @@ async function workbench(
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
   if (ctx === null) throw new Error("no 2d canvas");
-  const index = kanjiIndex(kanji);
-  const faces = words.map((word) => cardFace(word, index));
+  const faces = words.map(cardFace);
   const backs = faces.map((face) => measureBack(ctx, face));
   return { canvas, ctx, backs, faces };
 }
 
 export async function renderFlashcards(
   words: readonly Word[],
-  kanji: readonly Kanji[],
   size: number,
   options: RenderOptions
 ): Promise<Uint8Array> {
-  const { canvas, ctx, backs, faces } = await workbench(words, kanji);
+  const { canvas, ctx, backs, faces } = await workbench(words);
   const unit = textUnit(backs, size);
-  if (unit < MIN_TEXT_PX) throw new Error("the readings do not fit this grid");
+  if (unit < MIN_TEXT_PX) throw new Error("the card backs do not fit this grid");
   canvas.width = PAGE_WIDTH_PX;
   canvas.height = PAGE_HEIGHT_PX;
 

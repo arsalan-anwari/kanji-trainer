@@ -14,18 +14,24 @@
       "title": "Cards per page",
       "description": "Pick a grid for each A4 page. Every card has the same size and text, and every reading is printed in full.",
       "size": "{size}×{size}",
+      "all": "All",
       "pages": "{cards} cards on {pages} pages, fronts and backs",
+      "pagesAll": "{cards} cards in {files} PDFs, one per grid, {pages} pages in all",
       "start": "Start export"
     },
     "state": {
       "running": "Building the flashcard PDF…",
       "ready": "The flashcard PDF is ready.",
+      "readyAll": "The flashcard PDFs are ready.",
       "failed": "The flashcard PDF could not be built."
     },
     "progress": "Page {done} of {total}",
     "summary": "{cards} cards on {pages} pages, {size}×{size} per page.",
+    "summaryAll": "{cards} cards in {files} PDFs: {grids}.",
     "download": "Download PDF",
+    "downloadAll": "Save PDFs to a folder",
     "discard": "Discard",
-    "saved": "Flashcard PDF saved."
+    "saved": "Flashcard PDF saved.",
+    "savedAll": "Flashcard PDFs saved."
   }
 }

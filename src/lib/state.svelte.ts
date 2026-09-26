@@ -68,7 +68,7 @@ import { fallbackHint, hintFor, lookIndex, type Hint } from "./quiz/hints";
 import { componentIndex } from "./quiz/similarity";
 import { isCounted, newReportId, packsOf, summarize, type Report, type Summary } from "./quiz/report";
 import { settingsFromMistakes } from "./quiz/diagnosis";
-import { emptyFilter, filterWords, kanjiIndex, type WordFilter } from "./browse/cards";
+import { emptyFilter, filterWords, type WordFilter } from "./browse/cards";
 import { scoreTier } from "./quiz/score";
 import { sfx, type FanfareGrade } from "kaizen-ui";
 import { clips } from "./audio/clips.svelte";
@@ -193,7 +193,6 @@ class AppState {
     )
   );
 
-  kanjiByCharacter = $derived(kanjiIndex(this.kanji));
   shapes = $derived(shapesOf(this.merged.parts, this.kanji));
   /** How many words each (set, subcategory) pair still holds, for the badges. */
   subcategoryCounts = $derived(

@@ -155,6 +155,13 @@ function downloadInBrowser(bytes: Uint8Array, name: string, type: string): void 
   setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
+async function writeBinary(path: string, bytes: Uint8Array): Promise<void> {
+  const { invoke } = await import("@tauri-apps/api/core");
+  await invoke<null>("write_binary_file", bytes, {
+    headers: { path: encodeURIComponent(path) }
+  });
+}
+
 export async function savePdf(bytes: Uint8Array, name: string): Promise<boolean> {
   if (inTauri()) {
     const { save } = await import("@tauri-apps/plugin-dialog");
@@ -163,13 +170,32 @@ export async function savePdf(bytes: Uint8Array, name: string): Promise<boolean>
       filters: [{ name: t("common.file.pdfFilterName"), extensions: ["pdf"] }]
     });
     if (path === null) return false;
-    const { invoke } = await import("@tauri-apps/api/core");
-    await invoke<null>("write_binary_file", bytes, {
-      headers: { path: encodeURIComponent(path) }
-    });
+    await writeBinary(path, bytes);
     return true;
   }
   downloadInBrowser(bytes, name, "application/pdf");
+  return true;
+}
+
+export type NamedFile = { name: string; bytes: Uint8Array };
+
+/** Saves every file under its own name in one folder the learner picks. */
+export async function savePdfs(files: readonly NamedFile[]): Promise<boolean> {
+  if (!inTauri()) {
+    for (const file of files) downloadInBrowser(file.bytes, file.name, "application/pdf");
+    return true;
+  }
+  const { open } = await import("@tauri-apps/plugin-dialog");
+  const folder = await open({ directory: true, multiple: false });
+  if (folder === null || Array.isArray(folder)) return false;
+  // Android hands back a content:// tree, which a file name cannot be joined
+  // onto; ask for each file there instead.
+  if (folder.includes("://")) {
+    for (const file of files) if (!(await savePdf(file.bytes, file.name))) return false;
+    return true;
+  }
+  const { join } = await import("@tauri-apps/api/path");
+  for (const file of files) await writeBinary(await join(folder, file.name), file.bytes);
   return true;
 }
 

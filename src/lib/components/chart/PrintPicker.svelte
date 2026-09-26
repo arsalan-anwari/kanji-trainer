@@ -11,7 +11,10 @@
 
   let anchor = $state<HTMLElement | null>(null);
   let asking = $state(false);
-  let size = $state(3);
+  let size = $state<number | "all">(3);
+
+  const sizes = $derived(size === "all" ? GRID_SIZES : [size]);
+  const pages = $derived(sizes.reduce((sum, each) => sum + pageCount(app.printWords.length, each), 0));
 
   const tree = $derived(groupWordsBySet(app.charted));
   const openByDefault = $derived(app.chartFilter.search.trim() !== "" || tree.length === 1);
@@ -19,7 +22,7 @@
 
   function start(): void {
     asking = false;
-    void printJob.start(app.printWords, app.kanji, size);
+    void printJob.start(app.printWords, sizes);
     app.go("chart");
   }
 </script>
@@ -109,18 +112,24 @@
     {#snippet children(close)}
       <div class="flex flex-col gap-3">
         <p class="text-sm text-muted-foreground">{t("chart.export.grid.description")}</p>
-        <div role="group" aria-label={t("chart.export.grid.title")} class="grid grid-cols-4 gap-2">
+        <div role="group" aria-label={t("chart.export.grid.title")} class="grid grid-cols-5 gap-2">
           {#each GRID_SIZES as option (option)}
             <Chip size="sm" active={size === option} onclick={() => (size = option)}>
               {t("chart.export.grid.size", { size: option })}
             </Chip>
           {/each}
+          <Chip size="sm" active={size === "all"} onclick={() => (size = "all")}>
+            {t("chart.export.grid.all")}
+          </Chip>
         </div>
         <p class="text-sm font-semibold tabular-nums" aria-live="polite">
-          {t("chart.export.grid.pages", {
-            cards: n(app.printWords.length),
-            pages: n(pageCount(app.printWords.length, size))
-          })}
+          {size === "all"
+            ? t("chart.export.grid.pagesAll", {
+                cards: n(app.printWords.length),
+                files: n(sizes.length),
+                pages: n(pages)
+              })
+            : t("chart.export.grid.pages", { cards: n(app.printWords.length), pages: n(pages) })}
         </p>
         <div class="flex gap-2">
           <Button variant="outline" full onclick={close}>{t("common.cancel")}</Button>

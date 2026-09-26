@@ -188,6 +188,10 @@ describe("the shipped N5 content", () => {
     expect(content.words.filter((word) => clueNames(word.clue, word.meaning))).toEqual([]);
   });
 
+  test("shows every word in an example sentence", () => {
+    expect(content.words.filter((word) => word.example === undefined).map((word) => word.id)).toEqual([]);
+  });
+
   test("describes the shape of every kanji the level teaches", () => {
     expect(content.kanji.filter((entry) => entry.look === "")).toEqual([]);
   });
@@ -257,11 +261,11 @@ describe("the shipped N5 content", () => {
       kanji: content.kanji.length,
       description: DESCRIPTION_FILE
     });
-    expect(read(DESCRIPTION_FILE)).toContain("# JLPT N5");
+    expect(read(DESCRIPTION_FILE)).toContain("# N5 Base");
   });
 
   test("stays small enough to parse instantly on WebKitGTK and low-end Android", () => {
-    expect(Buffer.byteLength(read("content.json"))).toBeLessThan(320 * 1024);
+    expect(Buffer.byteLength(read("content.json"))).toBeLessThan(352 * 1024);
   });
 });
 

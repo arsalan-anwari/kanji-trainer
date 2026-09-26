@@ -47,8 +47,16 @@ function looksOf(word: Word, looks: LookIndex): string {
     .join(" ");
 }
 
+/** Hides every other kana of a romaji hint, so it helps without spelling the answer out. */
+export function maskedRomaji(reading: string): string {
+  return toRomajiHint(reading)
+    .split("-")
+    .map((syllable, index) => (index % 2 === 0 ? syllable : "?"))
+    .join("-");
+}
+
 export function textOf(word: Word, kind: HintKind, looks: LookIndex): string {
-  if (kind === "romaji") return toRomajiHint(word.reading);
+  if (kind === "romaji") return maskedRomaji(word.reading);
   if (kind === "clue") return word.clue;
   if (kind === "look") return looksOf(word, looks);
   if (kind === "ghost") return word.written;
@@ -139,7 +147,7 @@ if (import.meta.vitest) {
     });
 
     test("spells a heard word out on beginner only, and never hints which recording is right", () => {
-      expect(hintFor(word, "audio-kana", "beginner", looks)).toEqual({ kind: "romaji", text: "ga-k-ko-u" });
+      expect(hintFor(word, "audio-kana", "beginner", looks)).toEqual({ kind: "romaji", text: "ga-?-ko-?" });
       expect(hintFor(word, "audio-kanji", "beginner", looks)?.kind).toBe("look");
       expect(hintKind("audio-kana", "advanced")).toBeNull();
       expect(hintKind("audio-kanji", "advanced")).toBeNull();
@@ -154,11 +162,14 @@ if (import.meta.vitest) {
   });
 
   describe("filling a hint with content", () => {
-    test("writes a reading in romaji", () => {
+    test("writes a reading in romaji with every other kana hidden", () => {
       expect(hintFor(word, "kanji-kana", "beginner", looks)).toEqual({
         kind: "romaji",
-        text: "ga-k-ko-u"
+        text: "ga-?-ko-?"
       });
+      expect(maskedRomaji("き")).toBe("ki");
+      expect(maskedRomaji("やま")).toBe("ya-?");
+      expect(maskedRomaji("たべる")).toBe("ta-?-ru");
     });
 
     test("shows the curated clue without naming the word", () => {

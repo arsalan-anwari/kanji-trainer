@@ -9,10 +9,12 @@ usage() {
   cat <<'USAGE'
 Usage: scripts/sync_data.sh --upload | --download [--force]
 
-  --upload     Archive every built pack into data/archives/{id}.tar, write
-               data/catalog.json, then publish all of data/, the curated
-               data/overlay/ included, to the Hugging Face dataset, replacing
-               what is there. data/README.md becomes the dataset card. Files
+  --upload     Publish all of data/, the curated data/overlay/ included, to
+               the Hugging Face dataset, replacing what is there. It uploads
+               data/archives/ and data/catalog.json as they are; run
+               "npm run content:pack" first when a pack changed, so an upload
+               of anything else (flashcards, overlay edits) never touches a
+               pack's sha256 and never shows the learner an update. data/README.md becomes the dataset card. Files
                under a subdirectory of the dataset that no longer exist locally
                are removed; .gitattributes at the dataset root is left alone.
 
@@ -45,7 +47,6 @@ upload() {
     echo "sync_data: $DATA does not exist. Run 'npm run content:build' first." >&2
     exit 1
   fi
-  node "$ROOT/tools/content/catalog.ts"
   hf upload "$REPO" "$DATA" . \
     --type dataset \
     --delete "*/**" \

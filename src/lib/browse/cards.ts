@@ -1,5 +1,5 @@
 import { subcategoryKey, type SetId } from "../content/sets";
-import type { Kanji, Word } from "../content/types";
+import type { Example, Word } from "../content/types";
 import { atLevel } from "../quiz/questions";
 import { toRomajiHint } from "../quiz/romaji";
 import type { WordShape } from "../quiz/settings";
@@ -14,18 +14,12 @@ export type WordFilter = {
   search: string;
 };
 
-export type KanjiReadings = {
-  character: string;
-  on: string[];
-  kun: string[];
-};
-
 export type CardFace = {
   written: string;
   kana: string;
   romaji: string;
   meaning: string;
-  kanji: KanjiReadings[];
+  example: Example | null;
 };
 
 export function emptyFilter(level: string): WordFilter {
@@ -73,37 +67,17 @@ export function filterWords(words: readonly Word[], filter: WordFilter): Word[] 
   });
 }
 
-export function kunForDisplay(reading: string): string {
-  const [stem, okurigana] = reading.split(".");
-  return okurigana === undefined ? stem : `${stem}(${okurigana})`;
-}
-
 export function separated(items: readonly string[], mark: string): string[] {
   return items.map((item, index) => (index < items.length - 1 ? `${item}${mark}` : item));
 }
 
-export function listed(readings: readonly string[]): string[] {
-  return readings.length === 0 ? ["—"] : separated(readings, "、");
-}
-
-export function kanjiIndex(kanji: readonly Kanji[]): ReadonlyMap<string, Kanji> {
-  return new Map(kanji.map((entry) => [entry.character, entry]));
-}
-
-export function cardFace(word: Word, kanji: ReadonlyMap<string, Kanji>): CardFace {
+export function cardFace(word: Word): CardFace {
   return {
     written: word.written,
     kana: word.reading,
     romaji: toRomajiHint(word.reading),
     meaning: word.meaning,
-    kanji: [...new Set(word.kanji)].map((character) => {
-      const entry = kanji.get(character);
-      return {
-        character,
-        on: entry?.on ?? [],
-        kun: (entry?.kun ?? []).map(kunForDisplay)
-      };
-    })
+    example: word.example ?? null
   };
 }
 
@@ -174,51 +148,18 @@ if (import.meta.vitest) {
   });
 
   describe("the back of a card", () => {
-    const index = kanjiIndex([
-      {
-        character: "月",
-        level: "N5",
-        look: "",
-        components: [],
-        on: ["ゲツ", "ガツ"],
-        kun: ["つき"]
-      },
-      {
-        character: "上",
-        level: "N5",
-        look: "",
-        components: [],
-        on: ["ジョウ"],
-        kun: ["あ.げる", "うえ"]
-      }
-    ]);
-
-    test("prints a kana word with no on and kun block", () => {
-      const kana = word("とても", "describing", "degree", { kanji: [], shape: "kana" });
-      expect(cardFace(kana, new Map()).kanji).toEqual([]);
+    test("carries the reading, romaji and meaning", () => {
+      const face = cardFace({ ...monday, reading: "つき" });
+      expect(face).toEqual({ written: "月", kana: "つき", romaji: "tsu-ki", meaning: "月", example: null });
     });
 
-    test("writes a kun reading's okurigana in brackets", () => {
-      expect(kunForDisplay("あ.げる")).toBe("あ(げる)");
-      expect(kunForDisplay("うえ")).toBe("うえ");
+    test("carries the word's example sentence when it has one", () => {
+      const example = { japanese: "月がきれいです。", romaji: "Tsuki ga kirei desu.", english: "The moon is pretty." };
+      expect(cardFace({ ...monday, example }).example).toEqual(example);
     });
 
-    test("lists readings with a comma after all but the last, and a dash for none", () => {
-      expect(listed(["ゲツ", "ガツ", "つき"])).toEqual(["ゲツ、", "ガツ、", "つき"]);
-      expect(listed([])).toEqual(["—"]);
-    });
-
-    test("carries the reading, romaji, meaning and each kanji's readings once", () => {
-      const face = cardFace(
-        { ...monday, written: "月月", kanji: ["月", "月"], reading: "つき" },
-        index
-      );
-      expect(face).toMatchObject({ kana: "つき", romaji: "tsu-ki", meaning: "月" });
-      expect(face.kanji).toEqual([{ character: "月", on: ["ゲツ", "ガツ"], kun: ["つき"] }]);
-    });
-
-    test("leaves the readings empty for a kanji the dictionary lacks", () => {
-      expect(cardFace(one, index).kanji).toEqual([{ character: "一", on: [], kun: [] }]);
+    test("puts a mark after all but the last item", () => {
+      expect(separated(["ga", "k", "ko"], "-")).toEqual(["ga-", "k-", "ko"]);
     });
   });
 }

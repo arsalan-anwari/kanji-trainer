@@ -141,6 +141,31 @@ export function toRomajiHint(input: string): string {
   return romajiSyllables(input).join("-");
 }
 
+const PARTICLES: Record<string, string> = { は: "wa", へ: "e", を: "o" };
+const GREETING = /(にち|ばん)は$/;
+const PUNCTUATION: Record<string, string> = { "。": ".", "、": ",", "？": "?", "！": "!" };
+
+/**
+ * Romaji of a sentence written in kana with a space between words. は, へ and
+ * を standing alone are particles, read wa, e and o.
+ */
+export function sentenceRomaji(kana: string): string {
+  const words = kana
+    .replace(/([。、？！])/g, "$1 ")
+    .trim()
+    .split(/\s+/)
+    .map((word) => {
+      const bare = word.replace(/[。、？！]/g, "");
+      const marks = word.slice(bare.length).replace(/./g, (mark) => PUNCTUATION[mark] ?? mark);
+      const spoken = PARTICLES[bare] ?? (GREETING.test(bare) ? `${toRomaji(bare.slice(0, -1))}wa` : toRomaji(bare));
+      return spoken + marks;
+    })
+    .join(" ")
+    // A closing か asks a question, which romaji marks the English way.
+    .replace(/ ka\./g, " ka?");
+  return words.charAt(0).toUpperCase() + words.slice(1);
+}
+
 export function normalizeReading(input: string): string {
   const trimmed = katakanaToHiragana(input.trim());
   return /^[a-zA-Z'\- ]+$/.test(trimmed) ? toHiragana(trimmed) : trimmed;
@@ -192,6 +217,13 @@ if (import.meta.vitest) {
       expect(toRomaji("がっこう")).toBe("gakkou");
       expect(toRomaji("まっちゃ")).toBe("matcha");
       expect(toRomaji("きって")).toBe("kitte");
+    });
+
+    test("reads a spaced sentence, its particles and its punctuation", () => {
+      expect(sentenceRomaji("わたし は がっこう へ いきます。")).toBe("Watashi wa gakkou e ikimasu.");
+      expect(sentenceRomaji("パン を たべます か？")).toBe("Pan o tabemasu ka?");
+      expect(sentenceRomaji("こんにちは、たなかさん。")).toBe("Konnichiwa, tanakasan.");
+      expect(sentenceRomaji("えき は どこ です か。")).toBe("Eki wa doko desu ka?");
     });
 
     test("reads katakana and its long vowel mark", () => {

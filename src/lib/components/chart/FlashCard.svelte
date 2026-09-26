@@ -1,11 +1,9 @@
 <script lang="ts">
   import { Glyph, PlayIcon } from "kaizen-ui";
   import RotateCcw from "@lucide/svelte/icons/rotate-ccw";
-  import { listed, type CardFace } from "../../browse/cards";
+  import type { CardFace } from "../../browse/cards";
   import { clips } from "../../audio/clips.svelte";
   import { t } from "../../i18n.svelte";
-  import cnFlag from "../../assets/flags/cn.svg";
-  import jpFlag from "../../assets/flags/jp.svg";
 
   const FLIP_MS = 140;
 
@@ -35,19 +33,13 @@
     "flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-full border-2 transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none";
 </script>
 
-{#snippet readings(items: string[])}
-  <span class="jp" lang="ja">
-    {#each listed(items) as item, index (index)}<span class="whitespace-nowrap">{item}</span>{/each}
-  </span>
-{/snippet}
-
 <div
   role="group"
   aria-label={label}
   class="flex w-full flex-col gap-2 rounded-xl border-2 border-border bg-surface p-3 transition-transform ease-in-out"
   style="transform: scaleX({squashed ? 0 : 1}); transition-duration: {FLIP_MS}ms"
 >
-  <div class="grid grid-cols-1">
+  <div class="grid flex-1 grid-cols-1">
     <div
       data-face="front"
       class="flex flex-col items-center justify-center gap-2 [grid-area:1/1] {flipped
@@ -69,20 +61,16 @@
       data-face="back"
       class="flex min-w-0 flex-col gap-1.5 [grid-area:1/1] {flipped ? '' : 'invisible'}"
     >
-      <Glyph text={face.kana} class="text-lg font-bold" />
-      <span class="text-sm text-muted-foreground">{face.romaji}</span>
-      <span class="text-sm">{face.meaning}</span>
-      {#each face.kanji as entry (entry.character)}
-        <span
-          class="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-1.5 gap-y-1.5 border-t border-wire pt-1.5 text-xs"
-        >
-          <Glyph text={entry.character} class="col-span-2 text-base font-bold" />
-          <img src={cnFlag} alt="" class="mt-0.5 h-3 w-auto rounded-[2px]" />
-          {@render readings(entry.on)}
-          <img src={jpFlag} alt="" class="mt-0.5 h-3 w-auto rounded-[2px]" />
-          {@render readings(entry.kun)}
+      <Glyph text={face.kana} class="text-3xl font-bold" />
+      <span class="text-lg text-muted-foreground">{face.romaji}</span>
+      <span class="text-xl leading-snug font-semibold">{face.meaning}</span>
+      {#if face.example !== null}
+        <span data-example class="mt-1 flex flex-col gap-1.5 border-t border-wire pt-2">
+          <span class="jp text-xl leading-snug" lang="ja">{face.example.japanese}</span>
+          <span class="text-base leading-snug text-muted-foreground">{face.example.romaji}</span>
+          <span class="text-lg leading-snug">{face.example.english}</span>
         </span>
-      {/each}
+      {/if}
     </div>
   </div>
 
