@@ -82,7 +82,6 @@ feature live in [roadmap/](roadmap/).
 - [✅] Hear a word, answer its reading or its written form
 - [✅] See a word, pick the right recording
 - [✅] Playback from the Chart view
-- [📋] Replace or license the 279 JapanesePod101 recordings
 - [📋] Move the clip cache and recording picker into `kaizen-ui`
 
 ### Content packs [⚙️]
@@ -91,7 +90,6 @@ feature live in [roadmap/](roadmap/).
 - [✅] Marketplace tab to download, update, enable and disable packs
 - [✅] Full N5 in four packs: `n5-base`, `n5-plus`, `n5-extra`, `n5-kana`, 715 words
 - [✅] Several words sharing one kanji
-- [📋] Generate the 14 placeholder pictures
 
 ### Timing [⚙️]
 
