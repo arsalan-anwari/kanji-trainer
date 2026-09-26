@@ -214,7 +214,7 @@ def check():
             assert style_data["style"] and style_data["style_text"] and style_data["style_japanese"]
             skip = skiplist(pack, category)
             assert skip <= {w["file"] for w in rows}, sorted(skip - {w["file"] for w in rows})
-    assert total == 698, total
+    assert total == 715, total
     print(f"ok, {total} words parsed across {len(packs())} pack(s)")
 
 

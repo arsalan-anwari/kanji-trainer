@@ -1,59 +1,54 @@
 # kanji-trainer
 
-Cross-platform Tauri app for learning JLPT kanji. Desktop and Android, all state
-local, no account and no network sync.
+Trainer for JLPT vocabulary written in kanji, on desktop, tablet and phone.
+Built with Tauri 2 and Svelte 5, the second app after
+[kana-trainer](https://github.com/arsalan-anwari/kana-trainer).
 
-## Scope
+See the [roadmap](ROADMAP.md) for planned features.
 
-The app trains words: how they are written, how they sound, and what they mean.
-Word to reading, kana to kanji, word to meaning, picture to word, and Listening —
-hear a word and answer its reading or written form, or see a word and pick which
-recording says it. Every answer is a property of a single word.
+<!-- Showcase from packaging/repo goes here. -->
 
-Anything that needs you to understand a sentence, grammar, sentence structure,
-reading passages, conversation audio will be added in the planned `jlpt-trainer`
-instead. That app assumes you already know the vocabulary this one trains.
+## Features
 
-The Chart tab doubles as a vocabulary reference: every word as a flip card with
-its picture, reading, meaning and an example sentence in Japanese, romaji and
-English. The same selection exports as a double-sided A4 PDF of flashcards 
-to print and cut out.
+- JLPT N5 in four packs: 715 words using 409 kanji, one picture and one recording per word
+- Twelve question formats in five groups: reading, meaning, picture, listening and assembling a word from its pieces
+- Answers by multiple choice or typing, typing kanji needs a Japanese IME
+- Runs built by hand from sets, subcategories, word shapes and single words, at three difficulty levels that decide how look-alike the wrong answers are
+- Optional time trial, per question and for the whole run
+- Chart view of every word as a flip card with picture, reading, meaning and an example sentence
+- Printable double-sided A4 flashcards, 1×1 to 4×4 cards per page
+- Score reports saved on disk, exported and imported as `.kj-report` files
+- No SRS and no review queue: the app shows your results, you decide what to practise
+- Works on Linux, Windows, macOS and Android
 
-No SRS and no review queue. You configure each run by hand. Past results get
-charts and reports, but the app never decides what you practise next.
-
-Typing a kanji answer needs a Japanese input method (IME) enabled on your device.
+Sentences, grammar, reading and listening comprehension belong to the planned
+`jlpt-trainer`.
 
 ## Development
 
+Needs Node 22+ and Rust 1.77+, plus the GTK and WebKit development headers
+(same packages as [kana-trainer](https://github.com/arsalan-anwari/kana-trainer#development)).
+
 ```sh
-git submodule update --init   # vendor/kaizen-ui
+git submodule update --init       # vendor/kaizen-ui, the UI kit
+scripts/sync_data.sh --download   # data/, from Hugging Face
 npm ci
-npm run content:build         # build data/packs from data/overlay (needed before the app runs)
-npm run audio:fetch           # fetch a pack's clips into data/packs (needs ffmpeg)
-npm run tauri:dev             # app against the vite dev server
-npm run tauri:build           # release binary for this platform
-npm run dev                   # vite only, browser mode
-npm run preview               # serve the production build
-npm run check                 # svelte-check
-npm test                      # vitest
+npm run content:build             # data/overlay into data/packs
+npm run tauri:dev                 # run the app against the vite dev server
+npm run tauri:build               # release binary for this platform
+npm run dev                       # vite only, browser mode
+npm run check                     # svelte-check
+npm test                          # unit tests
 ```
 
-## Getting `data/`
+## Content
 
-`data/` is not in git. Its only home is the Hugging Face dataset: 
-```sh
-scripts/sync_data.sh --download  # everything, data/overlay/ included
-```
-
-
-The download comes from
-[arsalan-anwari/kanji-data](https://huggingface.co/datasets/arsalan-anwari/kanji-data).
-
-See [data/overlay/README.md](data/overlay/README.md) for the curated inputs and how to
-update the upstream data.
+`data/` is not in git. It lives in the
+[kanji-data](https://huggingface.co/datasets/arsalan-anwari/kanji-data) dataset on
+Hugging Face, see [its README](https://huggingface.co/datasets/arsalan-anwari/kanji-data/blob/main/README.md) for the packs and
+[overlay/README.md](https://huggingface.co/datasets/arsalan-anwari/kanji-data/blob/main/overlay/README.md) for the curated input.
 
 ## Licence
 
-App code is Apache-2.0 (see [LICENSE](LICENSE)). The generated content in
-`data/` is CC BY-SA 4.0, inherited from JMdict and KRADFILE.
+App code is Apache-2.0 (see [LICENSE](LICENSE)). The content in `data/` is
+CC BY-SA 4.0, inherited from JMdict and KRADFILE.

@@ -6,8 +6,12 @@ export function setPackRoot(url: string): void {
   root = url.replace(/\/+$/, "");
 }
 
+export function packsUrl(path: string): string {
+  return `${root}/${path}`;
+}
+
 export function packUrl(pack: string, path: string): string {
-  return `${root}/${pack}/${path}`;
+  return packsUrl(`${pack}/${path}`);
 }
 
 export function imagePath(word: Media): string {

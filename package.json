@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "content:fetch": "node tools/content/fetch.ts",
-    "content:build": "npm run content:fetch && node tools/content/build.ts",
+    "content:build": "npm run content:fetch && node tools/content/build.ts && npm run content:pack",
     "content:pack": "node tools/content/catalog.ts",
     "audio:fetch": "python3 tools/audio/fetch.py",
     "test": "vitest run",
@@ -19,6 +19,7 @@
     "tauri:dev": "tauri dev -- --no-default-features",
     "tauri:build": "tauri build --no-bundle",
     "tauri:run": "./src-tauri/target/release/kanji-trainer",
+    "flashcards:export": "./src-tauri/target/release/kanji-trainer --export-flashcards",
     "sync:ui": "git -C vendor/kaizen-ui push origin HEAD:main && git add vendor/kaizen-ui"
   },
   "dependencies": {

@@ -9,7 +9,7 @@ import {
   type InstalledPack,
   type PackMeta
 } from "./catalog";
-import { packUrl, setPackRoot } from "./url";
+import { packsUrl, packUrl, setPackRoot } from "./url";
 
 export type Progress = { done: number; total: number };
 
@@ -38,11 +38,20 @@ export async function preparePacks(): Promise<void> {
   setPackRoot(convertFileSrc(await join(await appDataDir(), "packs")));
 }
 
-async function servedPacks(): Promise<unknown[]> {
-  const ids = await fetchJson("/packs/index.json");
+export async function servedPacks(): Promise<unknown[]> {
+  const ids = await fetchJson(packsUrl("index.json"));
   if (!Array.isArray(ids)) return [];
   const ours = ids.filter((id): id is string => typeof id === "string");
   return Promise.all(ours.map((id) => fetchJson(packUrl(id, "pack.json"))));
+}
+
+export function shelved(raw: readonly unknown[]): InstalledPack[] {
+  return raw
+    .flatMap((value) => {
+      const pack = parseInstalled(value);
+      return pack === null ? [] : [pack];
+    })
+    .sort(byShelf);
 }
 
 export async function listInstalled(): Promise<InstalledPack[]> {
@@ -52,12 +61,7 @@ export async function listInstalled(): Promise<InstalledPack[]> {
   } catch {
     raw = [];
   }
-  return raw
-    .flatMap((value) => {
-      const pack = parseInstalled(value);
-      return pack === null ? [] : [pack];
-    })
-    .sort(byShelf);
+  return shelved(raw);
 }
 
 export async function loadPackContent(id: string): Promise<Content | null> {

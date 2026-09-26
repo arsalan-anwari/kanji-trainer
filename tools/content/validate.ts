@@ -626,7 +626,7 @@ if (import.meta.vitest) {
   describe("the committed component list", () => {
     test("names every component it teaches", () => {
       const components = loadComponentList();
-      expect(components.length).toBe(319);
+      expect(components.length).toBe(322);
       expect(components.every((row) => row.name !== "")).toBe(true);
     });
   });
@@ -657,7 +657,7 @@ if (import.meta.vitest) {
       }
     },
     "n5-plus": {
-      words: 154,
+      words: 157,
       sizes: {
         numbers: 5,
         calendar: 6,
@@ -666,35 +666,35 @@ if (import.meta.vitest) {
         people: 13,
         body: 11,
         mind: 3,
-        language: 8,
+        language: 9,
         home: 5,
         food: 9,
         clothing: 3,
         objects: 1,
         money: 6,
         "school-work": 8,
-        places: 9,
+        places: 10,
         travel: 5,
         nature: 11,
         leisure: 5,
         concepts: 2,
-        actions: 11,
+        actions: 12,
         describing: 23
       }
     },
     "n5-extra": {
-      words: 166,
+      words: 179,
       sizes: {
-        numbers: 8,
+        numbers: 9,
         time: 4,
-        position: 4,
-        people: 7,
-        body: 9,
-        mind: 6,
+        position: 6,
+        people: 8,
+        body: 10,
+        mind: 7,
         language: 6,
-        home: 14,
-        food: 17,
-        clothing: 6,
+        home: 15,
+        food: 20,
+        clothing: 7,
         objects: 5,
         money: 1,
         "school-work": 4,
@@ -703,13 +703,13 @@ if (import.meta.vitest) {
         nature: 12,
         leisure: 7,
         concepts: 5,
-        actions: 15,
-        describing: 21,
+        actions: 16,
+        describing: 22,
         expressions: 1
       }
     },
     "n5-kana": {
-      words: 164,
+      words: 165,
       sizes: {
         numbers: 8,
         time: 5,
@@ -722,7 +722,7 @@ if (import.meta.vitest) {
         clothing: 12,
         objects: 8,
         money: 1,
-        "school-work": 2,
+        "school-work": 3,
         places: 5,
         travel: 3,
         nature: 1,

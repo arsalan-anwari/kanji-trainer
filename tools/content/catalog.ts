@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -39,6 +39,10 @@ function archivePack(id: string): CatalogEntry {
   const meta = parsePackMeta(JSON.parse(readFileSync(join(packOutput(id), "pack.json"), "utf8")));
   if (meta === null || meta.id !== id) {
     throw new Error(`data/packs/${id}/pack.json is not a built pack; run "npm run content:build"`);
+  }
+  const unconverted = readdirSync(packOutput(id), { recursive: true }).filter((file) => String(file).endsWith(".png"));
+  if (unconverted.length > 0) {
+    throw new Error(`data/packs/${id} holds ${unconverted.length} png; run "python3 tools/images/convert.py --all"`);
   }
   const path = join(ARCHIVES_DIR, `${id}.tar`);
   execFileSync("tar", [...TAR_FLAGS, "-cf", path, "-C", packOutput(id), "."]);

@@ -47,6 +47,10 @@ export function cardInner(rect: Rect): Rect {
 
 export const GRID_SIZES: readonly number[] = [1, 2, 3, 4];
 
+export function flashcardFileName(size: number, today: Date): string {
+  return `kanji-flashcards-${today.toISOString().slice(0, 10)}-${size}x${size}.pdf`;
+}
+
 function ascii(text: string): Uint8Array {
   return new TextEncoder().encode(text);
 }
@@ -125,6 +129,10 @@ if (import.meta.vitest) {
   const { describe, test, expect } = import.meta.vitest;
 
   const latin1 = (bytes: Uint8Array): string => new TextDecoder("latin1").decode(bytes);
+
+  test("names a flashcard file by its UTC date and grid", () => {
+    expect(flashcardFileName(3, new Date("2026-09-26T23:30:00Z"))).toBe("kanji-flashcards-2026-09-26-3x3.pdf");
+  });
 
   function fakeJpeg(marker: number): PageImage {
     return { jpeg: Uint8Array.from([0xff, 0xd8, marker, 0x0a, 0xff, 0xd9]), width: 4, height: 6 };

@@ -6,6 +6,7 @@
   import { cardFace } from "../../browse/cards";
   import { audioUrl, imageUrl } from "../../quiz/hints";
   import { printJob, type PrintFile } from "../../print/job.svelte";
+  import { flashcardFileName } from "../../print/pdf";
   import { savePdf, savePdfs } from "../../storage";
   import FlashCard from "./FlashCard.svelte";
   import WordFilterPanel from "./WordFilterPanel.svelte";
@@ -21,8 +22,7 @@
 
   const job = $derived(printJob.job);
 
-  const fileName = (size: number): string =>
-    `kanji-flashcards-${new Date().toISOString().slice(0, 10)}-${size}x${size}.pdf`;
+  const fileName = (size: number): string => flashcardFileName(size, new Date());
 
   async function download(files: readonly PrintFile[]): Promise<void> {
     try {
