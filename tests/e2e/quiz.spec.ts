@@ -1,4 +1,4 @@
-import { expect, test, wasWrong } from "./run";
+import { expect, moveOn, test, wasWrong } from "./run";
 import type { Page } from "@playwright/test";
 
 async function tabTo(page: Page, selector: string): Promise<void> {
@@ -83,12 +83,12 @@ test("takes a typed reading and offers typing only where an answer can be typed"
   await expect(styles.getByRole("button", { name: /^Typing/ })).toHaveCount(0);
 });
 
-async function startMeaningRun(page: Page, direction: string): Promise<void> {
+async function startMeaningRun(page: Page, direction: string, set = /^Nature/): Promise<void> {
   await page.goto("/");
   // A format is a category and then a direction inside it.
   await page.getByRole("button", { name: "Meaning", exact: false }).first().click();
   await page.getByRole("button", { name: direction }).click();
-  await page.getByRole("button", { name: /^Nature/ }).click();
+  await page.getByRole("button", { name: set }).click();
   await page
     .getByRole("group", { name: "Number of questions" })
     .getByRole("button", { name: "10", exact: true })
@@ -96,6 +96,34 @@ async function startMeaningRun(page: Page, direction: string): Promise<void> {
   await page.getByRole("button", { name: "Start" }).click();
   await expect(page.getByRole("progressbar")).toBeVisible();
 }
+
+// How far each fitted text runs past the box it sits in, in pixels.
+async function overflows(page: Page, boxes: string): Promise<string[]> {
+  return page.locator(boxes).evaluateAll((elements) =>
+    elements.flatMap((box) => {
+      const text = box.querySelector<HTMLElement>("span[style*='font-size']");
+      if (text === null) return [];
+      const range = document.createRange();
+      range.selectNodeContents(text);
+      const inner = range.getBoundingClientRect();
+      const outer = box.getBoundingClientRect();
+      const past = Math.max(outer.left - inner.left, inner.right - outer.right);
+      return past > 0.5 ? [`${text.textContent} by ${past.toFixed(1)}px`] : [];
+    })
+  );
+}
+
+// "December" in bold ran past the edge of its tile.
+test("fits an English meaning inside its answer tile", async ({ page }) => {
+  await startMeaningRun(page, "Kanji to romaji", /^Calendar/);
+  for (let question = 1; question <= 10; question += 1) {
+    await expect(page.getByText(`${question} / 10`)).toBeVisible();
+    await page.evaluate(() => document.fonts.ready);
+    expect(await overflows(page, "[role='group'][aria-label='Answers'] button")).toEqual([]);
+    await page.getByRole("group", { name: "Answers" }).getByRole("button").first().click();
+    await moveOn(page, question, 10);
+  }
+});
 
 test("asks a kanji in Japanese and answers it in English", async ({ page }) => {
   await startMeaningRun(page, "Kanji to romaji");

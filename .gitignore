@@ -32,3 +32,5 @@ DEVELOPMENT_GUIDELINES.md
 *.log
 test-results
 playwright-report
+.showcase
+.promo

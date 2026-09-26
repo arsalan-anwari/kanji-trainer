@@ -24,6 +24,6 @@ export default defineConfig({
   test: {
     environment: "node",
     includeSource: ["src/**/*.ts", "tools/**/*.ts"],
-    exclude: ["**/node_modules/**", "**/dist/**", "vendor/**", "tests/e2e/**"]
+    exclude: ["**/node_modules/**", "**/dist/**", "vendor/**", "tests/e2e/**", "tools/showcase/**", "tools/promo/**"]
   }
 });

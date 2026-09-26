@@ -1,12 +1,37 @@
 # kanji-trainer
 
+[![GitHub Release](https://img.shields.io/github/v/release/arsalan-anwari/kanji-trainer?style=flat-square)](https://github.com/arsalan-anwari/kanji-trainer/releases)
+[![GitHub Downloads](https://img.shields.io/github/downloads/arsalan-anwari/kanji-trainer/total?style=flat-square)](https://github.com/arsalan-anwari/kanji-trainer/releases)
+[![license](https://img.shields.io/github/license/arsalan-anwari/kanji-trainer?style=flat-square)](LICENSE)
+[![Content License](https://img.shields.io/badge/content-CC%20BY--SA%204.0-lightgrey?style=flat-square)](https://huggingface.co/datasets/arsalan-anwari/kanji-data)
+[![Hugging Face](https://img.shields.io/badge/data-kanji--data-1a1b27?style=flat-square&logo=huggingface&logoColor=white&labelColor=0d1117)](https://huggingface.co/datasets/arsalan-anwari/kanji-data)
+
 Trainer for JLPT vocabulary written in kanji, on desktop, tablet and phone.
 Built with Tauri 2 and Svelte 5, the second app after
 [kana-trainer](https://github.com/arsalan-anwari/kana-trainer).
 
 See the [roadmap](ROADMAP.md) for planned features.
 
-<!-- Showcase from packaging/repo goes here. -->
+<table>
+  <tr>
+    <td align="center" valign="bottom">
+      <img src="packaging/repo/showcase.gif" width="420"
+           alt="Kanji Trainer on a desktop window, walking through the practice setup, a question in each of the twelve formats across reading, meaning, picture, listening and assembling, a run scored, the reports screen, the flashcard chart and the marketplace">
+    </td>
+    <td align="center" valign="bottom">
+      <img src="packaging/repo/showcase-phone.gif" width="160"
+           alt="The same walkthrough of Kanji Trainer on a phone screen">
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <b>Desktop</b><br>
+    </td>
+    <td align="center">
+      <b>Phone</b><br>
+    </td>
+  </tr>
+</table>
 
 ## Features
 
@@ -39,6 +64,7 @@ npm run tauri:build               # release binary for this platform
 npm run dev                       # vite only, browser mode
 npm run check                     # svelte-check
 npm test                          # unit tests
+scripts/record.sh --all           # showcase stills, readme gifs and promo clip
 ```
 
 ## Content
