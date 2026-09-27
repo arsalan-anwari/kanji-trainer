@@ -116,13 +116,28 @@ test("record the showcase", async ({ page }, testInfo) => {
   await shots.shot("19_Quiz_KanjiSound");
   await quitRun(page);
 
+  // Calendar words with the whole-block sets held back, as in the promo: each
+  // splits into four to six blocks (曜 into 日 and 翟, 火 into three). The shot
+  // is mid-build, the first kanji done and the next half assembled, so the
+  // pieces show in the slots and in the pile.
   await pickFormat(page, "Assemble");
+  await button("Clear", true).click();
+  await button(/^Calendar/).click();
+  // A narrow screen folds a set's subcategories away.
+  const unfold = button("Show Calendar", true);
+  if (await unfold.isVisible()) await unfold.click();
+  for (const held of ["Days", "Months", "Weeks", "Years"]) {
+    await button(new RegExp(`^${held} \\d`)).click();
+  }
   await startRun();
-  const [first] = await blocksInOrder(page);
-  await first.click();
+  const blocks = await blocksInOrder(page);
+  for (const block of blocks.slice(0, Math.max(1, blocks.length - 2))) await block.click();
   await shots.top();
   await shots.shot("20_Quiz_Assemble");
   await quitRun(page);
+  // Back to the seeded sets, the pool the runs after this one draw from.
+  await button("Clear", true).click();
+  for (const set of [/^Nature/, /^Food/, /^Calendar/]) await button(set).click();
 
   await pickFormat(page, "Reading", "Kanji to kana");
   await page.getByRole("group", { name: "Answer style" }).getByRole("button", { name: /^Typing/ }).click();

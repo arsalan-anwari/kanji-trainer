@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Board, FitText, Projector, RecordPlayer, viewport } from "kaizen-ui";
+  import { Board, Projector, RecordPlayer, viewport } from "kaizen-ui";
   import { clips } from "../../audio/clips.svelte";
   import { isAssembly, isJapanese, promptSurface } from "../../quiz/settings";
   import type { Question } from "../../quiz/questions";
@@ -44,23 +44,7 @@
       />
     </Projector>
   {:else}
-    <Board size="lg" {compact}>
-      <!-- The board is square, so a word laid out on one line has to shrink far
-           below what its height would allow. Past four glyphs it takes two lines
-           instead, which is how Japanese wraps anyway. The padding clears the
-           dashed guide, and the cap is on the short side so a tall glyph on a
-           board that is not square never spills either. -->
-      <FitText
-        text={question.prompt}
-        cap={46}
-        unit="cqmin"
-        pad={8}
-        perLine={japanese ? 4 : 12}
-        em={japanese ? 1 : 0.55}
-        lang={japanese ? "ja" : undefined}
-        class="font-medium {japanese ? 'jp' : ''}"
-      />
-    </Board>
+    <Board size="lg" {compact} text={question.prompt} jp={japanese} />
     {#if meaning !== ""}
       <p class="text-h4 font-semibold">{meaning}</p>
     {/if}
