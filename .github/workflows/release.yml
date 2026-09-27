@@ -197,13 +197,8 @@ jobs:
       - name: Install the node packages
         run: npm ci --no-audit --no-fund
 
-      # the crate ships the built frontend in src-tauri/dist. Outside a tauri
-      # build vite copies data/ into it, which would blow the 10 MB crate limit
-      - name: Build the frontend
-        env:
-          TAURI_ENV_PLATFORM: linux
-        run: npm run build
-
+      # no --verify: it compiles the whole app, which needs the gtk and webkit
+      # headers this job does not install. scripts/publish.sh --dry-run covers it
       - name: Publish the crate
         env:
           CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
@@ -212,4 +207,4 @@ jobs:
             echo "::warning::no CARGO_REGISTRY_TOKEN secret, the crate was not published"
             exit 0
           fi
-          cargo publish --manifest-path src-tauri/Cargo.toml --allow-dirty --no-verify
+          scripts/publish.sh --no-verify

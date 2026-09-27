@@ -131,6 +131,7 @@ npm run check                     # svelte-check
 npm test                          # unit tests
 scripts/record.sh --all           # showcase stills, readme gifs and promo clip
 scripts/update_version.sh 1.x.x   # set the version everywhere before tagging a release
+scripts/publish.sh --dry-run      # check the crates.io package, the release publishes it
 ```
 
 ## Content
