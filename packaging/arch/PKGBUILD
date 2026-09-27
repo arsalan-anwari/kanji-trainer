@@ -8,7 +8,7 @@ url="https://github.com/arsalan-anwari/kanji-trainer"
 license=('Apache-2.0')
 depends=('webkit2gtk-4.1' 'gtk3' 'libayatana-appindicator')
 makedepends=('rust' 'cargo' 'nodejs' 'npm')
-options=('!debug')
+options=('!debug' '!lto')
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz"
         "kaizen-ui-$_kaizenver.tar.gz::https://github.com/arsalan-anwari/kaizen-ui/archive/refs/tags/v$_kaizenver.tar.gz")
 sha256sums=('SKIP' 'SKIP')
