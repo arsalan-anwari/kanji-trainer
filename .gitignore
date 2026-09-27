@@ -34,3 +34,7 @@ test-results
 playwright-report
 .showcase
 .promo
+
+# Signing keys
+*.jks
+*.keystore

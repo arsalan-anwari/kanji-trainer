@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Kanji Trainer
+Comment=Practice JLPT vocabulary written in kanji
+Exec=kanji-trainer
+Icon=nl.anwari.kanjitrainer
+Terminal=false
+Categories=Education;Languages;
+Keywords=japanese;kanji;jlpt;vocabulary;

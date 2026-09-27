@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>nl.anwari.kanjitrainer</id>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license>Apache-2.0</project_license>
+  <name>Kanji Trainer</name>
+  <summary>Practice JLPT vocabulary written in kanji</summary>
+  <description>
+    <p>
+      Kanji Trainer drills JLPT words: how they are written, how they sound and what they
+      mean. Build a run by hand from topic sets and single words, answer by multiple choice
+      or typing, from kanji, kana, pictures and recordings, and review your score reports to
+      see which kanji and which formats need more work.
+    </p>
+  </description>
+  <launchable type="desktop-id">nl.anwari.kanjitrainer.desktop</launchable>
+  <url type="homepage">https://github.com/arsalan-anwari/kanji-trainer</url>
+  <provides>
+    <binary>kanji-trainer</binary>
+  </provides>
+  <releases>
+  </releases>
+  <content_rating type="oars-1.1"/>
+</component>

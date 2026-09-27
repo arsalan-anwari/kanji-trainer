@@ -13,9 +13,11 @@ feature live in [roadmap/](roadmap/).
 
 ## How versions map to milestones
 
-- **v1.0.0**: *The trainer.* Every question format, every platform, and content
-  beyond N5. Feature-complete as a trainer for how a word is written, how it
-  sounds and what it means.
+- **v1.0.0**: *The trainer.* Every question format over the full N5 word list,
+  packaged for Linux, Windows, macOS and Android.
+- **v1.1.0 to v1.9.0**: *Polish and reach.* Accessibility, localisation, store
+  listings, exam timing, harder distractors and the levels beyond N5. No new
+  question formats.
 - **v2.0.0 and beyond**: *On-device AI tutor.* Handwriting and speech practice
   with local models and delta-based feedback, the same split as Kana Trainer.
 
@@ -34,7 +36,7 @@ feature live in [roadmap/](roadmap/).
 
 ---
 
-## Milestone: The trainer (v1.0.0)
+## Milestone: The trainer (v1.0.0) [⚙️]
 
 ### Content foundation [✅]
 
@@ -56,11 +58,10 @@ feature live in [roadmap/](roadmap/).
 - [✅] Picture to word and picture to reading
 - [✅] Meaning shown on the answer reveal of every format
 
-### Difficulty [⚙️]
+### Difficulty [✅]
 
 - [✅] Three tiers that decide how believable the wrong answers are
 - [✅] Wrong answers that share a kanji, a component or a near-identical reading
-- [📋] Two real compounds recombined into a plausible non-word, as real papers do
 - [✅] Hints: kanji shape descriptions, word clues, picture descriptions
 
 ### Reports [✅]
@@ -77,44 +78,88 @@ feature live in [roadmap/](roadmap/).
 - [✅] Filter by level, word shape, category, subcategory or search
 - [✅] Double-sided A4 flashcard PDF, 1×1 to 4×4 cards per page
 
-### Audio [⚙️]
+### Audio [✅]
 
 - [✅] Hear a word, answer its reading or its written form
 - [✅] See a word, pick the right recording
 - [✅] Playback from the Chart view
-- [📋] Move the clip cache and recording picker into `kaizen-ui`
 
-### Content packs [⚙️]
+### Content packs [✅]
 
 - [✅] Packs classified by level and theme, downloaded from Hugging Face
 - [✅] Marketplace tab to download, update, enable and disable packs
 - [✅] Full N5 in four packs: `n5-base`, `n5-plus`, `n5-extra`, `n5-kana`, 715 words
 - [✅] Several words sharing one kanji
 
-### Timing [⚙️]
+### Timing [✅]
 
 - [✅] Optional time limit per question and per run
-- [📋] Preset at the real exam's pace
-- [📋] Exam drill: kanji to kana and kana to kanji, timed, no reveal until the end
-- [📋] Out of time, not reached and average time on the result screen
 
 ### Component assembly [✅]
 
 - [✅] Build a word from its kanji components, tap-to-place
 - [✅] Blocks laid out the way each character is built
 
-### Platform parity and polish [📋]
+### Release [⚙️]
+
+- [✅] CI on every push: type check, unit tests, end-to-end tests, rust checks
+- [✅] Packages for Linux (deb, rpm, Arch), Windows, macOS and Android, built by CI
+- [✅] Every package signed with OpenPGP, with its sha256 and a build provenance attestation
+- [✅] Changelog, read by the release workflow for the release notes
+- [📋] First tagged release on GitHub and crates.io
+
+---
+
+## v1.1.0: Loose ends [📋]
+
+Carried over from v1.0.0.
+
+- [📋] Record 七 (なな) and 一万 (いちまん), which have no clip in any source
+- [📋] Move the clip cache and recording picker into `kaizen-ui`, with Kana
+  Trainer adopting them
+- [📋] Announce the prompt label on picture questions instead of the image URL
+- [📋] Manual checks: clip seeking under WebKitGTK, and the Chart play and flip
+  buttons and the Listening formats on an Android phone
+
+## v1.2.0: Layout and accessibility [📋]
 
 - [📋] Layout holding from small phones at large font sizes to wide desktops
-- [📋] Keyboard-only navigation and screen reader support on every screen
-- [📋] Localisation across the same languages as Kana Trainer
-- [📋] Packaged and published for Linux, Windows, macOS and Android
+- [📋] Keyboard-only navigation on every screen
+- [📋] Screen reader support on every screen
+- [📋] WCAG 2.2 AA checked on every screen by the end-to-end suite, as in Kana Trainer
+
+## v1.3.0: Localisation [📋]
+
+- [📋] The interface in the same languages as Kana Trainer, right to left included
+
+## v1.4.0: Stores and testing [📋]
+
+- [📋] Google Play, F-Droid and the Microsoft Store
+- [📋] A download page on GitHub Pages
 - [📋] External testing, with a regression test for every confirmed bug
 
-### Beyond N5 [📋]
+## v1.5.0: Exam timing [📋]
 
-- [📋] N4 and higher levels as packs, no new question formats
-- [📋] Theme packs: travel, food, work, school, culture, media
+- [📋] Preset at the real exam's pace
+- [📋] Exam drill: kanji to kana and kana to kanji, timed, no reveal until the end
+- [📋] Out of time, not reached and average time on the result screen
+
+## v1.6.0: Harder distractors [📋]
+
+- [📋] Two real compounds recombined into a plausible non-word, as real papers do
+
+## v1.7.0: N4 [📋]
+
+- [📋] N4 as packs, no new question formats
+- [📋] Phonetic components surfaced where they start being predictive
+
+## v1.8.0: Theme packs [📋]
+
+- [📋] Travel, food, work, school, culture, media
+
+## v1.9.0: N3 and above [📋]
+
+- [📋] N3 and higher levels as packs
 - [📋] Difficulty tuning against the larger pools of look-alikes and homophones
 
 ---

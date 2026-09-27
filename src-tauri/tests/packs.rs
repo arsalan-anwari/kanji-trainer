@@ -80,10 +80,7 @@ impl<R: Read> Read for Aborted<R> {
 #[test]
 fn installs_a_pack_and_records_its_catalog_entry() {
     let root = scratch("install");
-    let bytes = pack_tar(&[
-        ("./content.json", "{}"),
-        ("./images/a.webp", "picture"),
-    ]);
+    let bytes = pack_tar(&[("./content.json", "{}"), ("./images/a.webp", "picture")]);
     let archive = archive_for("n5-food", "food", &bytes);
     let mut steps = Vec::new();
     install(&root, &archive, Cursor::new(&bytes), |done, total| {
