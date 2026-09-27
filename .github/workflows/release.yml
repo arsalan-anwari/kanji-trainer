@@ -197,8 +197,11 @@ jobs:
       - name: Install the node packages
         run: npm ci --no-audit --no-fund
 
-      # the crate ships the built frontend in src-tauri/dist
+      # the crate ships the built frontend in src-tauri/dist. Outside a tauri
+      # build vite copies data/ into it, which would blow the 10 MB crate limit
       - name: Build the frontend
+        env:
+          TAURI_ENV_PLATFORM: linux
         run: npm run build
 
       - name: Publish the crate

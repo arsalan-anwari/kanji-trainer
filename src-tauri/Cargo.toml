@@ -16,6 +16,7 @@ include = [
   "dist/**/*",
   "icons/**/*",
   "capabilities/**/*",
+  "gen/schemas/**/*",
   "build.rs",
   "tauri.conf.json",
   "Cargo.toml",
