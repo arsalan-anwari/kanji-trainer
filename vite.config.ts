@@ -18,7 +18,10 @@ export default defineConfig({
   build: {
     outDir: "src-tauri/dist",
     emptyOutDir: true,
-    target: "esnext"
+    target: "esnext",
+    // The entry chunk carries all 17 interface locales (eager, kaizen-ui's i18n
+    // is synchronous) and loads from disk, not the network.
+    chunkSizeWarningLimit: 1000
   },
   define: { "import.meta.vitest": "undefined" },
   test: {

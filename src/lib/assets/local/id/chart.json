@@ -1,0 +1,37 @@
+{
+  "title": "Bagan",
+  "play": "Putar {word}",
+  "flip": "Balikkan {word}",
+  "empty": "Tidak ada kata yang cocok dengan filter ini.",
+  "export": {
+    "open": "Ekspor kartu flash",
+    "title": "Ekspor kartu flash",
+    "selected": "{count} kata dipilih untuk PDF",
+    "back": "Kembali ke bagan",
+    "pdf": "Unduh sebagai PDF",
+    "busyNote": "Ekspor sedang berjalan. Tunggu atau batalkan di halaman Bagan.",
+    "grid": {
+      "title": "Kartu per halaman",
+      "description": "Pilih kisi untuk setiap halaman A4. Setiap kartu memiliki ukuran dan teks yang sama, dan setiap bacaan dicetak lengkap.",
+      "size": "{size}×{size}",
+      "all": "Semua",
+      "pages": "{cards} kartu pada {pages} halaman, depan dan belakang",
+      "pagesAll": "{cards} kartu dalam {files} PDF, satu per kisi, total {pages} halaman",
+      "start": "Mulai ekspor"
+    },
+    "state": {
+      "running": "Membuat PDF kartu flash…",
+      "ready": "PDF kartu flash sudah siap.",
+      "readyAll": "PDF kartu flash sudah siap.",
+      "failed": "PDF kartu flash tidak dapat dibuat."
+    },
+    "progress": "Halaman {done} dari {total}",
+    "summary": "{cards} kartu pada {pages} halaman, {size}×{size} per halaman.",
+    "summaryAll": "{cards} kartu dalam {files} PDF: {grids}.",
+    "download": "Unduh PDF",
+    "downloadAll": "Simpan PDF ke folder",
+    "discard": "Buang",
+    "saved": "PDF kartu flash disimpan.",
+    "savedAll": "PDF kartu flash disimpan."
+  }
+}

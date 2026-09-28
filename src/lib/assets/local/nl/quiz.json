@@ -1,0 +1,91 @@
+{
+  "progress": "Vraag {index} van {total}",
+  "runProgress": "Voortgang van de ronde",
+  "announce": "Vraag {index} van {total}. {prompt}",
+  "prompt": {
+    "kanji-kana": "Hoe lees je dit woord?",
+    "kana-kanji": "Welk woord is dit?",
+    "kanji-meaning": "Wat betekent dit woord?",
+    "meaning-kanji": "Welk woord betekent dit?",
+    "kana-meaning": "Wat betekent dit woord?",
+    "meaning-kana": "Hoe lees je dit woord?",
+    "image-kanji": "Welk woord is dit?",
+    "image-kana": "Hoe lees je dit woord?",
+    "audio-kana": "Hoe lees je het woord dat je hoorde?",
+    "audio-kanji": "Welk woord hoorde je?",
+    "kanji-audio": "Welke opname is dit woord?",
+    "replay": "Het woord nog eens afspelen",
+    "imageAlt": "Een afbeelding bij het woord",
+    "kana-assemble": "Bouw dit woord"
+  },
+  "choices": "Antwoorden",
+  "soundTile": "Opname {slot}",
+  "check": "Nakijken",
+  "soundHint": "Tik een opname aan om hem te horen en kijk dan na.",
+  "soundCompare": "Tik een opname aan om hem nog eens te horen.",
+  "typed": {
+    "label": "Antwoord",
+    "placeholder": "Typ je antwoord",
+    "submit": "Nakijken"
+  },
+  "correct": "Goed",
+  "wrong": "Fout",
+  "answerWas": "Het antwoord was {answer}",
+  "alsoReads": "ook gelezen als {list}",
+  "reveal": {
+    "reading": "Lezing",
+    "written": "Geschreven",
+    "gloss": "Betekenis"
+  },
+  "hint": {
+    "open": "Een hint tonen",
+    "close": "De hint sluiten",
+    "picture": "Een afbeelding als hint",
+    "kind": {
+      "romaji": "Hoe het klinkt",
+      "clue": "Een aanwijzing",
+      "look": "Hoe het geschreven wordt",
+      "image": "Een afbeelding",
+      "ghost": "Een paar stukjes"
+    }
+  },
+  "next": "Volgende",
+  "continue": "Verder",
+  "finish": "Naar de score",
+  "quit": "Stoppen",
+  "quitTitle": "Deze ronde stoppen?",
+  "quitBody": "De vragen die je al beantwoord hebt worden niet bewaard.",
+  "quitConfirm": "Stoppen",
+  "quitCancel": "Doorgaan",
+  "score": "{score} van {answered} goed",
+  "time": {
+    "out": "Tijd voorbij",
+    "warning": "Nog vijf seconden",
+    "questionLeft": "Resterende tijd voor deze vraag",
+    "runLeft": "Resterende tijd voor de ronde"
+  },
+  "assemble": {
+    "slots": "Vakken",
+    "pile": "Blokken",
+    "tray": "{kind} {index}",
+    "kanji": "kanji",
+    "kana": "kana",
+    "empty": "leeg",
+    "slot": "{tray}, {position}, {content}",
+    "placed": "{block} in {slot} gezet",
+    "lifted": "{block} uit {slot} gehaald",
+    "done": "{character} is compleet",
+    "position": {
+      "whole": "geheel",
+      "center": "midden",
+      "left": "links",
+      "right": "rechts",
+      "top": "boven",
+      "bottom": "onder",
+      "top-left": "linksboven",
+      "top-right": "rechtsboven",
+      "bottom-left": "linksonder",
+      "bottom-right": "rechtsonder"
+    }
+  }
+}

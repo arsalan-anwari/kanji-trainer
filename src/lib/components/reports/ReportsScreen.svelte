@@ -171,7 +171,7 @@
   <div class="flex flex-col gap-3">
     <ReportFilters bind:query />
 
-    <div class="flex items-center justify-between gap-2">
+    <div class="flex flex-wrap items-center justify-between gap-2">
       <button
         type="button"
         class="flex min-w-0 cursor-pointer items-center gap-2 rounded-lg py-1 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:cursor-default disabled:opacity-40"
@@ -220,7 +220,7 @@
               {#each actions as action (action.label)}
                 <button
                   type="button"
-                  class="flex h-11 shrink-0 cursor-pointer items-center gap-3 rounded-lg px-3 text-left text-sm font-semibold transition-colors hover:bg-accent disabled:cursor-default disabled:opacity-40 {action.danger ===
+                  class="flex h-11 shrink-0 cursor-pointer items-center gap-3 rounded-lg px-3 text-start text-sm font-semibold transition-colors hover:bg-accent disabled:cursor-default disabled:opacity-40 {action.danger ===
                   true
                     ? 'text-danger'
                     : ''}"
@@ -252,7 +252,7 @@
               <button
                 type="button"
                 aria-pressed={picked.includes(report.id)}
-                class="flex w-full cursor-pointer flex-col items-start gap-1 rounded-xl border-2 p-3 text-left transition-colors {picked.includes(
+                class="flex w-full cursor-pointer flex-col items-start gap-1 rounded-xl border-2 p-3 text-start transition-colors {picked.includes(
                   report.id
                 )
                   ? 'border-selected bg-selected-soft'
@@ -323,10 +323,12 @@
         </Button>
       </div>
 
-      <div class="grid grid-cols-3 gap-2">
-        <Stat tone="brand" value={`${n(accuracy)}%`} label={t("reports.stat.accuracy")} />
-        <Stat value={n(counted.length)} label={t("reports.stat.runs")} />
-        <Stat value={n(answers.length)} label={t("reports.stat.answers")} />
+      <div class="@container">
+        <div class="grid grid-cols-1 gap-2 @min-[12rem]:grid-cols-3">
+          <Stat tone="brand" value={`${n(accuracy)}%`} label={t("reports.stat.accuracy")} />
+          <Stat value={n(counted.length)} label={t("reports.stat.runs")} />
+          <Stat value={n(answers.length)} label={t("reports.stat.answers")} />
+        </div>
       </div>
 
       {#if app.message !== ""}

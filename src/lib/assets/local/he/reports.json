@@ -1,0 +1,104 @@
+{
+  "none": "עוד לא הושלם אף סבב.",
+  "entry": "{score} מתוך {total} נכונות",
+  "window": {
+    "all": "הכול",
+    "today": "היום",
+    "yesterday": "אתמול",
+    "custom": "מותאם",
+    "range": "{from} – {to}"
+  },
+  "range": {
+    "pick": "בחירת טווח תאריכים",
+    "title": "טווח תאריכים",
+    "close": "סגירת טווח התאריכים",
+    "from": "מ-",
+    "to": "עד",
+    "invalid": "ההתחלה צריכה להיות לפני הסוף או באותו יום, ולא לפני {earliest}."
+  },
+  "filters": {
+    "title": "מסננים",
+    "format": "סוג שאלה",
+    "answering": "אופן המענה",
+    "level": "רמה",
+    "packs": "חבילות",
+    "clear": "ניקוי המסננים"
+  },
+  "list": {
+    "shown": "{count} מוצגים",
+    "pickedOf": "{picked} מתוך {total}",
+    "selectAll": "בחירת כל הסבבים המוצגים",
+    "clearSelection": "ניקוי הבחירה",
+    "remove": "מחיקה",
+    "export": "ייצוא",
+    "import": "ייבוא",
+    "actions": "פעולות על סבבים"
+  },
+  "pages": {
+    "label": "עמודי הדוח",
+    "previous": "העמוד הקודם",
+    "next": "העמוד הבא",
+    "at": "עמוד {page} מתוך {pages}"
+  },
+  "deleted": "נמחק.",
+  "exported": "יוצא.",
+  "imported": "יובא.",
+  "importedSome": "יובא. חלק מהסבבים כבר היו כאן.",
+  "confirmTitle": "למחוק את הסבבים האלה?",
+  "confirmBody": "{count} סבבים יוסרו מהמכשיר הזה.",
+  "stat": {
+    "runs": "סבבים",
+    "answers": "תשובות",
+    "accuracy": "דיוק"
+  },
+  "diagnosis": {
+    "kanji": {
+      "title": "קאנג'י",
+      "description": "דיוק לפי קאנג'י.",
+      "empty": "עוד אין תשובות בבחירה הזו."
+    },
+    "sets": {
+      "title": "סטים",
+      "description": "דיוק לפי סט.",
+      "empty": "עוד אין תשובות בבחירה הזו."
+    },
+    "formats": {
+      "title": "סוגי שאלות",
+      "description": "דיוק לפי סוג שאלה.",
+      "empty": "עוד אין תשובות בבחירה הזו.",
+      "columns": {
+        "group": "סוג / גרסה",
+        "accuracy": "דיוק",
+        "bar": "התקדמות",
+        "score": "ציון"
+      }
+    },
+    "mistakes": {
+      "title": "טעויות לפי מילה",
+      "description": "תשובות שגויות, לפי מילה.",
+      "empty": "אין טעויות בבחירה הזו."
+    },
+    "time": {
+      "title": "מהירות",
+      "description": "זמן לשאלה.",
+      "empty": "עוד אין תשובות בבחירה הזו."
+    }
+  },
+  "practise": {
+    "button": "תרגול הטעויות האלה",
+    "empty": "אין טעויות לתרגל.",
+    "loaded": "המילים שטעית בהן נטענו להגדרת הסבב."
+  },
+  "mastery": {
+    "new": "חדש",
+    "shaky": "רעוע",
+    "learning": "בלמידה",
+    "steady": "יציב",
+    "mastered": "נשלט"
+  },
+  "tip": {
+    "stat": "{correct} מתוך {total} נכונות, {mastery}",
+    "speed": "{label}: ממוצע {averageMs} מ\"ש"
+  },
+  "packMissing": "חבילה שהסבב הזה השתמש בה כבויה או הוסרה, ולכן היא לא נכללת בסיכומים שלמטה."
+}

@@ -1,0 +1,91 @@
+{
+  "progress": "문제 {index} / {total}",
+  "runProgress": "세트 진행률",
+  "announce": "문제 {index} / {total}. {prompt}",
+  "prompt": {
+    "kanji-kana": "이 단어는 어떻게 읽나요?",
+    "kana-kanji": "이것은 어떤 단어인가요?",
+    "kanji-meaning": "이 단어의 뜻은 무엇인가요?",
+    "meaning-kanji": "이 뜻을 가진 단어는 무엇인가요?",
+    "kana-meaning": "이 단어의 뜻은 무엇인가요?",
+    "meaning-kana": "이 단어는 어떻게 읽나요?",
+    "image-kanji": "이것은 어떤 단어인가요?",
+    "image-kana": "이 단어는 어떻게 읽나요?",
+    "audio-kana": "들으신 단어는 어떻게 읽나요?",
+    "audio-kanji": "들으신 단어는 무엇인가요?",
+    "kanji-audio": "이 단어는 어느 녹음인가요?",
+    "replay": "단어 다시 듣기",
+    "imageAlt": "단어를 나타내는 그림",
+    "kana-assemble": "이 단어를 조립하세요"
+  },
+  "choices": "답",
+  "soundTile": "녹음 {slot}",
+  "check": "확인",
+  "soundHint": "녹음을 눌러 들어본 뒤 확인하세요.",
+  "soundCompare": "녹음을 눌러 다시 들어보세요.",
+  "typed": {
+    "label": "답",
+    "placeholder": "답을 입력하세요",
+    "submit": "확인"
+  },
+  "correct": "정답",
+  "wrong": "오답",
+  "answerWas": "정답은 {answer}였습니다",
+  "alsoReads": "{list}로도 읽습니다",
+  "reveal": {
+    "reading": "읽기",
+    "written": "표기",
+    "gloss": "뜻"
+  },
+  "hint": {
+    "open": "힌트 보기",
+    "close": "힌트 닫기",
+    "picture": "정답을 암시하는 그림",
+    "kind": {
+      "romaji": "발음",
+      "clue": "힌트",
+      "look": "글자의 모양",
+      "image": "그림",
+      "ghost": "조각 몇 개"
+    }
+  },
+  "next": "다음",
+  "continue": "계속",
+  "finish": "점수 보기",
+  "quit": "그만두기",
+  "quitTitle": "이 세트를 그만두시겠어요?",
+  "quitBody": "지금까지 푼 문제는 저장되지 않습니다.",
+  "quitConfirm": "그만두기",
+  "quitCancel": "계속하기",
+  "score": "{answered}개 중 {score}개 정답",
+  "time": {
+    "out": "시간 초과",
+    "warning": "5초 남았습니다",
+    "questionLeft": "이 문제의 남은 시간",
+    "runLeft": "세트의 남은 시간"
+  },
+  "assemble": {
+    "slots": "칸",
+    "pile": "블록",
+    "tray": "{kind} {index}",
+    "kanji": "한자",
+    "kana": "가나",
+    "empty": "비어 있음",
+    "slot": "{tray}, {position}, {content}",
+    "placed": "{block}을(를) {slot}에 놓았습니다",
+    "lifted": "{slot}에서 {block}을(를) 꺼냈습니다",
+    "done": "{character} 완성",
+    "position": {
+      "whole": "전체",
+      "center": "가운데",
+      "left": "왼쪽",
+      "right": "오른쪽",
+      "top": "위",
+      "bottom": "아래",
+      "top-left": "왼쪽 위",
+      "top-right": "오른쪽 위",
+      "bottom-left": "왼쪽 아래",
+      "bottom-right": "오른쪽 아래"
+    }
+  }
+}

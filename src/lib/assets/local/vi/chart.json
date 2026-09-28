@@ -1,0 +1,37 @@
+{
+  "title": "Biểu đồ",
+  "play": "Phát {word}",
+  "flip": "Lật {word}",
+  "empty": "Không có từ nào khớp với các bộ lọc này.",
+  "export": {
+    "open": "Xuất thẻ ghi nhớ",
+    "title": "Xuất thẻ ghi nhớ",
+    "selected": "{count} từ đã được chọn cho tệp PDF",
+    "back": "Quay lại biểu đồ",
+    "pdf": "Tải xuống dưới dạng PDF",
+    "busyNote": "Đang có một quá trình xuất đang chạy. Hãy đợi hoặc hủy bỏ trên trang Biểu đồ.",
+    "grid": {
+      "title": "Thẻ mỗi trang",
+      "description": "Chọn lưới cho mỗi trang A4. Mỗi thẻ có cùng kích thước và văn bản, và mọi cách đọc đều được in đầy đủ.",
+      "size": "{size}×{size}",
+      "all": "Tất cả",
+      "pages": "{cards} thẻ trên {pages} trang, mặt trước và mặt sau",
+      "pagesAll": "{cards} thẻ trong {files} tệp PDF, mỗi tệp một lưới, tổng cộng {pages} trang",
+      "start": "Bắt đầu xuất"
+    },
+    "state": {
+      "running": "Đang tạo tệp PDF thẻ ghi nhớ…",
+      "ready": "Tệp PDF thẻ ghi nhớ đã sẵn sàng.",
+      "readyAll": "Các tệp PDF thẻ ghi nhớ đã sẵn sàng.",
+      "failed": "Không thể tạo tệp PDF thẻ ghi nhớ."
+    },
+    "progress": "Trang {done} trên {total}",
+    "summary": "{cards} thẻ trên {pages} trang, {size}×{size} mỗi trang.",
+    "summaryAll": "{cards} thẻ trong {files} tệp PDF: {grids}.",
+    "download": "Tải xuống PDF",
+    "downloadAll": "Lưu các tệp PDF vào một thư mục",
+    "discard": "Hủy bỏ",
+    "saved": "Đã lưu tệp PDF thẻ ghi nhớ.",
+    "savedAll": "Đã lưu các tệp PDF thẻ ghi nhớ."
+  }
+}

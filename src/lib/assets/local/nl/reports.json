@@ -1,0 +1,104 @@
+{
+  "none": "Er is nog geen ronde afgemaakt.",
+  "entry": "{score} van {total} goed",
+  "window": {
+    "all": "Alle",
+    "today": "Vandaag",
+    "yesterday": "Gisteren",
+    "custom": "Eigen",
+    "range": "{from} – {to}"
+  },
+  "range": {
+    "pick": "Een periode kiezen",
+    "title": "Periode",
+    "close": "De periode sluiten",
+    "from": "Van",
+    "to": "Tot",
+    "invalid": "Begin op of voor het einde, en niet eerder dan {earliest}."
+  },
+  "filters": {
+    "title": "Filters",
+    "format": "Vraagvorm",
+    "answering": "Antwoorden",
+    "level": "Niveau",
+    "packs": "Pakketten",
+    "clear": "Filters wissen"
+  },
+  "list": {
+    "shown": "{count} getoond",
+    "pickedOf": "{picked} van {total}",
+    "selectAll": "Alle getoonde rondes kiezen",
+    "clearSelection": "De keuze wissen",
+    "remove": "Verwijderen",
+    "export": "Exporteren",
+    "import": "Importeren",
+    "actions": "Acties voor rondes"
+  },
+  "pages": {
+    "label": "Verslagpagina's",
+    "previous": "Vorige pagina",
+    "next": "Volgende pagina",
+    "at": "Pagina {page} van {pages}"
+  },
+  "deleted": "Verwijderd.",
+  "exported": "Geëxporteerd.",
+  "imported": "Geïmporteerd.",
+  "importedSome": "Geïmporteerd. Sommige rondes waren er al.",
+  "confirmTitle": "Deze rondes verwijderen?",
+  "confirmBody": "{count} rondes worden van dit apparaat verwijderd.",
+  "stat": {
+    "runs": "Rondes",
+    "answers": "Antwoorden",
+    "accuracy": "Nauwkeurigheid"
+  },
+  "diagnosis": {
+    "kanji": {
+      "title": "Kanji",
+      "description": "Nauwkeurigheid per kanji.",
+      "empty": "Nog geen antwoorden in deze selectie."
+    },
+    "sets": {
+      "title": "Sets",
+      "description": "Nauwkeurigheid per set.",
+      "empty": "Nog geen antwoorden in deze selectie."
+    },
+    "formats": {
+      "title": "Vraagvormen",
+      "description": "Nauwkeurigheid per vraagvorm.",
+      "empty": "Nog geen antwoorden in deze selectie.",
+      "columns": {
+        "group": "Vraagvorm / variant",
+        "accuracy": "Nauwkeurigheid",
+        "bar": "Voortgang",
+        "score": "Score"
+      }
+    },
+    "mistakes": {
+      "title": "Fouten per woord",
+      "description": "Foute antwoorden, per woord.",
+      "empty": "Geen fouten in deze selectie."
+    },
+    "time": {
+      "title": "Snelheid",
+      "description": "Tijd per vraag.",
+      "empty": "Nog geen antwoorden in deze selectie."
+    }
+  },
+  "practise": {
+    "button": "Deze fouten oefenen",
+    "empty": "Geen fouten om te oefenen.",
+    "loaded": "De woorden die je fout had staan klaar in de instellingen."
+  },
+  "mastery": {
+    "new": "Nieuw",
+    "shaky": "Wankel",
+    "learning": "Bezig",
+    "steady": "Stevig",
+    "mastered": "Beheerst"
+  },
+  "tip": {
+    "stat": "{correct} van {total} goed, {mastery}",
+    "speed": "{label}: gemiddeld {averageMs} ms"
+  },
+  "packMissing": "Een pakket dat deze ronde gebruikte staat uit of is verwijderd, dus telt het niet mee in de totalen hieronder."
+}

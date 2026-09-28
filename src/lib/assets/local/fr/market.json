@@ -1,0 +1,88 @@
+{
+  "title": "Place de marché",
+  "tagline": "Ajoutez des niveaux et des packs de mots thématiques. Tout ce que vous téléchargez reste sur cet appareil et fonctionne hors ligne.",
+  "stats": {
+    "installed": "Installé",
+    "updates": "Mises à jour",
+    "available": "À découvrir"
+  },
+  "catalog": {
+    "fresh": "Catalogue à jour",
+    "stale": "Hors ligne : affichage du catalogue de votre dernière connexion",
+    "none": "Catalogue non chargé : affichage uniquement des éléments installés",
+    "refresh": "Rechercher de nouveaux packs"
+  },
+  "filter": {
+    "theme": "Thème",
+    "level": "Niveau",
+    "all": "Tous"
+  },
+  "theme": {
+    "base": "Niveau de base",
+    "plus": "Plus de kanji",
+    "extra": "Kanji plus difficiles",
+    "kana": "Mots en kana",
+    "travel": "Voyage",
+    "food": "Nourriture et boisson",
+    "work": "Travail",
+    "school": "École",
+    "culture": "Culture",
+    "media": "Anime et manga"
+  },
+  "section": {
+    "updates": "Mises à jour",
+    "installed": "Vos packs",
+    "available": "Découvrir"
+  },
+  "badge": {
+    "installed": "Installé",
+    "update": "Mettre à jour",
+    "new": "Nouveau",
+    "off": "Désactivé",
+    "required": "Requis"
+  },
+  "meta": {
+    "words": "{count} mots",
+    "kanji": "{count} kanji",
+    "size": "{size} Mo",
+    "version": "v{version}"
+  },
+  "action": {
+    "download": "Télécharger",
+    "update": "Mettre à jour",
+    "details": "Détails",
+    "detailsOf": "Détails de {title}",
+    "use": "Utiliser pour s'entraîner",
+    "useHint": "Ses ensembles et mots s'affichent dans Entraînement et Tableau",
+    "alwaysOn": "Toujours activé : chaque session s'appuie dessus",
+    "delete": "Supprimer {title}",
+    "retry": "Réessayer"
+  },
+  "progress": "Téléchargement de {done} sur {total} Mo",
+  "progressLabel": "Téléchargement de {title}",
+  "failed": "Le téléchargement n'a pas abouti. Vérifiez votre connexion et réessayez.",
+  "needsNetwork": "Connectez-vous à Internet pour télécharger.",
+  "browserOnly": "Les packs sont installés par l'application. Dans le navigateur, créez plutôt data/.",
+  "empty": "Aucun pack ne correspond à ces filtres.",
+  "source": "Les packs proviennent du jeu de données Kanji Trainer sur Hugging Face.",
+  "remove": {
+    "title": "Supprimer {title} ?",
+    "body": "Ses mots quitteront l'Entraînement et le Tableau. Les sessions passées qui les utilisaient sont conservées, mais affichent un avertissement et sont exclues de vos totaux jusqu'à ce que vous le téléchargiez à nouveau.",
+    "confirm": "Supprimer",
+    "cancel": "Garder"
+  },
+  "gate": {
+    "title": "Télécharger les bases",
+    "description": "Kanji Trainer a besoin de ses packs de base avant toute chose. Il s'agit d'un téléchargement unique ; ensuite, l'application fonctionne hors ligne.",
+    "total": "{size} Mo au total",
+    "start": "Télécharger",
+    "offline": "Le catalogue de packs n'a pas pu être chargé. Vérifiez votre connexion Internet et réessayez ; si le problème persiste, il est possible que le catalogue ne soit pas encore publié.",
+    "retry": "Réessayer",
+    "busy": "Téléchargement de {title}…"
+  },
+  "description": {
+    "loading": "Chargement de la description…",
+    "missing": "La description n'a pas pu être chargée. Connectez-vous à Internet pour la lire avant de télécharger."
+  },
+  "newerApp": "Ce pack nécessite une version plus récente de Kanji Trainer. Mettez l'application à jour pour l'utiliser."
+}

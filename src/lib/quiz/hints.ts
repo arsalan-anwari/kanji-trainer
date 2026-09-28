@@ -1,12 +1,13 @@
+import { CONTENT_LANG, langOf } from "../content/locale";
 import type { Kanji, Word } from "../content/types";
 import { audioPath, imagePath, packUrl } from "../packs/url";
 import { toRomajiHint } from "./romaji.ts";
 import type { Difficulty, Format } from "./settings";
 
 export type HintKind = "romaji" | "clue" | "look" | "image" | "ghost";
-export type Hint = { kind: HintKind; text: string };
+export type Hint = { kind: HintKind; text: string; lang?: string };
 
-export type LookIndex = ReadonlyMap<string, string>;
+export type LookIndex = ReadonlyMap<string, Pick<Kanji, "look" | "lang">>;
 
 const KINDS: Record<Format, { beginner: HintKind | null; advanced: HintKind | null }> = {
   "kanji-kana": { beginner: "romaji", advanced: "clue" },
@@ -29,7 +30,7 @@ export function hintKind(format: Format, difficulty: Difficulty): HintKind | nul
 }
 
 export function lookIndex(kanji: readonly Kanji[]): LookIndex {
-  return new Map(kanji.map((entry) => [entry.character, entry.look]));
+  return new Map(kanji.map((entry) => [entry.character, entry]));
 }
 
 export function imageUrl(word: Word): string {
@@ -40,11 +41,16 @@ export function audioUrl(word: Word): string {
   return packUrl(word.pack, audioPath(word));
 }
 
-function looksOf(word: Word, looks: LookIndex): string {
-  return word.kanji
-    .map((character) => looks.get(character) ?? "")
-    .filter((look) => look !== "")
-    .join(" ");
+function looksOf(word: Word, looks: LookIndex): Omit<Hint, "kind"> {
+  const parts = word.kanji.flatMap((character) => {
+    const entry = looks.get(character);
+    return entry === undefined || entry.look === "" ? [] : [entry];
+  });
+  const langs = new Set(parts.map(langOf));
+  return {
+    text: parts.map((part) => part.look).join(" "),
+    lang: langs.size === 1 ? [...langs][0] : CONTENT_LANG
+  };
 }
 
 /** Hides every other kana of a romaji hint, so it helps without spelling the answer out. */
@@ -55,12 +61,12 @@ export function maskedRomaji(reading: string): string {
     .join("-");
 }
 
-export function textOf(word: Word, kind: HintKind, looks: LookIndex): string {
-  if (kind === "romaji") return maskedRomaji(word.reading);
-  if (kind === "clue") return word.clue;
+export function textOf(word: Word, kind: HintKind, looks: LookIndex): Omit<Hint, "kind"> {
+  if (kind === "romaji") return { text: maskedRomaji(word.reading), lang: "ja-Latn" };
+  if (kind === "clue") return { text: word.clue, lang: langOf(word) };
   if (kind === "look") return looksOf(word, looks);
-  if (kind === "ghost") return word.written;
-  return imageUrl(word);
+  if (kind === "ghost") return { text: word.written, lang: "ja" };
+  return { text: imageUrl(word) };
 }
 
 export function hintFor(
@@ -71,8 +77,8 @@ export function hintFor(
 ): Hint | null {
   const kind = hintKind(format, difficulty);
   if (kind === null) return null;
-  const text = textOf(word, kind, looks);
-  return text === "" ? null : { kind, text };
+  const content = textOf(word, kind, looks);
+  return content.text === "" ? null : { kind, ...content };
 }
 
 export function fallbackHint(word: Word, format: Format, looks: LookIndex): Hint | null {
@@ -100,9 +106,9 @@ if (import.meta.vitest) {
     file: "school"
   };
 
-  const looks = new Map([
-    ["学", "A roof over a child, with three sparks above it."],
-    ["校", "The tree radical beside a figure with crossed legs."]
+  const looks: LookIndex = new Map([
+    ["学", { look: "A roof over a child, with three sparks above it." }],
+    ["校", { look: "The tree radical beside a figure with crossed legs." }]
   ]);
 
   describe("choosing what a hint shows", () => {
@@ -147,7 +153,7 @@ if (import.meta.vitest) {
     });
 
     test("spells a heard word out on beginner only, and never hints which recording is right", () => {
-      expect(hintFor(word, "audio-kana", "beginner", looks)).toEqual({ kind: "romaji", text: "ga-?-ko-?" });
+      expect(hintFor(word, "audio-kana", "beginner", looks)).toEqual({ kind: "romaji", text: "ga-?-ko-?", lang: "ja-Latn" });
       expect(hintFor(word, "audio-kanji", "beginner", looks)?.kind).toBe("look");
       expect(hintKind("audio-kana", "advanced")).toBeNull();
       expect(hintKind("audio-kanji", "advanced")).toBeNull();
@@ -161,11 +167,40 @@ if (import.meta.vitest) {
     });
   });
 
+  describe("hinting in the learner's language", () => {
+    const dutch: Word = { ...word, clue: "Waar kinderen op een doordeweekse ochtend les krijgen.", lang: "nl" };
+    const halfDutch: LookIndex = new Map([...looks, ["学", { look: "Een dak boven een kind.", lang: "nl" }]]);
+
+    test("tags a translated clue with its language", () => {
+      expect(hintFor(dutch, "kanji-meaning", "advanced", looks)).toEqual({
+        kind: "clue",
+        text: "Waar kinderen op een doordeweekse ochtend les krijgen.",
+        lang: "nl"
+      });
+    });
+
+    test("tags an untranslated clue English", () => {
+      expect(hintFor(word, "kanji-meaning", "advanced", looks)?.lang).toBe("en");
+    });
+
+    test("tags a half translated shape description as English", () => {
+      const hint = hintFor(word, "kana-kanji", "beginner", halfDutch);
+      expect(hint?.text).toBe("Een dak boven een kind. The tree radical beside a figure with crossed legs.");
+      expect(hint?.lang).toBe("en");
+    });
+
+    test("tags a fully translated shape description with its language", () => {
+      const both: LookIndex = new Map([...halfDutch, ["校", { look: "Een boom naast een figuur.", lang: "nl" }]]);
+      expect(hintFor(word, "kana-kanji", "beginner", both)?.lang).toBe("nl");
+    });
+  });
+
   describe("filling a hint with content", () => {
     test("writes a reading in romaji with every other kana hidden", () => {
       expect(hintFor(word, "kanji-kana", "beginner", looks)).toEqual({
         kind: "romaji",
-        text: "ga-?-ko-?"
+        text: "ga-?-ko-?",
+        lang: "ja-Latn"
       });
       expect(maskedRomaji("き")).toBe("ki");
       expect(maskedRomaji("やま")).toBe("ya-?");

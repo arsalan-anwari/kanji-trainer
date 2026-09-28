@@ -1,0 +1,32 @@
+{
+  "title": "Sesión finalizada",
+  "score": "Puntuación",
+  "accuracy": "Precisión",
+  "asked": "Preguntas",
+  "average": "Promedio por pregunta",
+  "timedOut": "Tiempo agotado",
+  "secondsShort": "{count}s",
+  "missed": {
+    "title": "Palabras para repasar",
+    "none": "Todas las palabras fueron correctas.",
+    "count": "{count} palabras",
+    "timedOut": "Tiempo agotado"
+  },
+  "again": "Configurar otra sesión",
+  "report": "Ver sesiones anteriores",
+  "skip": "Toca en cualquier lugar para omitir",
+  "tier": {
+    "perfect": "Perfecto",
+    "great": "Casi perfecto",
+    "good": "Buena sesión",
+    "fair": "Vas por buen camino",
+    "poor": "Sigue practicando"
+  },
+  "blurb": {
+    "perfect": "Ni una sola palabra fallada.",
+    "great": "Muy cerca de un resultado impecable.",
+    "good": "La mayoría fueron correctas.",
+    "fair": "Ya tienes la idea general.",
+    "poor": "Cada sesión hace que la siguiente sea más fácil."
+  }
+}

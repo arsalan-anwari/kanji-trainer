@@ -4,6 +4,7 @@
   import { isAssembly, isJapanese, promptSurface } from "../../quiz/settings";
   import type { Question } from "../../quiz/questions";
   import { app } from "../../state.svelte";
+  import { CONTENT_LANG, langOf } from "../../content/locale";
   import { t } from "../../i18n.svelte";
 
   let { question }: { question: Question } = $props();
@@ -16,6 +17,7 @@
   const compact = $derived(!viewport.wide && viewport.short);
 
   const playing = $derived(clips.playing === question.prompt);
+  const lang = $derived(app.currentWord === null ? CONTENT_LANG : langOf(app.currentWord));
   const meaning = $derived(isAssembly(app.settings.format) ? (app.currentWord?.meaning ?? "") : "");
 </script>
 
@@ -44,9 +46,15 @@
       />
     </Projector>
   {:else}
-    <Board size="lg" {compact} text={question.prompt} jp={japanese} />
+    <Board
+      size="lg"
+      {compact}
+      text={question.prompt}
+      jp={japanese}
+      lang={surface === "meaning" ? lang : undefined}
+    />
     {#if meaning !== ""}
-      <p class="text-h4 font-semibold">{meaning}</p>
+      <p {lang} dir="auto" class="text-h4 font-semibold">{meaning}</p>
     {/if}
   {/if}
 </div>

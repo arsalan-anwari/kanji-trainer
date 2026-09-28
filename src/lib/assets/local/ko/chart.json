@@ -1,0 +1,37 @@
+{
+  "title": "표",
+  "play": "{word} 재생",
+  "flip": "{word} 뒤집기",
+  "empty": "이 필터에 맞는 단어가 없습니다.",
+  "export": {
+    "open": "플래시카드 내보내기",
+    "title": "플래시카드 내보내기",
+    "selected": "PDF에 {count}개 단어가 선택되었습니다",
+    "back": "표로 돌아가기",
+    "pdf": "PDF로 다운로드",
+    "busyNote": "이미 내보내기가 진행 중입니다. 기다리거나 표 페이지에서 취소하세요.",
+    "grid": {
+      "title": "페이지당 카드 수",
+      "description": "A4 페이지마다 격자를 선택하세요. 모든 카드는 크기와 텍스트가 같고, 모든 읽기가 전부 인쇄됩니다.",
+      "size": "{size}×{size}",
+      "all": "전체",
+      "pages": "{pages}페이지에 {cards}장의 카드, 앞면과 뒷면",
+      "pagesAll": "{files}개 PDF에 {cards}장의 카드, 격자당 하나씩, 총 {pages}페이지",
+      "start": "내보내기 시작"
+    },
+    "state": {
+      "running": "플래시카드 PDF를 만들고 있습니다…",
+      "ready": "플래시카드 PDF가 준비되었습니다.",
+      "readyAll": "플래시카드 PDF들이 준비되었습니다.",
+      "failed": "플래시카드 PDF를 만들 수 없습니다."
+    },
+    "progress": "{total}페이지 중 {done}페이지",
+    "summary": "{pages}페이지에 {cards}장의 카드, 페이지당 {size}×{size}.",
+    "summaryAll": "{files}개 PDF에 {cards}장의 카드: {grids}.",
+    "download": "PDF 다운로드",
+    "downloadAll": "PDF를 폴더에 저장",
+    "discard": "버리기",
+    "saved": "플래시카드 PDF가 저장되었습니다.",
+    "savedAll": "플래시카드 PDF들이 저장되었습니다."
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "progress": "{total} sorudan {index}.si",
+  "runProgress": "Çalışma ilerlemesi",
+  "announce": "{total} sorudan {index}.si. {prompt}",
+  "prompt": {
+    "kanji-kana": "Bu kelime nasıl okunur?",
+    "kana-kanji": "Bu hangi kelime?",
+    "kanji-meaning": "Bu kelime ne anlama geliyor?",
+    "meaning-kanji": "Bunun anlamı olan kelime hangisi?",
+    "kana-meaning": "Bu kelime ne anlama geliyor?",
+    "meaning-kana": "Bu kelime nasıl okunur?",
+    "image-kanji": "Bu hangi kelime?",
+    "image-kana": "Bu kelime nasıl okunur?",
+    "audio-kana": "Duyduğunuz kelime nasıl okunur?",
+    "audio-kanji": "Hangi kelimeyi duydunuz?",
+    "kanji-audio": "Bu kelimenin kaydı hangisi?",
+    "replay": "Kelimeyi tekrar oynat",
+    "imageAlt": "Kelimeyi gösteren bir resim",
+    "kana-assemble": "Bu kelimeyi oluştur"
+  },
+  "choices": "Cevaplar",
+  "soundTile": "Kayıt {slot}",
+  "check": "Kontrol et",
+  "soundHint": "Dinlemek için bir kayda dokunun, ardından kontrol edin.",
+  "soundCompare": "Tekrar dinlemek için bir kayda dokunun.",
+  "typed": {
+    "label": "Cevap",
+    "placeholder": "Cevabınızı yazın",
+    "submit": "Kontrol et"
+  },
+  "correct": "Doğru",
+  "wrong": "Yanlış",
+  "answerWas": "Cevap {answer} idi",
+  "alsoReads": "ayrıca {list} olarak okunur",
+  "reveal": {
+    "reading": "Okunuş",
+    "written": "Yazılış",
+    "gloss": "Anlam"
+  },
+  "hint": {
+    "open": "İpucu göster",
+    "close": "İpucunu kapat",
+    "picture": "Cevabı işaret eden bir resim",
+    "kind": {
+      "romaji": "Nasıl ses çıkarıyor",
+      "clue": "Bir ipucu",
+      "look": "Nasıl yazılıyor",
+      "image": "Bir resim",
+      "ghost": "Bazı parçalar"
+    }
+  },
+  "next": "Sıradaki",
+  "continue": "Devam et",
+  "finish": "Skoru gör",
+  "quit": "Çıkış",
+  "quitTitle": "Bu çalışmadan çıkılsın mı?",
+  "quitBody": "Şu ana kadar cevaplanan sorular kaydedilmeyecektir.",
+  "quitConfirm": "Çıkış",
+  "quitCancel": "Devam et",
+  "score": "{answered} sorudan {score} tanesi doğru",
+  "time": {
+    "out": "Süre doldu",
+    "warning": "Beş saniye kaldı",
+    "questionLeft": "Bu soru için kalan süre",
+    "runLeft": "Çalışma için kalan süre"
+  },
+  "assemble": {
+    "slots": "Yuvalar",
+    "pile": "Bloklar",
+    "tray": "{kind} {index}",
+    "kanji": "kanji",
+    "kana": "kana",
+    "empty": "boş",
+    "slot": "{tray}, {position}, {content}",
+    "placed": "{block}, {slot} içine yerleştirildi",
+    "lifted": "{block}, {slot} içinden çıkarıldı",
+    "done": "{character} tamamlandı",
+    "position": {
+      "whole": "bütün",
+      "center": "orta",
+      "left": "sol",
+      "right": "sağ",
+      "top": "üst",
+      "bottom": "alt",
+      "top-left": "sol üst",
+      "top-right": "sağ üst",
+      "bottom-left": "sol alt",
+      "bottom-right": "sağ alt"
+    }
+  }
+}

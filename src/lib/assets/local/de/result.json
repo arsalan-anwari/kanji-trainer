@@ -1,0 +1,32 @@
+{
+  "title": "Durchlauf beendet",
+  "score": "Punktzahl",
+  "accuracy": "Genauigkeit",
+  "asked": "Fragen",
+  "average": "Durchschnitt pro Frage",
+  "timedOut": "Zeit abgelaufen",
+  "secondsShort": "{count}s",
+  "missed": {
+    "title": "Wörter zum Wiederholen",
+    "none": "Jedes Wort war richtig.",
+    "count": "{count} Wörter",
+    "timedOut": "Zeit abgelaufen"
+  },
+  "again": "Neuen Durchlauf starten",
+  "report": "Vergangene Durchläufe ansehen",
+  "skip": "Zum Überspringen irgendwo tippen",
+  "tier": {
+    "perfect": "Perfekt",
+    "great": "Fast perfekt",
+    "good": "Starker Durchlauf",
+    "fair": "Auf dem richtigen Weg",
+    "poor": "Weiter üben"
+  },
+  "blurb": {
+    "perfect": "Kein einziges Wort verpasst.",
+    "great": "Fast fehlerfrei.",
+    "good": "Die meisten saßen.",
+    "fair": "Die Ansätze sind da.",
+    "poor": "Jeder Durchlauf macht den nächsten einfacher."
+  }
+}

@@ -1,4 +1,5 @@
 import { parseContent } from "../content/load";
+import { parsePackLocale, type PackLocale } from "../content/locale";
 import type { Content } from "../content/types";
 import { inTauri } from "../storage";
 import {
@@ -66,6 +67,10 @@ export async function listInstalled(): Promise<InstalledPack[]> {
 
 export async function loadPackContent(id: string): Promise<Content | null> {
   return parseContent(await fetchJson(packUrl(id, "content.json")));
+}
+
+export async function loadPackLocale(id: string, locale: string): Promise<PackLocale | null> {
+  return parsePackLocale(await fetchJson(packUrl(id, `locale/${locale}.json`)));
 }
 
 export async function loadDescription(meta: PackMeta): Promise<string | null> {

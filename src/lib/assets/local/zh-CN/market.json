@@ -1,0 +1,88 @@
+{
+  "title": "商店",
+  "tagline": "添加关卡和主题词包。所有下载内容都保存在本设备上，可离线使用。",
+  "stats": {
+    "installed": "已安装",
+    "updates": "更新",
+    "available": "可发现"
+  },
+  "catalog": {
+    "fresh": "目录已更新",
+    "stale": "离线：显示上次连接时的目录",
+    "none": "目录未加载：仅显示已安装内容",
+    "refresh": "检查新词包"
+  },
+  "filter": {
+    "theme": "主题",
+    "level": "级别",
+    "all": "全部"
+  },
+  "theme": {
+    "base": "基础级别",
+    "plus": "更多汉字",
+    "extra": "更难的汉字",
+    "kana": "假名词汇",
+    "travel": "旅行",
+    "food": "饮食",
+    "work": "工作",
+    "school": "学校",
+    "culture": "文化",
+    "media": "动漫"
+  },
+  "section": {
+    "updates": "更新",
+    "installed": "你的词包",
+    "available": "发现"
+  },
+  "badge": {
+    "installed": "已安装",
+    "update": "更新",
+    "new": "新",
+    "off": "关",
+    "required": "必选"
+  },
+  "meta": {
+    "words": "{count} 个单词",
+    "kanji": "{count} 个汉字",
+    "size": "{size} MB",
+    "version": "v{version}"
+  },
+  "action": {
+    "download": "下载",
+    "update": "更新",
+    "details": "详情",
+    "detailsOf": "{title} 的详情",
+    "use": "用于练习",
+    "useHint": "它的词组和单词会显示在练习和图表中",
+    "alwaysOn": "始终启用：每次练习都会用到它",
+    "delete": "移除 {title}",
+    "retry": "重试"
+  },
+  "progress": "正在下载 {done}/{total} MB",
+  "progressLabel": "{title} 的下载",
+  "failed": "下载未完成。请检查网络连接后重试。",
+  "needsNetwork": "请连接互联网以下载。",
+  "browserOnly": "词包由应用安装。在浏览器中，请改为构建 data/。",
+  "empty": "没有符合这些筛选条件的词包。",
+  "source": "词包来自 Hugging Face 上的 Kanji Trainer 数据集。",
+  "remove": {
+    "title": "移除 {title}？",
+    "body": "它的单词将从练习和图表中移除。过去使用它的练习记录会保留，但会显示警告，且不计入你的统计，直到你重新下载它。",
+    "confirm": "移除",
+    "cancel": "保留"
+  },
+  "gate": {
+    "title": "下载基础内容",
+    "description": "Kanji Trainer 首先需要基础词包。只需下载一次，之后应用即可离线使用。",
+    "total": "共 {size} MB",
+    "start": "下载",
+    "offline": "无法加载词包目录。请检查网络连接后重试；如果仍然失败，目录可能尚未发布。",
+    "retry": "重试",
+    "busy": "正在下载 {title}…"
+  },
+  "description": {
+    "loading": "正在加载描述…",
+    "missing": "无法加载描述。请连接互联网在下载前查看。"
+  },
+  "newerApp": "此词包需要更新版本的 Kanji Trainer。请更新应用后使用。"
+}

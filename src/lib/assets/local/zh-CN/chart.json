@@ -1,0 +1,37 @@
+{
+  "title": "图表",
+  "play": "播放 {word}",
+  "flip": "翻转 {word}",
+  "empty": "没有符合这些筛选条件的单词。",
+  "export": {
+    "open": "导出闪卡",
+    "title": "导出闪卡",
+    "selected": "已选择 {count} 个单词用于 PDF",
+    "back": "返回图表",
+    "pdf": "下载为 PDF",
+    "busyNote": "已有导出正在进行。请等待其完成，或在图表页面将其取消。",
+    "grid": {
+      "title": "每页卡片数",
+      "description": "为每张 A4 纸选择一种网格布局。每张卡片大小相同、文字相同，且读音完整显示。",
+      "size": "{size}×{size}",
+      "all": "全部",
+      "pages": "共 {pages} 页、{cards} 张卡片，含正面和背面",
+      "pagesAll": "共 {files} 个 PDF、{cards} 张卡片，每种网格一个，总计 {pages} 页",
+      "start": "开始导出"
+    },
+    "state": {
+      "running": "正在生成闪卡 PDF……",
+      "ready": "闪卡 PDF 已生成。",
+      "readyAll": "闪卡 PDF 已全部生成。",
+      "failed": "无法生成闪卡 PDF。"
+    },
+    "progress": "第 {done} 页，共 {total} 页",
+    "summary": "每页 {size}×{size}，共 {pages} 页、{cards} 张卡片。",
+    "summaryAll": "{files} 个 PDF 中共 {cards} 张卡片：{grids}。",
+    "download": "下载 PDF",
+    "downloadAll": "将 PDF 保存到文件夹",
+    "discard": "放弃",
+    "saved": "闪卡 PDF 已保存。",
+    "savedAll": "闪卡 PDF 已全部保存。"
+  }
+}

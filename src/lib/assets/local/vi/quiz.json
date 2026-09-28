@@ -1,0 +1,91 @@
+{
+  "progress": "Câu {index} trên {total}",
+  "runProgress": "Tiến độ lượt chơi",
+  "announce": "Câu {index} trên {total}. {prompt}",
+  "prompt": {
+    "kanji-kana": "Từ này đọc thế nào?",
+    "kana-kanji": "Đây là từ nào?",
+    "kanji-meaning": "Từ này nghĩa là gì?",
+    "meaning-kanji": "Từ nào có nghĩa này?",
+    "kana-meaning": "Từ này nghĩa là gì?",
+    "meaning-kana": "Từ này đọc thế nào?",
+    "image-kanji": "Đây là từ nào?",
+    "image-kana": "Từ này đọc thế nào?",
+    "audio-kana": "Từ bạn vừa nghe đọc thế nào?",
+    "audio-kanji": "Bạn đã nghe thấy từ nào?",
+    "kanji-audio": "Bản ghi âm nào là từ này?",
+    "replay": "Phát lại từ này",
+    "imageAlt": "Một bức ảnh minh họa cho từ này",
+    "kana-assemble": "Ghép từ này"
+  },
+  "choices": "Đáp án",
+  "soundTile": "Bản ghi âm {slot}",
+  "check": "Kiểm tra",
+  "soundHint": "Nhấn vào một bản ghi âm để nghe, sau đó kiểm tra.",
+  "soundCompare": "Nhấn vào một bản ghi âm để nghe lại.",
+  "typed": {
+    "label": "Đáp án",
+    "placeholder": "Nhập câu trả lời của bạn",
+    "submit": "Kiểm tra"
+  },
+  "correct": "Đúng",
+  "wrong": "Sai",
+  "answerWas": "Đáp án là {answer}",
+  "alsoReads": "còn đọc là {list}",
+  "reveal": {
+    "reading": "Cách đọc",
+    "written": "Cách viết",
+    "gloss": "Nghĩa"
+  },
+  "hint": {
+    "open": "Hiện gợi ý",
+    "close": "Đóng gợi ý",
+    "picture": "Một bức ảnh gợi ý đáp án",
+    "kind": {
+      "romaji": "Cách phát âm",
+      "clue": "Một manh mối",
+      "look": "Cách viết",
+      "image": "Một bức ảnh",
+      "ghost": "Một vài mảnh ghép"
+    }
+  },
+  "next": "Tiếp theo",
+  "continue": "Tiếp tục",
+  "finish": "Xem điểm số",
+  "quit": "Thoát",
+  "quitTitle": "Thoát lượt chơi này?",
+  "quitBody": "Các câu đã trả lời sẽ không được lưu lại.",
+  "quitConfirm": "Thoát",
+  "quitCancel": "Tiếp tục chơi",
+  "score": "{score} trên {answered} câu đúng",
+  "time": {
+    "out": "Hết thời gian",
+    "warning": "Còn năm giây",
+    "questionLeft": "Thời gian còn lại cho câu này",
+    "runLeft": "Thời gian còn lại của lượt chơi"
+  },
+  "assemble": {
+    "slots": "Các ô",
+    "pile": "Các khối",
+    "tray": "{kind} {index}",
+    "kanji": "kanji",
+    "kana": "kana",
+    "empty": "trống",
+    "slot": "{tray}, {position}, {content}",
+    "placed": "Đã đặt {block} vào {slot}",
+    "lifted": "Đã lấy {block} ra khỏi {slot}",
+    "done": "{character} đã hoàn thành",
+    "position": {
+      "whole": "toàn bộ",
+      "center": "trung tâm",
+      "left": "trái",
+      "right": "phải",
+      "top": "trên",
+      "bottom": "dưới",
+      "top-left": "trên bên trái",
+      "top-right": "trên bên phải",
+      "bottom-left": "dưới bên trái",
+      "bottom-right": "dưới bên phải"
+    }
+  }
+}

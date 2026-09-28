@@ -1,0 +1,32 @@
+{
+  "title": "Session terminée",
+  "score": "Score",
+  "accuracy": "Précision",
+  "asked": "Questions",
+  "average": "Moyenne par question",
+  "timedOut": "Temps écoulé",
+  "secondsShort": "{count}s",
+  "missed": {
+    "title": "Mots à revoir",
+    "none": "Tous les mots étaient corrects.",
+    "count": "{count} mots",
+    "timedOut": "Temps écoulé"
+  },
+  "again": "Lancer une nouvelle session",
+  "report": "Voir les sessions passées",
+  "skip": "Appuyez n'importe où pour passer",
+  "tier": {
+    "perfect": "Parfait",
+    "great": "Presque parfait",
+    "good": "Très bonne session",
+    "fair": "En bonne voie",
+    "poor": "Continuez à vous entraîner"
+  },
+  "blurb": {
+    "perfect": "Aucun mot manqué.",
+    "great": "Presque un sans-faute.",
+    "good": "La plupart étaient corrects.",
+    "fair": "Les bases sont là.",
+    "poor": "Chaque session rend la suivante plus facile."
+  }
+}

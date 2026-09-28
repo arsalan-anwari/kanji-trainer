@@ -1,0 +1,104 @@
+{
+  "none": "尚未完成任何一次練習。",
+  "entry": "{total} 題中答對 {score} 題",
+  "window": {
+    "all": "全部",
+    "today": "今天",
+    "yesterday": "昨天",
+    "custom": "自訂",
+    "range": "{from} – {to}"
+  },
+  "range": {
+    "pick": "選擇日期範圍",
+    "title": "日期範圍",
+    "close": "關閉日期範圍",
+    "from": "從",
+    "to": "到",
+    "invalid": "開始日期須早於或等於結束日期，且不得早於 {earliest}。"
+  },
+  "filters": {
+    "title": "篩選",
+    "format": "題型",
+    "answering": "作答方式",
+    "level": "等級",
+    "packs": "字組",
+    "clear": "清除篩選"
+  },
+  "list": {
+    "shown": "顯示 {count} 筆",
+    "pickedOf": "{total} 筆中已選 {picked} 筆",
+    "selectAll": "全選顯示的練習",
+    "clearSelection": "取消選取",
+    "remove": "刪除",
+    "export": "匯出",
+    "import": "匯入",
+    "actions": "練習操作"
+  },
+  "pages": {
+    "label": "報告頁面",
+    "previous": "上一頁",
+    "next": "下一頁",
+    "at": "第 {page} 頁，共 {pages} 頁"
+  },
+  "deleted": "已刪除。",
+  "exported": "已匯出。",
+  "imported": "已匯入。",
+  "importedSome": "已匯入。部分練習原本已存在。",
+  "confirmTitle": "要刪除這些練習嗎？",
+  "confirmBody": "將從此裝置移除 {count} 次練習。",
+  "stat": {
+    "runs": "練習次數",
+    "answers": "作答數",
+    "accuracy": "正確率"
+  },
+  "diagnosis": {
+    "kanji": {
+      "title": "漢字",
+      "description": "各漢字的正確率。",
+      "empty": "此選取範圍內尚無作答紀錄。"
+    },
+    "sets": {
+      "title": "字組",
+      "description": "各字組的正確率。",
+      "empty": "此選取範圍內尚無作答紀錄。"
+    },
+    "formats": {
+      "title": "題型",
+      "description": "各題型的正確率。",
+      "empty": "此選取範圍內尚無作答紀錄。",
+      "columns": {
+        "group": "題型 / 變化形",
+        "accuracy": "正確率",
+        "bar": "進度",
+        "score": "得分"
+      }
+    },
+    "mistakes": {
+      "title": "各詞語的錯誤",
+      "description": "依詞語統計的錯誤答案。",
+      "empty": "此選取範圍內沒有錯誤。"
+    },
+    "time": {
+      "title": "速度",
+      "description": "每題作答時間。",
+      "empty": "此選取範圍內尚無作答紀錄。"
+    }
+  },
+  "practise": {
+    "button": "練習這些錯誤",
+    "empty": "沒有可練習的錯誤。",
+    "loaded": "已將你答錯的詞語載入設定。"
+  },
+  "mastery": {
+    "new": "新學",
+    "shaky": "不熟",
+    "learning": "學習中",
+    "steady": "穩定",
+    "mastered": "已精通"
+  },
+  "tip": {
+    "stat": "{total} 題中答對 {correct} 題，{mastery}",
+    "speed": "{label}：平均 {averageMs} 毫秒"
+  },
+  "packMissing": "此練習使用的某個字組已停用或移除，因此未計入下方總計。"
+}

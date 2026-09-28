@@ -1,0 +1,32 @@
+{
+  "title": "Çalışma tamamlandı",
+  "score": "Puan",
+  "accuracy": "Doğruluk",
+  "asked": "Sorular",
+  "average": "Soru başına ortalama",
+  "timedOut": "Süre doldu",
+  "secondsShort": "{count}sn",
+  "missed": {
+    "title": "Tekrar bakılacak kelimeler",
+    "none": "Her kelime doğruydu.",
+    "count": "{count} kelime",
+    "timedOut": "Süre doldu"
+  },
+  "again": "Yeni bir çalışma ayarla",
+  "report": "Geçmiş çalışmaları gör",
+  "skip": "Atlamak için herhangi bir yere dokun",
+  "tier": {
+    "perfect": "Kusursuz",
+    "great": "Neredeyse kusursuz",
+    "good": "Güçlü çalışma",
+    "fair": "İlerliyorsun",
+    "poor": "Çalışmaya devam et"
+  },
+  "blurb": {
+    "perfect": "Tek bir kelime bile kaçmadı.",
+    "great": "Hatasıza çok yakındı.",
+    "good": "Çoğu doğruydu.",
+    "fair": "Temeli oluşmaya başladı.",
+    "poor": "Her çalışma bir sonrakini kolaylaştırır."
+  }
+}

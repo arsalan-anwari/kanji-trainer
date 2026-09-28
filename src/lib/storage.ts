@@ -145,6 +145,8 @@ export async function exportReports(reports: readonly Report[]): Promise<boolean
   return true;
 }
 
+const BROWSER_DOWNLOAD_GAP_MS = 250;
+
 function downloadInBrowser(bytes: Uint8Array, name: string, type: string): void {
   const blob = new Blob([bytes as BlobPart], { type });
   const url = URL.createObjectURL(blob);
@@ -182,7 +184,10 @@ export type NamedFile = { name: string; bytes: Uint8Array };
 /** Saves every file under its own name in one folder the learner picks. */
 export async function savePdfs(files: readonly NamedFile[]): Promise<boolean> {
   if (!inTauri()) {
-    for (const file of files) downloadInBrowser(file.bytes, file.name, "application/pdf");
+    for (const file of files) {
+      downloadInBrowser(file.bytes, file.name, "application/pdf");
+      await new Promise((resolve) => setTimeout(resolve, BROWSER_DOWNLOAD_GAP_MS));
+    }
     return true;
   }
   const { open } = await import("@tauri-apps/plugin-dialog");

@@ -40,7 +40,7 @@
     </div>
     <div class="flex shrink-0 flex-wrap gap-2">
       <Button variant="outline" onclick={() => app.go("chart")}>
-        <Icon name="chevron-left" />
+        <Icon name="chevron-left" class="size-4 rtl:-scale-x-100" />
         {t("chart.export.back")}
       </Button>
       <ExpandAllButton />

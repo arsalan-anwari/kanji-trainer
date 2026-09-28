@@ -4,6 +4,7 @@
   import { openWhen } from "./ExpandAllButton.svelte";
   import type { SetGroup } from "../../content/sets";
   import type { Word } from "../../content/types";
+  import { langOf } from "../../content/locale";
   import { n, t } from "../../i18n.svelte";
 
   let {
@@ -30,14 +31,14 @@
   {@const label = t(`common.set.${branch.set}`)}
   <details data-section use:openWhen={openByDefault} class="rounded-2xl border-2 border-border bg-surface">
     <summary
-      class="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-bold [&::-webkit-details-marker]:hidden"
+      class="flex cursor-pointer list-none flex-wrap items-center gap-2 px-4 py-3 font-bold [&::-webkit-details-marker]:hidden"
     >
       <SetIcon set={branch.set} />
       <span>{label}</span>
       <span class="text-sm font-normal tabular-nums text-muted-foreground">
         {t("setup.words.taken", { taken: n(taken), total: n(ids.length) })}
       </span>
-      <Icon name="chevron-down" class="ml-auto size-4 text-muted-foreground" />
+      <Icon name="chevron-down" class="ms-auto size-4 text-muted-foreground" />
     </summary>
 
     <div class="flex flex-col gap-4 border-t-2 border-border px-4 py-4">
@@ -56,27 +57,23 @@
                 total: n(groupIds.length)
               })}
             </span>
-            <span
-              role="presentation"
-              class="ml-auto flex gap-2"
-              onclick={(event) => event.stopPropagation()}
-            >
-              <Button size="sm" variant="outline" onclick={() => onset(groupIds, true)}>
-                <Icon name="select-all" />
-                {t("setup.words.all")}
-              </Button>
-              <Button size="sm" variant="outline" onclick={() => onset(groupIds, false)}>
-                <Icon name="select-none" />
-                {t("setup.words.clear")}
-              </Button>
-            </span>
-            <Icon name="chevron-down" class="size-4 text-muted-foreground" />
+            <Icon name="chevron-down" class="ms-auto size-4 text-muted-foreground" />
           </summary>
+          <div class="flex flex-wrap gap-2 border-t border-wire px-3 pt-3">
+            <Button size="sm" variant="outline" onclick={() => onset(groupIds, true)}>
+              <Icon name="select-all" />
+              {t("setup.words.all")}
+            </Button>
+            <Button size="sm" variant="outline" onclick={() => onset(groupIds, false)}>
+              <Icon name="select-none" />
+              {t("setup.words.clear")}
+            </Button>
+          </div>
           <div
             use:roving
             role="group"
             aria-label={t("setup.words.group", { label: groupLabel })}
-            class="grid grid-cols-[repeat(auto-fill,minmax(7.5rem,1fr))] gap-2 border-t border-wire p-3"
+            class="grid grid-cols-[repeat(auto-fill,minmax(7.5rem,1fr))] gap-2 p-3"
           >
             {#each group.words as word (word.id)}
               {@const usable = isUsable(word.id)}
@@ -86,7 +83,7 @@
                 aria-pressed={on}
                 disabled={!usable}
                 title={usable ? undefined : t("setup.words.unsuitedWord")}
-                class="flex flex-col gap-0.5 rounded-lg border px-3 py-2 text-left transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none {!usable
+                class="flex flex-col gap-0.5 rounded-lg border px-3 py-2 text-start transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none {!usable
                   ? 'cursor-not-allowed border-dashed border-wire bg-surface opacity-30'
                   : on
                     ? 'cursor-pointer border-selected bg-selected-soft'
@@ -97,7 +94,7 @@
                   <Glyph text={word.written} class="text-lg font-bold" />
                   <Glyph text={word.reading} class="text-sm text-muted-foreground" />
                 </span>
-                <span class="text-xs leading-snug text-muted-foreground">{word.meaning}</span>
+                <bdi lang={langOf(word)} class="text-xs leading-snug text-muted-foreground">{word.meaning}</bdi>
               </button>
             {/each}
           </div>

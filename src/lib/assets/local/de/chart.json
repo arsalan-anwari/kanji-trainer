@@ -1,0 +1,37 @@
+{
+  "title": "Übersicht",
+  "play": "{word} abspielen",
+  "flip": "{word} umdrehen",
+  "empty": "Kein Wort entspricht diesen Filtern.",
+  "export": {
+    "open": "Lernkarten exportieren",
+    "title": "Lernkarten exportieren",
+    "selected": "{count} Wörter für das PDF ausgewählt",
+    "back": "Zurück zur Übersicht",
+    "pdf": "Als PDF herunterladen",
+    "busyNote": "Ein Export läuft bereits. Warte darauf oder brich ihn auf der Übersichtsseite ab.",
+    "grid": {
+      "title": "Karten pro Seite",
+      "description": "Wähle ein Raster für jede A4-Seite. Jede Karte hat die gleiche Größe und den gleichen Text, und jede Lesung wird vollständig gedruckt.",
+      "size": "{size}×{size}",
+      "all": "Alle",
+      "pages": "{cards} Karten auf {pages} Seiten, Vorder- und Rückseiten",
+      "pagesAll": "{cards} Karten in {files} PDFs, eines pro Raster, insgesamt {pages} Seiten",
+      "start": "Export starten"
+    },
+    "state": {
+      "running": "Erstelle Lernkarten-PDF…",
+      "ready": "Das Lernkarten-PDF ist fertig.",
+      "readyAll": "Die Lernkarten-PDFs sind fertig.",
+      "failed": "Das Lernkarten-PDF konnte nicht erstellt werden."
+    },
+    "progress": "Seite {done} von {total}",
+    "summary": "{cards} Karten auf {pages} Seiten, {size}×{size} pro Seite.",
+    "summaryAll": "{cards} Karten in {files} PDFs: {grids}.",
+    "download": "PDF herunterladen",
+    "downloadAll": "PDFs in einem Ordner speichern",
+    "discard": "Verwerfen",
+    "saved": "Lernkarten-PDF gespeichert.",
+    "savedAll": "Lernkarten-PDFs gespeichert."
+  }
+}

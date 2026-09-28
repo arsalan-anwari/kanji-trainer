@@ -2,6 +2,7 @@
   import ExpandAllButton, { openWhen } from "./ExpandAllButton.svelte";
   import { Button, EmptyState, Glyph, Icon } from "kaizen-ui";
   import { app } from "../../state.svelte";
+  import { langOf } from "../../content/locale";
   import { groupWordsByKanji, SET_IDS, type SetId } from "../../content/sets";
   import { n, t } from "../../i18n.svelte";
   import SetIcon from "./SetIcon.svelte";
@@ -33,7 +34,7 @@
       <UnsuitedWarning />
       <ExpandAllButton />
       <Button variant="outline" onclick={() => app.go("setup")}>
-        <Icon name="chevron-left" />
+        <Icon name="chevron-left" class="size-4 rtl:-scale-x-100" />
         {t("setup.study.back")}
       </Button>
     </div>
@@ -42,14 +43,14 @@
   {#each grouped as group (group.id)}
     <details data-section use:openWhen={openByDefault} class="rounded-2xl border-2 border-border bg-surface">
       <summary
-        class="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-bold [&::-webkit-details-marker]:hidden"
+        class="flex cursor-pointer list-none flex-wrap items-center gap-2 px-4 py-3 font-bold [&::-webkit-details-marker]:hidden"
       >
         <SetIcon set={group.id} />
         <span>{t(`common.set.${group.id}`)}</span>
         <span class="text-sm font-normal tabular-nums text-muted-foreground">
           {t("common.words", { count: n(group.words.length) })}
         </span>
-        <Icon name="chevron-down" class="ml-auto size-4 text-muted-foreground" />
+        <Icon name="chevron-down" class="ms-auto size-4 text-muted-foreground" />
       </summary>
       <div class="columns-1 gap-3 border-t-2 border-border px-4 py-4 sm:columns-2 lg:columns-3 xl:columns-4">
         {#each group.byKanji as kanji (kanji.character)}
@@ -67,7 +68,7 @@
                     <Glyph text={word.written} class="text-lg font-bold" />
                     <Glyph text={word.reading} class="text-sm text-muted-foreground" />
                   </span>
-                  <span class="text-xs leading-snug text-muted-foreground">{word.meaning}</span>
+                  <bdi lang={langOf(word)} class="text-xs leading-snug text-muted-foreground">{word.meaning}</bdi>
                 </li>
               {/each}
             </ul>

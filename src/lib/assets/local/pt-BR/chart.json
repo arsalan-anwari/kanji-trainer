@@ -1,0 +1,37 @@
+{
+  "title": "Gráfico",
+  "play": "Reproduzir {word}",
+  "flip": "Virar {word}",
+  "empty": "Nenhuma palavra corresponde a estes filtros.",
+  "export": {
+    "open": "Exportar flashcards",
+    "title": "Exportar flashcards",
+    "selected": "{count} palavras selecionadas para o PDF",
+    "back": "Voltar ao gráfico",
+    "pdf": "Baixar como PDF",
+    "busyNote": "Uma exportação já está em andamento. Aguarde ou cancele-a na página do Gráfico.",
+    "grid": {
+      "title": "Cartões por página",
+      "description": "Escolha uma grade para cada página A4. Cada cartão tem o mesmo tamanho e texto, e cada leitura é impressa na íntegra.",
+      "size": "{size}×{size}",
+      "all": "Todos",
+      "pages": "{cards} cartões em {pages} páginas, frente e verso",
+      "pagesAll": "{cards} cartões em {files} PDFs, um por grade, {pages} páginas no total",
+      "start": "Iniciar exportação"
+    },
+    "state": {
+      "running": "Gerando o PDF de flashcards…",
+      "ready": "O PDF de flashcards está pronto.",
+      "readyAll": "Os PDFs de flashcards estão prontos.",
+      "failed": "Não foi possível gerar o PDF de flashcards."
+    },
+    "progress": "Página {done} de {total}",
+    "summary": "{cards} cartões em {pages} páginas, {size}×{size} por página.",
+    "summaryAll": "{cards} cartões em {files} PDFs: {grids}.",
+    "download": "Baixar PDF",
+    "downloadAll": "Salvar PDFs em uma pasta",
+    "discard": "Descartar",
+    "saved": "PDF de flashcards salvo.",
+    "savedAll": "PDFs de flashcards salvos."
+  }
+}

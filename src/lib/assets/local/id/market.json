@@ -1,0 +1,88 @@
+{
+  "title": "Marketplace",
+  "tagline": "Tambahkan level dan paket kata bertema. Semua yang Anda unduh tersimpan di perangkat ini dan dapat digunakan secara luring.",
+  "stats": {
+    "installed": "Terinstal",
+    "updates": "Pembaruan",
+    "available": "Untuk dijelajahi"
+  },
+  "catalog": {
+    "fresh": "Katalog terkini",
+    "stale": "Luring: menampilkan katalog dari koneksi terakhir Anda",
+    "none": "Katalog tidak dimuat: hanya menampilkan yang terinstal",
+    "refresh": "Periksa paket baru"
+  },
+  "filter": {
+    "theme": "Tema",
+    "level": "Level",
+    "all": "Semua"
+  },
+  "theme": {
+    "base": "Level dasar",
+    "plus": "Lebih banyak kanji",
+    "extra": "Kanji lebih sulit",
+    "kana": "Kata-kata kana",
+    "travel": "Perjalanan",
+    "food": "Makanan dan minuman",
+    "work": "Pekerjaan",
+    "school": "Sekolah",
+    "culture": "Budaya",
+    "media": "Anime dan manga"
+  },
+  "section": {
+    "updates": "Pembaruan",
+    "installed": "Paket Anda",
+    "available": "Jelajahi"
+  },
+  "badge": {
+    "installed": "Terinstal",
+    "update": "Pembaruan",
+    "new": "Baru",
+    "off": "Nonaktif",
+    "required": "Wajib"
+  },
+  "meta": {
+    "words": "{count} kata",
+    "kanji": "{count} kanji",
+    "size": "{size} MB",
+    "version": "v{version}"
+  },
+  "action": {
+    "download": "Unduh",
+    "update": "Perbarui",
+    "details": "Detail",
+    "detailsOf": "Detail {title}",
+    "use": "Gunakan dalam latihan",
+    "useHint": "Set dan katanya muncul di Latihan dan Bagan",
+    "alwaysOn": "Selalu aktif: setiap sesi latihan menggunakannya",
+    "delete": "Hapus {title}",
+    "retry": "Coba lagi"
+  },
+  "progress": "Mengunduh {done} dari {total} MB",
+  "progressLabel": "Unduhan {title}",
+  "failed": "Unduhan tidak selesai. Periksa koneksi Anda dan coba lagi.",
+  "needsNetwork": "Hubungkan ke internet untuk mengunduh.",
+  "browserOnly": "Paket diinstal oleh aplikasi. Di peramban, buat data/ sebagai gantinya.",
+  "empty": "Tidak ada paket yang cocok dengan filter ini.",
+  "source": "Paket berasal dari dataset Kanji Trainer di Hugging Face.",
+  "remove": {
+    "title": "Hapus {title}?",
+    "body": "Katanya akan keluar dari Latihan dan Bagan. Sesi latihan sebelumnya yang menggunakannya tetap tersimpan, tetapi akan menampilkan peringatan dan tidak dihitung dalam total Anda sampai Anda mengunduhnya kembali.",
+    "confirm": "Hapus",
+    "cancel": "Simpan"
+  },
+  "gate": {
+    "title": "Unduh dasar-dasarnya",
+    "description": "Kanji Trainer memerlukan paket dasarnya sebelum yang lain. Ini adalah unduhan satu kali; setelah itu aplikasi dapat digunakan secara luring.",
+    "total": "Total {size} MB",
+    "start": "Unduh",
+    "offline": "Katalog paket tidak dapat dimuat. Periksa koneksi internet Anda dan coba lagi; jika terus gagal, mungkin katalog belum dipublikasikan.",
+    "retry": "Coba lagi",
+    "busy": "Mengunduh {title}…"
+  },
+  "description": {
+    "loading": "Memuat deskripsi…",
+    "missing": "Deskripsi tidak dapat dimuat. Hubungkan ke internet untuk membacanya sebelum mengunduh."
+  },
+  "newerApp": "Paket ini memerlukan versi Kanji Trainer yang lebih baru. Perbarui aplikasi untuk menggunakannya."
+}

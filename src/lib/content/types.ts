@@ -35,6 +35,7 @@ export type Word = {
   file: string;
   /** One sentence that shows the word in use. Never asked; shown on the back of a flashcard. */
   example?: Example;
+  lang?: string;
 };
 
 export type Example = { japanese: string; romaji: string; english: string };
@@ -58,6 +59,7 @@ export type Kanji = {
   on: string[];
   /** Kun readings with okurigana after a dot, as KANJIDIC writes them. */
   kun: string[];
+  lang?: string;
 };
 
 export type Source = {

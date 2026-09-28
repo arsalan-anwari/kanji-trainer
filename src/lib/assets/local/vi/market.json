@@ -1,0 +1,88 @@
+{
+  "title": "Cửa hàng",
+  "tagline": "Thêm các cấp độ và gói từ vựng theo chủ đề. Mọi thứ bạn tải xuống đều lưu trên thiết bị này và hoạt động ngoại tuyến.",
+  "stats": {
+    "installed": "Đã cài đặt",
+    "updates": "Cập nhật",
+    "available": "Khám phá"
+  },
+  "catalog": {
+    "fresh": "Danh mục đã cập nhật",
+    "stale": "Ngoại tuyến: hiển thị danh mục từ lần kết nối cuối của bạn",
+    "none": "Chưa tải danh mục: chỉ hiển thị những gì đã cài đặt",
+    "refresh": "Kiểm tra gói mới"
+  },
+  "filter": {
+    "theme": "Chủ đề",
+    "level": "Cấp độ",
+    "all": "Tất cả"
+  },
+  "theme": {
+    "base": "Cấp độ cơ bản",
+    "plus": "Thêm kanji",
+    "extra": "Kanji khó hơn",
+    "kana": "Từ vựng kana",
+    "travel": "Du lịch",
+    "food": "Ăn uống",
+    "work": "Công việc",
+    "school": "Trường học",
+    "culture": "Văn hóa",
+    "media": "Anime và manga"
+  },
+  "section": {
+    "updates": "Cập nhật",
+    "installed": "Gói của bạn",
+    "available": "Khám phá"
+  },
+  "badge": {
+    "installed": "Đã cài đặt",
+    "update": "Cập nhật",
+    "new": "Mới",
+    "off": "Tắt",
+    "required": "Bắt buộc"
+  },
+  "meta": {
+    "words": "{count} từ",
+    "kanji": "{count} kanji",
+    "size": "{size} MB",
+    "version": "v{version}"
+  },
+  "action": {
+    "download": "Tải xuống",
+    "update": "Cập nhật",
+    "details": "Chi tiết",
+    "detailsOf": "Chi tiết về {title}",
+    "use": "Sử dụng trong luyện tập",
+    "useHint": "Các bộ và từ của nó sẽ hiển thị trong Luyện tập và Bảng tra cứu",
+    "alwaysOn": "Luôn bật: mọi lượt chạy đều dựa trên nó",
+    "delete": "Gỡ bỏ {title}",
+    "retry": "Thử lại"
+  },
+  "progress": "Đang tải xuống {done} trên {total} MB",
+  "progressLabel": "Tải xuống {title}",
+  "failed": "Quá trình tải xuống không hoàn tất. Hãy kiểm tra kết nối và thử lại.",
+  "needsNetwork": "Kết nối internet để tải xuống.",
+  "browserOnly": "Các gói được cài đặt bởi ứng dụng. Trên trình duyệt, hãy xây dựng data/ thay thế.",
+  "empty": "Không có gói nào khớp với các bộ lọc này.",
+  "source": "Các gói đến từ tập dữ liệu Kanji Trainer trên Hugging Face.",
+  "remove": {
+    "title": "Gỡ bỏ {title}?",
+    "body": "Các từ của nó sẽ rời khỏi Luyện tập và Bảng tra cứu. Các lượt chạy trước đó đã sử dụng chúng vẫn được giữ lại, nhưng sẽ hiển thị cảnh báo và không được tính vào tổng số của bạn cho đến khi bạn tải lại.",
+    "confirm": "Gỡ bỏ",
+    "cancel": "Giữ lại"
+  },
+  "gate": {
+    "title": "Tải xuống các gói cơ bản",
+    "description": "Kanji Trainer cần các gói cơ bản trước khi thực hiện bất cứ điều gì khác. Đây là lần tải xuống một lần; sau đó ứng dụng sẽ hoạt động ngoại tuyến.",
+    "total": "Tổng cộng {size} MB",
+    "start": "Tải xuống",
+    "offline": "Không thể tải danh mục gói. Hãy kiểm tra kết nối internet và thử lại; nếu vẫn lỗi, có thể danh mục chưa được xuất bản.",
+    "retry": "Thử lại",
+    "busy": "Đang tải xuống {title}…"
+  },
+  "description": {
+    "loading": "Đang tải mô tả…",
+    "missing": "Không thể tải mô tả. Hãy kết nối internet để đọc trước khi tải xuống."
+  },
+  "newerApp": "Gói này cần phiên bản Kanji Trainer mới hơn. Hãy cập nhật ứng dụng để sử dụng."
+}

@@ -1,0 +1,88 @@
+{
+  "title": "Marktplatz",
+  "tagline": "Füge Levels und thematische Wortpakete hinzu. Alles, was du herunterlädst, bleibt auf diesem Gerät und funktioniert offline.",
+  "stats": {
+    "installed": "Installiert",
+    "updates": "Updates",
+    "available": "Entdecken"
+  },
+  "catalog": {
+    "fresh": "Katalog aktuell",
+    "stale": "Offline: Katalog der letzten Verbindung wird angezeigt",
+    "none": "Katalog nicht geladen: nur installierte Pakete werden angezeigt",
+    "refresh": "Auf neue Pakete prüfen"
+  },
+  "filter": {
+    "theme": "Thema",
+    "level": "Level",
+    "all": "Alle"
+  },
+  "theme": {
+    "base": "Basis-Level",
+    "plus": "Mehr Kanji",
+    "extra": "Schwierigere Kanji",
+    "kana": "Kana-Wörter",
+    "travel": "Reisen",
+    "food": "Essen und Trinken",
+    "work": "Arbeit",
+    "school": "Schule",
+    "culture": "Kultur",
+    "media": "Anime und Manga"
+  },
+  "section": {
+    "updates": "Updates",
+    "installed": "Deine Pakete",
+    "available": "Entdecken"
+  },
+  "badge": {
+    "installed": "Installiert",
+    "update": "Update",
+    "new": "Neu",
+    "off": "Aus",
+    "required": "Erforderlich"
+  },
+  "meta": {
+    "words": "{count} Wörter",
+    "kanji": "{count} Kanji",
+    "size": "{size} MB",
+    "version": "v{version}"
+  },
+  "action": {
+    "download": "Herunterladen",
+    "update": "Aktualisieren",
+    "details": "Details",
+    "detailsOf": "Details zu {title}",
+    "use": "Im Training verwenden",
+    "useHint": "Die Sets und Wörter erscheinen im Training und in der Übersicht",
+    "alwaysOn": "Immer an: jeder Durchlauf baut darauf auf",
+    "delete": "{title} entfernen",
+    "retry": "Erneut versuchen"
+  },
+  "progress": "Lade {done} von {total} MB herunter",
+  "progressLabel": "Download von {title}",
+  "failed": "Der Download wurde nicht abgeschlossen. Überprüfe deine Verbindung und versuche es erneut.",
+  "needsNetwork": "Verbinde dich mit dem Internet, um herunterzuladen.",
+  "browserOnly": "Pakete werden über die App installiert. Erstelle im Browser stattdessen data/.",
+  "empty": "Kein Paket entspricht diesen Filtern.",
+  "source": "Die Pakete stammen aus dem Kanji Trainer Datensatz auf Hugging Face.",
+  "remove": {
+    "title": "{title} entfernen?",
+    "body": "Die Wörter werden aus dem Training und der Übersicht entfernt. Vergangene Durchläufe, die diese nutzten, bleiben erhalten, zeigen aber eine Warnung und werden nicht in deine Gesamtergebnisse eingerechnet, bis du sie erneut herunterlädst.",
+    "confirm": "Entfernen",
+    "cancel": "Behalten"
+  },
+  "gate": {
+    "title": "Grundlagen herunterladen",
+    "description": "Kanji Trainer benötigt zuerst die Basispakete. Dies ist ein einmaliger Download; danach funktioniert die App offline.",
+    "total": "{size} MB insgesamt",
+    "start": "Herunterladen",
+    "offline": "Der Paketkatalog konnte nicht geladen werden. Überprüfe deine Internetverbindung und versuche es erneut; falls es weiterhin fehlschlägt, ist der Katalog möglicherweise noch nicht veröffentlicht.",
+    "retry": "Erneut versuchen",
+    "busy": "Lade {title} herunter…"
+  },
+  "description": {
+    "loading": "Lade Beschreibung…",
+    "missing": "Die Beschreibung konnte nicht geladen werden. Verbinde dich mit dem Internet, um sie vor dem Download zu lesen."
+  },
+  "newerApp": "Dieses Paket benötigt eine neuere Version von Kanji Trainer. Aktualisiere die App, um es zu verwenden."
+}

@@ -1,0 +1,91 @@
+{
+  "progress": "السؤال {index} من {total}",
+  "runProgress": "تقدم الجولة",
+  "announce": "السؤال {index} من {total}. {prompt}",
+  "prompt": {
+    "kanji-kana": "كيف تُقرأ هذه الكلمة؟",
+    "kana-kanji": "ما هي هذه الكلمة؟",
+    "kanji-meaning": "ما معنى هذه الكلمة؟",
+    "meaning-kanji": "ما هي الكلمة التي تعني هذا؟",
+    "kana-meaning": "ما معنى هذه الكلمة؟",
+    "meaning-kana": "كيف تُقرأ هذه الكلمة؟",
+    "image-kanji": "ما هي هذه الكلمة؟",
+    "image-kana": "كيف تُقرأ هذه الكلمة؟",
+    "audio-kana": "كيف تُقرأ الكلمة التي سمعتها؟",
+    "audio-kanji": "ما هي الكلمة التي سمعتها؟",
+    "kanji-audio": "أي تسجيل يطابق هذه الكلمة؟",
+    "replay": "شغّل الكلمة مجدداً",
+    "imageAlt": "صورة توضح الكلمة",
+    "kana-assemble": "كوّن هذه الكلمة"
+  },
+  "choices": "الإجابات",
+  "soundTile": "التسجيل {slot}",
+  "check": "تحقق",
+  "soundHint": "اضغط على تسجيل لسماعه، ثم تحقق.",
+  "soundCompare": "اضغط على تسجيل لسماعه مجدداً.",
+  "typed": {
+    "label": "الإجابة",
+    "placeholder": "اكتب إجابتك",
+    "submit": "تحقق"
+  },
+  "correct": "صحيح",
+  "wrong": "خطأ",
+  "answerWas": "كانت الإجابة {answer}",
+  "alsoReads": "تُقرأ أيضاً {list}",
+  "reveal": {
+    "reading": "القراءة",
+    "written": "الكتابة",
+    "gloss": "المعنى"
+  },
+  "hint": {
+    "open": "أظهر تلميحاً",
+    "close": "أغلق التلميح",
+    "picture": "صورة تلمح للإجابة",
+    "kind": {
+      "romaji": "كيف تُنطق",
+      "clue": "تلميح",
+      "look": "كيف تُكتب",
+      "image": "صورة",
+      "ghost": "بعض الأجزاء"
+    }
+  },
+  "next": "التالي",
+  "continue": "متابعة",
+  "finish": "عرض النتيجة",
+  "quit": "إنهاء",
+  "quitTitle": "هل تريد إنهاء هذه الجولة؟",
+  "quitBody": "لن يتم حفظ الأسئلة التي تمت الإجابة عليها حتى الآن.",
+  "quitConfirm": "إنهاء",
+  "quitCancel": "استمر",
+  "score": "{score} من {answered} صحيحة",
+  "time": {
+    "out": "انتهى الوقت",
+    "warning": "بقي خمس ثوانٍ",
+    "questionLeft": "الوقت المتبقي لهذا السؤال",
+    "runLeft": "الوقت المتبقي في الجولة"
+  },
+  "assemble": {
+    "slots": "الخانات",
+    "pile": "المكعبات",
+    "tray": "{kind} {index}",
+    "kanji": "كانجي",
+    "kana": "كانا",
+    "empty": "فارغ",
+    "slot": "{tray}، {position}، {content}",
+    "placed": "تم وضع {block} في {slot}",
+    "lifted": "تم إخراج {block} من {slot}",
+    "done": "{character} مكتملة",
+    "position": {
+      "whole": "كاملة",
+      "center": "المركز",
+      "left": "اليسار",
+      "right": "اليمين",
+      "top": "الأعلى",
+      "bottom": "الأسفل",
+      "top-left": "أعلى اليسار",
+      "top-right": "أعلى اليمين",
+      "bottom-left": "أسفل اليسار",
+      "bottom-right": "أسفل اليمين"
+    }
+  }
+}

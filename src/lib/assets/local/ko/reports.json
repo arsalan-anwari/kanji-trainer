@@ -1,0 +1,104 @@
+{
+  "none": "아직 완료된 학습 기록이 없습니다.",
+  "entry": "{total}개 중 {score}개 정답",
+  "window": {
+    "all": "전체",
+    "today": "오늘",
+    "yesterday": "어제",
+    "custom": "직접 설정",
+    "range": "{from} – {to}"
+  },
+  "range": {
+    "pick": "기간 선택",
+    "title": "기간",
+    "close": "기간 닫기",
+    "from": "시작",
+    "to": "종료",
+    "invalid": "종료일과 같거나 그 이전에 시작해야 하며, {earliest}보다 이전일 수 없습니다."
+  },
+  "filters": {
+    "title": "필터",
+    "format": "형식",
+    "answering": "풀이 방식",
+    "level": "레벨",
+    "packs": "팩",
+    "clear": "필터 지우기"
+  },
+  "list": {
+    "shown": "{count}개 표시됨",
+    "pickedOf": "{total}개 중 {picked}개",
+    "selectAll": "표시된 모든 기록 선택",
+    "clearSelection": "선택 해제",
+    "remove": "삭제",
+    "export": "내보내기",
+    "import": "가져오기",
+    "actions": "기록 작업"
+  },
+  "pages": {
+    "label": "리포트 페이지",
+    "previous": "이전 페이지",
+    "next": "다음 페이지",
+    "at": "{pages}페이지 중 {page}페이지"
+  },
+  "deleted": "삭제되었습니다.",
+  "exported": "내보냈습니다.",
+  "imported": "가져왔습니다.",
+  "importedSome": "가져왔습니다. 일부 기록은 이미 존재했습니다.",
+  "confirmTitle": "이 기록들을 삭제할까요?",
+  "confirmBody": "{count}개의 기록이 이 기기에서 삭제됩니다.",
+  "stat": {
+    "runs": "기록 수",
+    "answers": "답변 수",
+    "accuracy": "정확도"
+  },
+  "diagnosis": {
+    "kanji": {
+      "title": "한자",
+      "description": "한자별 정확도.",
+      "empty": "이 선택에 아직 답변이 없습니다."
+    },
+    "sets": {
+      "title": "세트",
+      "description": "세트별 정확도.",
+      "empty": "이 선택에 아직 답변이 없습니다."
+    },
+    "formats": {
+      "title": "형식",
+      "description": "형식별 정확도.",
+      "empty": "이 선택에 아직 답변이 없습니다.",
+      "columns": {
+        "group": "형식 / 변형",
+        "accuracy": "정확도",
+        "bar": "진행률",
+        "score": "점수"
+      }
+    },
+    "mistakes": {
+      "title": "단어별 오답",
+      "description": "단어별 오답 목록.",
+      "empty": "이 선택에 오답이 없습니다."
+    },
+    "time": {
+      "title": "속도",
+      "description": "문제당 소요 시간.",
+      "empty": "이 선택에 아직 답변이 없습니다."
+    }
+  },
+  "practise": {
+    "button": "이 오답들 연습하기",
+    "empty": "연습할 오답이 없습니다.",
+    "loaded": "틀린 단어들을 설정 화면에 불러왔습니다."
+  },
+  "mastery": {
+    "new": "새로움",
+    "shaky": "불안정",
+    "learning": "학습 중",
+    "steady": "안정",
+    "mastered": "완전 학습"
+  },
+  "tip": {
+    "stat": "{total}개 중 {correct}개 정답, {mastery}",
+    "speed": "{label}: 평균 {averageMs}ms"
+  },
+  "packMissing": "이 기록에서 사용한 팩 하나가 꺼져 있거나 삭제되어 아래 합계에서 제외됩니다."
+}

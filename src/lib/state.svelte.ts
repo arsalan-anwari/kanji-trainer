@@ -25,6 +25,7 @@ import {
   installPack,
   listInstalled,
   loadPackContent,
+  loadPackLocale,
   preparePacks,
   type Progress
 } from "./packs/store";
@@ -65,6 +66,15 @@ import {
   type RunSettings
 } from "./quiz/settings";
 import { fallbackHint, hintFor, lookIndex, type Hint } from "./quiz/hints";
+import {
+  CONTENT_LANG,
+  mergePackLocales,
+  NO_PACK_LOCALE,
+  translateKanji,
+  translateWords,
+  type PackLocale
+} from "./content/locale";
+import { FALLBACK, i18n } from "./i18n.svelte";
 import { componentIndex } from "./quiz/similarity";
 import { isCounted, newReportId, packsOf, summarize, type Report, type Summary } from "./quiz/report";
 import { settingsFromMistakes } from "./quiz/diagnosis";
@@ -161,8 +171,9 @@ class AppState {
   merged = $derived(
     mergeContents(this.enabledPackIds.flatMap((id) => this.packContents[id] ?? []))
   );
-  words = $derived<Word[]>(this.merged.words);
-  kanji = $derived<Kanji[]>(this.merged.kanji);
+  packLocale = $state<{ lang: string; translation: PackLocale }>({ lang: CONTENT_LANG, translation: NO_PACK_LOCALE });
+  words = $derived<Word[]>(translateWords(this.merged.words, this.packLocale.translation, this.packLocale.lang));
+  kanji = $derived<Kanji[]>(translateKanji(this.merged.kanji, this.packLocale.translation, this.packLocale.lang));
   ready = $derived(this.words.length > 0);
   offers = $derived<Offer[]>(offers(this.catalog, this.installed));
   updateCount = $derived(this.offers.filter((offer) => offer.state === "update").length);
@@ -311,6 +322,12 @@ class AppState {
     this.packContents = contents;
     this.contentFailed = installed.some(isBase) && Object.keys(contents).length === 0;
     this.packsLoaded = true;
+  }
+
+  async loadPackLocales(locale: string, ids: readonly string[]): Promise<void> {
+    const loaded =
+      locale === FALLBACK ? [] : await Promise.all(ids.map((id) => loadPackLocale(id, locale)));
+    if (i18n.locale === locale) this.packLocale = { lang: locale, translation: mergePackLocales(loaded) };
   }
 
   async refreshCatalog(): Promise<void> {

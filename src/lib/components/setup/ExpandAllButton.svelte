@@ -52,7 +52,7 @@
   });
 </script>
 
-<Button variant="outline" disabled={!found} onclick={toggleAll}>
+<Button variant="outline" wrap disabled={!found} onclick={toggleAll}>
   {#if allOpen}
     <ChevronsDownUp class="size-4" strokeWidth={1.8} aria-hidden="true" />
     {t("common.collapseAll")}

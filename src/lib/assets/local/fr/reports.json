@@ -1,0 +1,104 @@
+{
+  "none": "Aucune session n'a encore été terminée.",
+  "entry": "{score} sur {total} bonnes réponses",
+  "window": {
+    "all": "Tout",
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "custom": "Personnalisé",
+    "range": "{from} – {to}"
+  },
+  "range": {
+    "pick": "Choisir une plage de dates",
+    "title": "Plage de dates",
+    "close": "Fermer la plage de dates",
+    "from": "Du",
+    "to": "Au",
+    "invalid": "Commencez à ou avant la fin, et pas avant le {earliest}."
+  },
+  "filters": {
+    "title": "Filtres",
+    "format": "Format",
+    "answering": "Réponses",
+    "level": "Niveau",
+    "packs": "Packs",
+    "clear": "Effacer les filtres"
+  },
+  "list": {
+    "shown": "{count} affiché(s)",
+    "pickedOf": "{picked} sur {total}",
+    "selectAll": "Sélectionner toutes les sessions affichées",
+    "clearSelection": "Effacer la sélection",
+    "remove": "Supprimer",
+    "export": "Exporter",
+    "import": "Importer",
+    "actions": "Actions sur les sessions"
+  },
+  "pages": {
+    "label": "Pages de rapport",
+    "previous": "Page précédente",
+    "next": "Page suivante",
+    "at": "Page {page} sur {pages}"
+  },
+  "deleted": "Supprimé.",
+  "exported": "Exporté.",
+  "imported": "Importé.",
+  "importedSome": "Importé. Certaines sessions étaient déjà présentes.",
+  "confirmTitle": "Supprimer ces sessions ?",
+  "confirmBody": "{count} session(s) seront supprimée(s) de cet appareil.",
+  "stat": {
+    "runs": "Sessions",
+    "answers": "Réponses",
+    "accuracy": "Précision"
+  },
+  "diagnosis": {
+    "kanji": {
+      "title": "Kanji",
+      "description": "Précision par kanji.",
+      "empty": "Aucune réponse dans cette sélection pour le moment."
+    },
+    "sets": {
+      "title": "Séries",
+      "description": "Précision par série.",
+      "empty": "Aucune réponse dans cette sélection pour le moment."
+    },
+    "formats": {
+      "title": "Formats",
+      "description": "Précision par format.",
+      "empty": "Aucune réponse dans cette sélection pour le moment.",
+      "columns": {
+        "group": "Format / variante",
+        "accuracy": "Précision",
+        "bar": "Progression",
+        "score": "Score"
+      }
+    },
+    "mistakes": {
+      "title": "Erreurs par mot",
+      "description": "Mauvaises réponses, par mot.",
+      "empty": "Aucune erreur dans cette sélection."
+    },
+    "time": {
+      "title": "Vitesse",
+      "description": "Temps par question.",
+      "empty": "Aucune réponse dans cette sélection pour le moment."
+    }
+  },
+  "practise": {
+    "button": "S'entraîner sur ces erreurs",
+    "empty": "Aucune erreur à travailler.",
+    "loaded": "Les mots manqués ont été chargés dans la configuration."
+  },
+  "mastery": {
+    "new": "Nouveau",
+    "shaky": "Instable",
+    "learning": "En apprentissage",
+    "steady": "Stable",
+    "mastered": "Maîtrisé"
+  },
+  "tip": {
+    "stat": "{correct} sur {total} corrects, {mastery}",
+    "speed": "{label} : {averageMs}ms en moyenne"
+  },
+  "packMissing": "Un pack utilisé lors de cette session est désactivé ou supprimé, il est donc exclu des totaux ci-dessous."
+}

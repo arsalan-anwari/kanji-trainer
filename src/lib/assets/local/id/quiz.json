@@ -1,0 +1,91 @@
+{
+  "progress": "Pertanyaan {index} dari {total}",
+  "runProgress": "Progres sesi",
+  "announce": "Pertanyaan {index} dari {total}. {prompt}",
+  "prompt": {
+    "kanji-kana": "Bagaimana cara membaca kata ini?",
+    "kana-kanji": "Kata manakah ini?",
+    "kanji-meaning": "Apa arti kata ini?",
+    "meaning-kanji": "Kata manakah yang memiliki arti ini?",
+    "kana-meaning": "Apa arti kata ini?",
+    "meaning-kana": "Bagaimana cara membaca kata ini?",
+    "image-kanji": "Kata manakah ini?",
+    "image-kana": "Bagaimana cara membaca kata ini?",
+    "audio-kana": "Bagaimana cara membaca kata yang Anda dengar?",
+    "audio-kanji": "Kata manakah yang Anda dengar?",
+    "kanji-audio": "Rekaman manakah yang merupakan kata ini?",
+    "replay": "Putar ulang kata tersebut",
+    "imageAlt": "Gambar yang mengilustrasikan kata tersebut",
+    "kana-assemble": "Susun kata ini"
+  },
+  "choices": "Jawaban",
+  "soundTile": "Rekaman {slot}",
+  "check": "Periksa",
+  "soundHint": "Ketuk rekaman untuk mendengarkannya, lalu periksa.",
+  "soundCompare": "Ketuk rekaman untuk mendengarkannya lagi.",
+  "typed": {
+    "label": "Jawaban",
+    "placeholder": "Ketik jawaban Anda",
+    "submit": "Periksa"
+  },
+  "correct": "Benar",
+  "wrong": "Salah",
+  "answerWas": "Jawabannya adalah {answer}",
+  "alsoReads": "juga dibaca {list}",
+  "reveal": {
+    "reading": "Cara baca",
+    "written": "Tulisan",
+    "gloss": "Arti"
+  },
+  "hint": {
+    "open": "Tampilkan petunjuk",
+    "close": "Tutup petunjuk",
+    "picture": "Gambar yang memberi petunjuk tentang jawaban",
+    "kind": {
+      "romaji": "Cara pengucapan",
+      "clue": "Sebuah petunjuk",
+      "look": "Cara penulisannya",
+      "image": "Sebuah gambar",
+      "ghost": "Beberapa bagian"
+    }
+  },
+  "next": "Berikutnya",
+  "continue": "Lanjutkan",
+  "finish": "Lihat skor",
+  "quit": "Keluar",
+  "quitTitle": "Keluar dari sesi ini?",
+  "quitBody": "Pertanyaan yang sudah dijawab tidak akan disimpan.",
+  "quitConfirm": "Keluar",
+  "quitCancel": "Lanjutkan saja",
+  "score": "{score} dari {answered} benar",
+  "time": {
+    "out": "Waktu habis",
+    "warning": "Tersisa lima detik",
+    "questionLeft": "Waktu tersisa untuk pertanyaan ini",
+    "runLeft": "Waktu tersisa dalam sesi ini"
+  },
+  "assemble": {
+    "slots": "Slot",
+    "pile": "Blok",
+    "tray": "{kind} {index}",
+    "kanji": "kanji",
+    "kana": "kana",
+    "empty": "kosong",
+    "slot": "{tray}, {position}, {content}",
+    "placed": "Menempatkan {block} di {slot}",
+    "lifted": "Mengambil {block} dari {slot}",
+    "done": "{character} selesai",
+    "position": {
+      "whole": "keseluruhan",
+      "center": "tengah",
+      "left": "kiri",
+      "right": "kanan",
+      "top": "atas",
+      "bottom": "bawah",
+      "top-left": "kiri atas",
+      "top-right": "kanan atas",
+      "bottom-left": "kiri bawah",
+      "bottom-right": "kanan bawah"
+    }
+  }
+}

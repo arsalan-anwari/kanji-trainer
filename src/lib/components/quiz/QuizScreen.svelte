@@ -18,6 +18,7 @@
   const word = $derived(app.currentWord);
   const last = $derived(app.questions.length - 1 === app.index);
   const heard = $derived(promptSurface(app.settings.format) === "audio");
+  const labelled = $derived(heard || promptSurface(app.settings.format) === "image");
   const picksSound = $derived(answerSurface(app.settings.format) === "audio");
 
   // Two columns only when the window is wide *and* actually wider than it is
@@ -31,9 +32,7 @@
       : t("quiz.announce", {
           index: n(app.index + 1),
           total: n(app.questions.length),
-          // The reading is the answer on this format, so only the prompt is read
-          // out.
-          prompt: heard ? t(`quiz.prompt.${app.settings.format}`) : question.prompt
+          prompt: labelled ? t(`quiz.prompt.${app.settings.format}`) : question.prompt
         })
   );
 

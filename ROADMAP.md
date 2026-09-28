@@ -15,9 +15,9 @@ feature live in [roadmap/](roadmap/).
 
 - **v1.0.0**: *The trainer.* Every question format over the full N5 word list,
   packaged for Linux, Windows, macOS and Android.
-- **v1.1.0 to v1.9.0**: *Polish and reach.* Accessibility, localisation, store
-  listings, exam timing, harder distractors and the levels beyond N5. No new
-  question formats.
+- **v1.1.0 to v1.4.0**: *Polish and reach.* Accessibility, localisation, store
+  listings, exam practice and the levels beyond N5. No new question formats.
+  Each release is a substantial step; small fixes ride along as patch versions.
 - **v2.0.0 and beyond**: *On-device AI tutor.* Handwriting and speech practice
   with local models and delta-based feedback, the same split as Kana Trainer.
 
@@ -62,6 +62,7 @@ feature live in [roadmap/](roadmap/).
 
 - [✅] Three tiers that decide how believable the wrong answers are
 - [✅] Wrong answers that share a kanji, a component or a near-identical reading
+- [✅] Two real compounds recombined into a plausible non-word, as real papers do
 - [✅] Hints: kanji shape descriptions, word clues, picture descriptions
 
 ### Reports [✅]
@@ -110,54 +111,57 @@ feature live in [roadmap/](roadmap/).
 
 ---
 
-## v1.1.0: Loose ends [📋]
+## v1.1.0: Platform parity [✅]
 
-Carried over from v1.0.0.
+The standard Kana Trainer already ships at, on every target, and what v1.0.0
+left open.
 
-- [📋] Record 七 (なな) and 一万 (いちまん), which have no clip in any source
+### Loose ends
+
+- [✅] The 279 JapanesePod101 clips used with the publisher's permission
+- [✅] Clips for 七 (なな) and 一万 (いちまん), missing from every source
 - [📋] Move the clip cache and recording picker into `kaizen-ui`, with Kana
-  Trainer adopting them
-- [📋] Announce the prompt label on picture questions instead of the image URL
-- [📋] Manual checks: clip seeking under WebKitGTK, and the Chart play and flip
-  buttons and the Listening formats on an Android phone
+  Trainer adopting them (deferred until a third app needs them)
+- [✅] Chart play and flip buttons and the Listening formats checked on Android
+- [✅] Replaying a clip under WebKitGTK starts it from the beginning
 
-## v1.2.0: Layout and accessibility [📋]
+### Layout and accessibility
 
-- [📋] Layout holding from small phones at large font sizes to wide desktops
-- [📋] Keyboard-only navigation on every screen
-- [📋] Screen reader support on every screen
-- [📋] WCAG 2.2 AA checked on every screen by the end-to-end suite, as in Kana Trainer
+- [✅] Layout holding from small phones at large font sizes to wide desktops
+- [✅] Keyboard-only navigation on every screen
+- [✅] Screen reader support on every screen, picture questions announcing
+  their prompt label instead of the image URL
+- [✅] WCAG 2.2 AA checked on every screen by the end-to-end suite, as in Kana Trainer
 
-## v1.3.0: Localisation [📋]
+### Localisation
 
-- [📋] The interface in the same languages as Kana Trainer, right to left included
+- [✅] The interface in the same languages as Kana Trainer, right to left included
+- [✅] Meanings, accepted answers, word clues, example sentences and shape
+  descriptions translated per pack, falling back to English
 
-## v1.4.0: Stores and testing [📋]
+## v1.2.0: Public release [📋]
+
+The first release meant for learners who are not testing it.
+
+### Stores and testing
 
 - [📋] Google Play, F-Droid and the Microsoft Store
 - [📋] A download page on GitHub Pages
 - [📋] External testing, with a regression test for every confirmed bug
 
-## v1.5.0: Exam timing [📋]
+### Exam practice
 
 - [📋] Preset at the real exam's pace
 - [📋] Exam drill: kanji to kana and kana to kanji, timed, no reveal until the end
-- [📋] Out of time, not reached and average time on the result screen
+- [📋] Irregular readings the papers keep returning to: hour and day counters
 
-## v1.6.0: Harder distractors [📋]
-
-- [📋] Two real compounds recombined into a plausible non-word, as real papers do
-
-## v1.7.0: N4 [📋]
+## v1.3.0: N4 [📋]
 
 - [📋] N4 as packs, no new question formats
+- [📋] Theme packs alongside it: travel, food, work, school, culture, media
 - [📋] Phonetic components surfaced where they start being predictive
 
-## v1.8.0: Theme packs [📋]
-
-- [📋] Travel, food, work, school, culture, media
-
-## v1.9.0: N3 and above [📋]
+## v1.4.0: N3 and above [📋]
 
 - [📋] N3 and higher levels as packs
 - [📋] Difficulty tuning against the larger pools of look-alikes and homophones

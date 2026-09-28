@@ -1,0 +1,91 @@
+{
+  "progress": "第 {index} 题，共 {total} 题",
+  "runProgress": "练习进度",
+  "announce": "第 {index} 题，共 {total} 题。{prompt}",
+  "prompt": {
+    "kanji-kana": "这个词怎么读？",
+    "kana-kanji": "这是哪个词？",
+    "kanji-meaning": "这个词是什么意思？",
+    "meaning-kanji": "哪个词是这个意思？",
+    "kana-meaning": "这个词是什么意思？",
+    "meaning-kana": "这个词怎么读？",
+    "image-kanji": "这是哪个词？",
+    "image-kana": "这个词怎么读？",
+    "audio-kana": "你听到的词怎么读？",
+    "audio-kanji": "你听到的是哪个词？",
+    "kanji-audio": "这个词对应哪段录音？",
+    "replay": "再播放一次这个词",
+    "imageAlt": "展示这个词的图片",
+    "kana-assemble": "拼出这个词"
+  },
+  "choices": "答案",
+  "soundTile": "录音 {slot}",
+  "check": "检查",
+  "soundHint": "点击录音试听，然后检查。",
+  "soundCompare": "点击录音再听一遍。",
+  "typed": {
+    "label": "答案",
+    "placeholder": "输入你的答案",
+    "submit": "检查"
+  },
+  "correct": "正确",
+  "wrong": "错误",
+  "answerWas": "答案是 {answer}",
+  "alsoReads": "也可读作 {list}",
+  "reveal": {
+    "reading": "读音",
+    "written": "写法",
+    "gloss": "意思"
+  },
+  "hint": {
+    "open": "显示提示",
+    "close": "关闭提示",
+    "picture": "暗示答案的图片",
+    "kind": {
+      "romaji": "发音",
+      "clue": "一条线索",
+      "look": "写法",
+      "image": "一张图片",
+      "ghost": "部分拼块"
+    }
+  },
+  "next": "下一题",
+  "continue": "继续",
+  "finish": "查看得分",
+  "quit": "退出",
+  "quitTitle": "退出本次练习？",
+  "quitBody": "已回答的题目将不会被保存。",
+  "quitConfirm": "退出",
+  "quitCancel": "继续练习",
+  "score": "{answered} 题中答对 {score} 题",
+  "time": {
+    "out": "时间到",
+    "warning": "还剩五秒",
+    "questionLeft": "本题剩余时间",
+    "runLeft": "本次练习剩余时间"
+  },
+  "assemble": {
+    "slots": "槽位",
+    "pile": "拼块",
+    "tray": "{kind} {index}",
+    "kanji": "kanji",
+    "kana": "kana",
+    "empty": "空",
+    "slot": "{tray}，{position}，{content}",
+    "placed": "已将 {block} 放入 {slot}",
+    "lifted": "已将 {block} 从 {slot} 取出",
+    "done": "{character} 已完成",
+    "position": {
+      "whole": "整体",
+      "center": "中间",
+      "left": "左侧",
+      "right": "右侧",
+      "top": "上方",
+      "bottom": "下方",
+      "top-left": "左上",
+      "top-right": "右上",
+      "bottom-left": "左下",
+      "bottom-right": "右下"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "title": "圖表",
+  "play": "播放 {word}",
+  "flip": "將 {word} 翻面",
+  "empty": "沒有符合這些篩選條件的單字。",
+  "export": {
+    "open": "匯出單字卡",
+    "title": "匯出單字卡",
+    "selected": "已為 PDF 選取 {count} 個單字",
+    "back": "返回圖表",
+    "pdf": "下載為 PDF",
+    "busyNote": "已有匯出作業正在進行。請等候其完成,或在圖表頁面取消。",
+    "grid": {
+      "title": "每頁卡片數",
+      "description": "為每頁 A4 選擇版面配置。每張卡片的大小與文字都相同,讀音也會完整印出。",
+      "size": "{size}×{size}",
+      "all": "全部",
+      "pages": "{cards} 張卡片,共 {pages} 頁,含正面與背面",
+      "pagesAll": "{cards} 張卡片分成 {files} 個 PDF,每種版面一個,共 {pages} 頁",
+      "start": "開始匯出"
+    },
+    "state": {
+      "running": "正在產生單字卡 PDF…",
+      "ready": "單字卡 PDF 已完成。",
+      "readyAll": "所有單字卡 PDF 均已完成。",
+      "failed": "無法產生單字卡 PDF。"
+    },
+    "progress": "第 {done} 頁,共 {total} 頁",
+    "summary": "{cards} 張卡片,共 {pages} 頁,每頁 {size}×{size}。",
+    "summaryAll": "{cards} 張卡片,分成 {files} 個 PDF:{grids}。",
+    "download": "下載 PDF",
+    "downloadAll": "將 PDF 儲存至資料夾",
+    "discard": "捨棄",
+    "saved": "單字卡 PDF 已儲存。",
+    "savedAll": "所有單字卡 PDF 均已儲存。"
+  }
+}

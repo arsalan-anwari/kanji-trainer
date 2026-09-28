@@ -34,7 +34,7 @@
   <IconButton
     icon="lightbulb"
     label={t("quiz.hint.open")}
-    class="fixed right-[calc(env(safe-area-inset-right,0px)+var(--edge-x))] bottom-[calc(var(--nav-bar)+var(--edge-y))] z-30 animate-none hover:animate-pulse focus-visible:animate-pulse motion-reduce:animate-none"
+    class="fixed end-[calc(max(env(safe-area-inset-left,0px),env(safe-area-inset-right,0px))+var(--edge-x))] bottom-[calc(var(--nav-bar)+var(--edge-y))] z-30 animate-none hover:animate-pulse focus-visible:animate-pulse motion-reduce:animate-none"
     onclick={() => app.showHint()}
   />
 {/if}
@@ -71,7 +71,11 @@
             onerror={() => (broken = true)}
           />
         {:else}
-          <p class="text-base leading-snug {shown.kind === 'romaji' ? 'font-semibold' : ''}">
+          <p
+            lang={shown.lang}
+            dir="auto"
+            class="text-base leading-snug {shown.kind === 'romaji' ? 'font-semibold' : ''}"
+          >
             {shown.text}
           </p>
         {/if}

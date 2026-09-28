@@ -47,7 +47,7 @@
       onclick={() => app.toggleSet(id)}
     >
       <span class="block">{label}</span>
-      <span class="block font-normal tabular-nums opacity-80">
+      <span class="block font-normal tabular-nums">
         {n(taken)}/{n(subcategories.length)}
       </span>
     </button>

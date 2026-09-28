@@ -5,6 +5,36 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-09-28
+
+Platform parity: the standard Kana Trainer already ships at, on every target.
+
+### Added
+- The interface in 17 languages, the same set as Kana Trainer: English,
+  Simplified and Traditional Chinese, Korean, Spanish, Brazilian Portuguese,
+  Indonesian, Vietnamese, Thai, French, German, Dutch, Turkish, Russian, and
+  Arabic, Persian and Hebrew laid out right to left.
+- Pack content translated into every one of those languages: each word's
+  meaning, the answers accepted when typed, its clue and example sentence, and
+  each kanji's shape description. Anything without a translation falls back to
+  English.
+- Keyboard-only use of every screen.
+- End-to-end checks for WCAG 2.2 AA on every screen, keyboard-only use, screen
+  reader announcements, switching language and layout in long and right to
+  left languages.
+- All flashcards in all locales for all available packs.
+
+### Changed
+- Layout holds from small phones at large font sizes to wide desktops.
+- The Android launcher icon sits inside the safe area on a paper-coloured
+  background instead of running full-bleed on white.
+- The 279 JapanesePod101 recordings are now used with the publisher's
+  permission.
+
+### Fixed
+- Picture questions announce their prompt to screen readers instead of the
+  image URL.
+
 ## [1.0.0] - 2026-09-27
 
 The first release.
@@ -38,4 +68,5 @@ The first release.
 - Packages for Linux (deb, rpm, Arch), Windows, macOS and Android, each signed
   with OpenPGP and shipped with its sha256.
 
+[1.1.0]: https://github.com/arsalan-anwari/kanji-trainer/releases/tag/v1.1.0
 [1.0.0]: https://github.com/arsalan-anwari/kanji-trainer/releases/tag/v1.0.0

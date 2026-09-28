@@ -1,0 +1,37 @@
+{
+  "title": "Tableau",
+  "play": "Lire {word}",
+  "flip": "Retourner {word}",
+  "empty": "Aucun mot ne correspond à ces filtres.",
+  "export": {
+    "open": "Exporter les cartes mémoire",
+    "title": "Exporter les cartes mémoire",
+    "selected": "{count} mots sélectionnés pour le PDF",
+    "back": "Retour au tableau",
+    "pdf": "Télécharger au format PDF",
+    "busyNote": "Une exportation est déjà en cours. Veuillez patienter ou l'annuler sur la page Tableau.",
+    "grid": {
+      "title": "Cartes par page",
+      "description": "Choisissez une grille pour chaque page A4. Chaque carte a la même taille et le même texte, et chaque lecture est imprimée en entier.",
+      "size": "{size}×{size}",
+      "all": "Tout",
+      "pages": "{cards} cartes sur {pages} pages, recto et verso",
+      "pagesAll": "{cards} cartes dans {files} PDF, un par grille, {pages} pages au total",
+      "start": "Démarrer l'exportation"
+    },
+    "state": {
+      "running": "Génération du PDF des cartes mémoire…",
+      "ready": "Le PDF des cartes mémoire est prêt.",
+      "readyAll": "Les PDF des cartes mémoire sont prêts.",
+      "failed": "Le PDF des cartes mémoire n'a pas pu être généré."
+    },
+    "progress": "Page {done} sur {total}",
+    "summary": "{cards} cartes sur {pages} pages, {size}×{size} par page.",
+    "summaryAll": "{cards} cartes dans {files} PDF : {grids}.",
+    "download": "Télécharger le PDF",
+    "downloadAll": "Enregistrer les PDF dans un dossier",
+    "discard": "Ignorer",
+    "saved": "PDF des cartes mémoire enregistré.",
+    "savedAll": "PDF des cartes mémoire enregistrés."
+  }
+}

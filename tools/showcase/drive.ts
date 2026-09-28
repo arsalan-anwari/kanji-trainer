@@ -1,5 +1,5 @@
 import { expect, type Locator, type Page } from "@playwright/test";
-import { readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import type { Part, Word } from "../../src/lib/content/types";
 
@@ -167,6 +167,33 @@ const contents: { words: Word[]; parts: Record<string, Part[]> }[] = ids.map((id
 const words = contents.flatMap((content) => content.words);
 const parts = new Map(contents.flatMap((content) => Object.entries(content.parts)));
 
+// Every meaning a word is shown under, English and each pack locale, so a run in
+// another language is answered the same way.
+const translated = new Map<string, string[]>();
+for (const id of ids) {
+  const dir = `${packs}${id}/locale/`;
+  for (const file of existsSync(dir) ? readdirSync(dir) : []) {
+    const locale: { words: Record<string, { meaning: string }> } = JSON.parse(readFileSync(dir + file, "utf8"));
+    for (const [word, entry] of Object.entries(locale.words)) {
+      translated.set(word, [...(translated.get(word) ?? []), entry.meaning]);
+    }
+  }
+}
+const meaningsOf = (word: Word): string[] => [word.meaning, ...(translated.get(word.id) ?? [])];
+
+const local = fileURLToPath(new URL("../../src/lib/assets/local/", import.meta.url));
+
+/** An interface string by its key, `quiz.hint.open`, in the locale `tag`. */
+export function say(tag: string, key: string): string {
+  const [file, ...path] = key.split(".");
+  let node: unknown = JSON.parse(readFileSync(`${local}${tag}/${file}.json`, "utf8"));
+  for (const part of path) node = (node as Record<string, unknown>)[part];
+  return node as string;
+}
+
+const escaped = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const choices = new RegExp(`^(${readdirSync(local).map((tag) => escaped(say(tag, "quiz.choices"))).join("|")})$`);
+
 // A word's picture and recording share one path under the pack.
 const isAssetOf = (path: string, word: Word): boolean =>
   path.includes(`/${word.pack}/`) && path.includes(`/${word.set}/${word.subcategory}/${word.file}.`);
@@ -184,8 +211,9 @@ async function heard(page: Page): Promise<string> {
   });
 }
 
-const answers = (page: Page): Locator =>
-  page.getByRole("group", { name: "Answers" }).getByRole("button");
+/** The answer tiles, in whichever language the app is in. */
+export const answers = (page: Page): Locator =>
+  page.getByRole("group", { name: choices }).getByRole("button");
 
 export async function answering(page: Page): Promise<void> {
   await expect(answers(page).first()).toBeEnabled();
@@ -207,7 +235,10 @@ async function prompted(page: Page): Promise<Word[]> {
   }
   const text = (await board.innerText()).replace(/\s+/g, "");
   return words.filter(
-    (word) => word.written === text || word.reading === text || word.meaning.replace(/\s+/g, "") === text
+    (word) =>
+      word.written === text ||
+      word.reading === text ||
+      meaningsOf(word).some((meaning) => meaning.replace(/\s+/g, "") === text)
   );
 }
 
@@ -220,7 +251,7 @@ export async function rightSlot(page: Page): Promise<number> {
   const matches = await prompted(page);
   const labels = await tileLabels(page);
   const slot = labels.findIndex((label) =>
-    matches.some((word) => [word.written, word.reading, word.meaning].includes(label))
+    matches.some((word) => [word.written, word.reading, ...meaningsOf(word)].includes(label))
   );
   return Math.max(0, slot);
 }
@@ -268,14 +299,38 @@ export async function moveOn(page: Page, question: number, total: number): Promi
   await page.getByRole("button", { name: last ? "See the score" : "Continue" }).click();
 }
 
-export async function quitRun(page: Page): Promise<void> {
-  await page.getByRole("button", { name: "Quit", exact: true }).first().click();
-  await confirmQuit(page);
+export async function quitRun(page: Page, tag = "en"): Promise<void> {
+  await page.getByRole("button", { name: say(tag, "quiz.quit"), exact: true }).first().click();
+  await confirmQuit(page, tag);
 }
 
-export async function confirmQuit(page: Page): Promise<void> {
-  await page.getByLabel("Quit this run?").getByRole("button", { name: "Quit", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Start", exact: true })).toBeVisible();
+export async function confirmQuit(page: Page, tag = "en"): Promise<void> {
+  await page
+    .getByLabel(say(tag, "quiz.quitTitle"))
+    .getByRole("button", { name: say(tag, "quiz.quitConfirm"), exact: true })
+    .click();
+  await expect(page.getByRole("button", { name: say(tag, "setup.start.button"), exact: true })).toBeVisible();
+}
+
+// Switches the interface from the locale `from` to the one listed as `name`:
+// through the header picker where it fits, the settings sheet where it does not.
+export async function pickLanguage(
+  page: Page,
+  from: string,
+  name: string,
+  tap: (target: Locator) => Promise<void> = (target) => target.click()
+): Promise<void> {
+  const label = say(from, "common.prefs.language");
+  const inHeader = page.getByRole("navigation").getByLabel(label);
+  const sheet = !(await inHeader.isVisible());
+  if (sheet) {
+    await tap(page.getByRole("button", { name: say(from, "common.settings"), exact: true }));
+    await tap(page.getByRole("dialog").getByLabel(label));
+  } else {
+    await tap(inHeader);
+  }
+  await tap(page.getByRole("option", { name }));
+  if (sheet) await page.keyboard.press("Escape");
 }
 
 // Picks a question format: its category, then a direction inside it.

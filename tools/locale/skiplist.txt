@@ -1,0 +1,20 @@
+# What scripts/translate_locale.sh leaves alone unless run with --all.
+# One lang[/target[/category[/subcategory]]] per line, target being "app" or a
+# pack id: "fr" skips all of French, "fr/app/common" one interface file,
+# "fr/n5-base/numbers/frequency" one word subcategory of a pack.
+nl
+he
+fr
+zh-CN
+zh-TW
+ko
+es
+pt-BR
+id
+vi
+th
+de
+tr
+ru
+ar
+fa

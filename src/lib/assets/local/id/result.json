@@ -1,0 +1,32 @@
+{
+  "title": "Sesi selesai",
+  "score": "Skor",
+  "accuracy": "Akurasi",
+  "asked": "Pertanyaan",
+  "average": "Rata-rata per pertanyaan",
+  "timedOut": "Waktu habis",
+  "secondsShort": "{count}d",
+  "missed": {
+    "title": "Kata yang perlu dilihat lagi",
+    "none": "Semua kata benar.",
+    "count": "{count} kata",
+    "timedOut": "Waktu habis"
+  },
+  "again": "Atur sesi lain",
+  "report": "Lihat sesi sebelumnya",
+  "skip": "Ketuk di mana saja untuk melewati",
+  "tier": {
+    "perfect": "Sempurna",
+    "great": "Hampir sempurna",
+    "good": "Sesi yang kuat",
+    "fair": "Mulai terbiasa",
+    "poor": "Terus berlatih"
+  },
+  "blurb": {
+    "perfect": "Tidak ada satu pun kata yang salah.",
+    "great": "Sangat dekat dengan hasil sempurna.",
+    "good": "Sebagian besar benar.",
+    "fair": "Sudah mulai terlihat polanya.",
+    "poor": "Setiap sesi membuat sesi berikutnya lebih mudah."
+  }
+}

@@ -1,3 +1,4 @@
+import { langOf } from "../content/locale";
 import { subcategoryKey, type SetId } from "../content/sets";
 import type { Example, Word } from "../content/types";
 import { atLevel } from "../quiz/questions";
@@ -20,6 +21,7 @@ export type CardFace = {
   romaji: string;
   meaning: string;
   example: Example | null;
+  lang: string;
 };
 
 export function emptyFilter(level: string): WordFilter {
@@ -77,7 +79,8 @@ export function cardFace(word: Word): CardFace {
     kana: word.reading,
     romaji: toRomajiHint(word.reading),
     meaning: word.meaning,
-    example: word.example ?? null
+    example: word.example ?? null,
+    lang: langOf(word)
   };
 }
 
@@ -150,7 +153,7 @@ if (import.meta.vitest) {
   describe("the back of a card", () => {
     test("carries the reading, romaji and meaning", () => {
       const face = cardFace({ ...monday, reading: "つき" });
-      expect(face).toEqual({ written: "月", kana: "つき", romaji: "tsu-ki", meaning: "月", example: null });
+      expect(face).toEqual({ written: "月", kana: "つき", romaji: "tsu-ki", meaning: "月", example: null, lang: "en" });
     });
 
     test("carries the word's example sentence when it has one", () => {

@@ -1,0 +1,104 @@
+{
+  "none": "Belum ada sesi yang selesai.",
+  "entry": "{score} dari {total} benar",
+  "window": {
+    "all": "Semua",
+    "today": "Hari ini",
+    "yesterday": "Kemarin",
+    "custom": "Kustom",
+    "range": "{from} – {to}"
+  },
+  "range": {
+    "pick": "Pilih rentang tanggal",
+    "title": "Rentang tanggal",
+    "close": "Tutup rentang tanggal",
+    "from": "Dari",
+    "to": "Sampai",
+    "invalid": "Mulai pada atau sebelum tanggal akhir, dan tidak lebih awal dari {earliest}."
+  },
+  "filters": {
+    "title": "Filter",
+    "format": "Format",
+    "answering": "Menjawab",
+    "level": "Level",
+    "packs": "Paket",
+    "clear": "Hapus filter"
+  },
+  "list": {
+    "shown": "{count} ditampilkan",
+    "pickedOf": "{picked} dari {total}",
+    "selectAll": "Pilih semua sesi yang ditampilkan",
+    "clearSelection": "Hapus pilihan",
+    "remove": "Hapus",
+    "export": "Ekspor",
+    "import": "Impor",
+    "actions": "Tindakan sesi"
+  },
+  "pages": {
+    "label": "Halaman laporan",
+    "previous": "Halaman sebelumnya",
+    "next": "Halaman berikutnya",
+    "at": "Halaman {page} dari {pages}"
+  },
+  "deleted": "Dihapus.",
+  "exported": "Diekspor.",
+  "imported": "Diimpor.",
+  "importedSome": "Diimpor. Beberapa sesi sudah ada di sini.",
+  "confirmTitle": "Hapus sesi ini?",
+  "confirmBody": "{count} sesi akan dihapus dari perangkat ini.",
+  "stat": {
+    "runs": "Sesi",
+    "answers": "Jawaban",
+    "accuracy": "Akurasi"
+  },
+  "diagnosis": {
+    "kanji": {
+      "title": "Kanji",
+      "description": "Akurasi per kanji.",
+      "empty": "Belum ada jawaban dalam pilihan ini."
+    },
+    "sets": {
+      "title": "Set",
+      "description": "Akurasi per set.",
+      "empty": "Belum ada jawaban dalam pilihan ini."
+    },
+    "formats": {
+      "title": "Format",
+      "description": "Akurasi per format.",
+      "empty": "Belum ada jawaban dalam pilihan ini.",
+      "columns": {
+        "group": "Format / varian",
+        "accuracy": "Akurasi",
+        "bar": "Progres",
+        "score": "Skor"
+      }
+    },
+    "mistakes": {
+      "title": "Kesalahan per kata",
+      "description": "Jawaban salah, berdasarkan kata.",
+      "empty": "Tidak ada kesalahan dalam pilihan ini."
+    },
+    "time": {
+      "title": "Kecepatan",
+      "description": "Waktu per pertanyaan.",
+      "empty": "Belum ada jawaban dalam pilihan ini."
+    }
+  },
+  "practise": {
+    "button": "Latih kesalahan ini",
+    "empty": "Tidak ada kesalahan untuk dilatih.",
+    "loaded": "Kata-kata yang Anda lewatkan telah dimuat ke pengaturan."
+  },
+  "mastery": {
+    "new": "Baru",
+    "shaky": "Kurang stabil",
+    "learning": "Sedang dipelajari",
+    "steady": "Stabil",
+    "mastered": "Dikuasai"
+  },
+  "tip": {
+    "stat": "{correct} dari {total} benar, {mastery}",
+    "speed": "{label}: rata-rata {averageMs}ms"
+  },
+  "packMissing": "Paket yang digunakan sesi ini tidak aktif atau telah dihapus, sehingga tidak disertakan dalam total di bawah."
+}

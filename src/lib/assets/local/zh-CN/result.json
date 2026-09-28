@@ -1,0 +1,32 @@
+{
+  "title": "练习结束",
+  "score": "得分",
+  "accuracy": "正确率",
+  "asked": "题目数",
+  "average": "每题平均用时",
+  "timedOut": "时间到",
+  "secondsShort": "{count}秒",
+  "missed": {
+    "title": "需要再复习的词",
+    "none": "全部答对了。",
+    "count": "{count} 个词",
+    "timedOut": "时间到"
+  },
+  "again": "再设置一次练习",
+  "report": "查看过往练习",
+  "skip": "点击任意位置跳过",
+  "tier": {
+    "perfect": "完美",
+    "great": "接近完美",
+    "good": "表现出色",
+    "fair": "渐入佳境",
+    "poor": "继续练习"
+  },
+  "blurb": {
+    "perfect": "一个词都没错。",
+    "great": "离全对只差一点。",
+    "good": "大部分都答对了。",
+    "fair": "已经有点样子了。",
+    "poor": "每次练习都会让下一次更轻松。"
+  }
+}

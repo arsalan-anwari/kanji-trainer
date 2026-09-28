@@ -1,0 +1,32 @@
+{
+  "title": "Ronde klaar",
+  "score": "Score",
+  "accuracy": "Nauwkeurigheid",
+  "asked": "Vragen",
+  "average": "Gemiddeld per vraag",
+  "timedOut": "Tijd voorbij",
+  "secondsShort": "{count} s",
+  "missed": {
+    "title": "Woorden om nog eens te bekijken",
+    "none": "Elk woord was goed.",
+    "count": "{count} woorden",
+    "timedOut": "Tijd voorbij"
+  },
+  "again": "Nieuwe ronde instellen",
+  "report": "Eerdere rondes bekijken",
+  "skip": "Tik ergens om over te slaan",
+  "tier": {
+    "perfect": "Perfect",
+    "great": "Bijna perfect",
+    "good": "Sterke ronde",
+    "fair": "Je komt er",
+    "poor": "Blijf oefenen"
+  },
+  "blurb": {
+    "perfect": "Geen enkel woord gemist.",
+    "great": "Zo dicht bij een foutloze ronde.",
+    "good": "De meeste zaten raak.",
+    "fair": "De basis staat.",
+    "poor": "Elke ronde maakt de volgende makkelijker."
+  }
+}

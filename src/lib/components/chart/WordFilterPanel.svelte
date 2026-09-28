@@ -54,7 +54,7 @@
       </span>
     {/if}
     {#if actions}
-      <div class="ml-auto flex flex-wrap gap-2 font-normal">{@render actions()}</div>
+      <div class="ms-auto flex flex-wrap gap-2 font-normal">{@render actions()}</div>
     {/if}
   </div>
   <div class="flex flex-col gap-3 border-t-2 border-border px-4 py-4">
@@ -133,7 +133,7 @@
     </div>
 
     {#each filter.sets as set (set)}
-      <div class="flex flex-wrap items-center gap-2 pl-5">
+      <div class="flex flex-wrap items-center gap-2 ps-5">
         <Icon name="chevron-down" class="size-3.5 -rotate-90 text-muted-foreground" />
         <span class="text-xs font-bold text-muted-foreground">{t(`common.set.${set}`)}</span>
         <div role="group" aria-label={t(`common.set.${set}`)} class="flex flex-wrap gap-2">

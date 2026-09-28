@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Button, Glyph } from "kaizen-ui";
   import type { Word } from "../../content/types";
+  import { langOf } from "../../content/locale";
   import { app } from "../../state.svelte";
   import { t } from "../../i18n.svelte";
 
@@ -15,8 +16,8 @@
     ? 'var(--success)'
     : 'var(--danger)'} 26%, transparent)"
 >
-  <div class="mx-auto flex w-full max-w-xl items-center justify-between gap-4">
-    <div class="flex min-w-0 flex-1 flex-col gap-1">
+  <div class="mx-auto flex w-full max-w-xl flex-wrap items-center justify-between gap-x-4 gap-y-2">
+    <div class="flex min-w-[10rem] flex-1 flex-col gap-1">
       <span class="text-h4 font-bold {app.lastCorrect ? 'text-success' : 'text-danger'}">
         {t(app.lastTimedOut ? "quiz.time.out" : app.lastCorrect ? "quiz.correct" : "quiz.wrong")}
       </span>
@@ -30,9 +31,9 @@
           </span>
         {/if}
       </span>
-      <span class="truncate text-xs text-muted-foreground">{word.meaning}</span>
+      <bdi lang={langOf(word)} class="truncate text-xs text-muted-foreground">{word.meaning}</bdi>
     </div>
-    <span class="shrink-0">
+    <span class="ms-auto shrink-0">
       <Button size="lg" variant="primary" onclick={() => app.next()}>
         {t(last ? "quiz.finish" : "quiz.continue")}
       </Button>

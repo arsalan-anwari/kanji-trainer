@@ -1,0 +1,37 @@
+{
+  "title": "Gráfico",
+  "play": "Reproducir {word}",
+  "flip": "Voltear {word}",
+  "empty": "Ninguna palabra coincide con estos filtros.",
+  "export": {
+    "open": "Exportar tarjetas de memoria",
+    "title": "Exportar tarjetas de memoria",
+    "selected": "{count} palabras seleccionadas para el PDF",
+    "back": "Volver al gráfico",
+    "pdf": "Descargar como PDF",
+    "busyNote": "Ya hay una exportación en curso. Espere a que termine o cancélela en la página del Gráfico.",
+    "grid": {
+      "title": "Tarjetas por página",
+      "description": "Elija una cuadrícula para cada página A4. Cada tarjeta tiene el mismo tamaño y texto, y cada lectura se imprime completa.",
+      "size": "{size}×{size}",
+      "all": "Todas",
+      "pages": "{cards} tarjetas en {pages} páginas, anverso y reverso",
+      "pagesAll": "{cards} tarjetas en {files} PDFs, uno por cuadrícula, {pages} páginas en total",
+      "start": "Iniciar exportación"
+    },
+    "state": {
+      "running": "Generando el PDF de tarjetas de memoria…",
+      "ready": "El PDF de tarjetas de memoria está listo.",
+      "readyAll": "Los PDFs de tarjetas de memoria están listos.",
+      "failed": "No se pudo generar el PDF de tarjetas de memoria."
+    },
+    "progress": "Página {done} de {total}",
+    "summary": "{cards} tarjetas en {pages} páginas, {size}×{size} por página.",
+    "summaryAll": "{cards} tarjetas en {files} PDFs: {grids}.",
+    "download": "Descargar PDF",
+    "downloadAll": "Guardar PDFs en una carpeta",
+    "discard": "Descartar",
+    "saved": "PDF de tarjetas de memoria guardado.",
+    "savedAll": "PDFs de tarjetas de memoria guardados."
+  }
+}

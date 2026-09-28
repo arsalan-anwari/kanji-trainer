@@ -1,0 +1,88 @@
+{
+  "title": "市集",
+  "tagline": "新增等級與主題單字包。所有下載的內容都會保留在這個裝置上，並可離線使用。",
+  "stats": {
+    "installed": "已安裝",
+    "updates": "更新",
+    "available": "待探索"
+  },
+  "catalog": {
+    "fresh": "目錄已是最新",
+    "stale": "離線中：顯示上次連線時的目錄",
+    "none": "目錄未載入：僅顯示已安裝的內容",
+    "refresh": "檢查新單字包"
+  },
+  "filter": {
+    "theme": "主題",
+    "level": "等級",
+    "all": "全部"
+  },
+  "theme": {
+    "base": "基礎等級",
+    "plus": "更多漢字",
+    "extra": "更難的漢字",
+    "kana": "假名單字",
+    "travel": "旅遊",
+    "food": "飲食",
+    "work": "工作",
+    "school": "學校",
+    "culture": "文化",
+    "media": "動漫"
+  },
+  "section": {
+    "updates": "更新",
+    "installed": "你的單字包",
+    "available": "探索"
+  },
+  "badge": {
+    "installed": "已安裝",
+    "update": "更新",
+    "new": "新",
+    "off": "關閉",
+    "required": "必要"
+  },
+  "meta": {
+    "words": "{count} 個單字",
+    "kanji": "{count} 個漢字",
+    "size": "{size} MB",
+    "version": "v{version}"
+  },
+  "action": {
+    "download": "下載",
+    "update": "更新",
+    "details": "詳情",
+    "detailsOf": "{title} 的詳情",
+    "use": "用於練習",
+    "useHint": "其組別與單字會顯示在練習與圖表中",
+    "alwaysOn": "持續啟用：每次練習都以此為基礎",
+    "delete": "移除 {title}",
+    "retry": "再試一次"
+  },
+  "progress": "正在下載 {done} / {total} MB",
+  "progressLabel": "{title} 的下載進度",
+  "failed": "下載未完成。請檢查你的網路連線後再試一次。",
+  "needsNetwork": "請連上網際網路以進行下載。",
+  "browserOnly": "單字包由應用程式安裝。在瀏覽器中，請改為建立 data/。",
+  "empty": "沒有符合這些篩選條件的單字包。",
+  "source": "單字包來自 Hugging Face 上的 Kanji Trainer 資料集。",
+  "remove": {
+    "title": "要移除 {title} 嗎？",
+    "body": "其單字將從練習與圖表中移除。過去使用這些單字的紀錄會保留，但會顯示警告，且在你重新下載前不會計入總計。",
+    "confirm": "移除",
+    "cancel": "保留"
+  },
+  "gate": {
+    "title": "下載基礎內容",
+    "description": "Kanji Trainer 需要先安裝基礎單字包才能使用。這是單次下載；完成後應用程式即可離線使用。",
+    "total": "共 {size} MB",
+    "start": "下載",
+    "offline": "無法載入單字包目錄。請檢查網際網路連線後再試一次；若持續失敗，表示目錄可能尚未發布。",
+    "retry": "再試一次",
+    "busy": "正在下載 {title}…"
+  },
+  "description": {
+    "loading": "正在載入說明…",
+    "missing": "無法載入說明。請連上網際網路，先閱讀說明再下載。"
+  },
+  "newerApp": "此單字包需要較新版本的 Kanji Trainer。請更新應用程式後使用。"
+}

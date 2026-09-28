@@ -51,7 +51,7 @@
     </div>
     <div class="flex shrink-0 flex-wrap gap-2">
       <ExpandAllButton />
-      <Button variant="brand" disabled={app.charted.length === 0} onclick={() => app.go("print")}>
+      <Button variant="brand" wrap disabled={app.charted.length === 0} onclick={() => app.go("print")}>
         <Icon name="download" />
         {t("chart.export.open")}
       </Button>
@@ -150,14 +150,14 @@
       class="rounded-2xl border-2 border-border bg-surface"
     >
       <summary
-        class="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-bold [&::-webkit-details-marker]:hidden"
+        class="flex cursor-pointer list-none flex-wrap items-center gap-2 px-4 py-3 font-bold [&::-webkit-details-marker]:hidden"
       >
         <SetIcon set={branch.set} />
         <span>{t(`common.set.${branch.set}`)}</span>
         <span class="text-sm font-normal tabular-nums text-muted-foreground">
           {t("common.words", { count: n(count) })}
         </span>
-        <Icon name="chevron-down" class="ml-auto size-4 text-muted-foreground" />
+        <Icon name="chevron-down" class="ms-auto size-4 text-muted-foreground" />
       </summary>
       {#if open}
         <div class="flex flex-col gap-4 border-t-2 border-border px-4 py-4">
@@ -172,7 +172,7 @@
                 use:roving
                 role="group"
                 aria-label={groupLabel}
-                class="grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(15rem,1fr))] gap-3"
+                class="grid auto-rows-fr grid-cols-[repeat(auto-fill,minmax(min(15rem,100%),1fr))] gap-3"
               >
                 {#each group.words as word (word.id)}
                   <FlashCard

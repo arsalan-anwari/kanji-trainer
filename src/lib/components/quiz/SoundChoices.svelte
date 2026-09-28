@@ -48,7 +48,7 @@
           state(choice)
         ]}"
       >
-        <span class="w-4 shrink-0 text-left text-xs font-bold opacity-60" aria-hidden="true">
+        <span class="w-4 shrink-0 text-start text-xs font-bold opacity-60" aria-hidden="true">
           {index + 1}
         </span>
         <span

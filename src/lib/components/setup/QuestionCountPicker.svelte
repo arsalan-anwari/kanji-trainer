@@ -34,9 +34,9 @@
   }
 </script>
 
-<div role="group" aria-label={t("setup.run.count")} class="flex flex-col gap-2">
+<div role="group" aria-label={t("setup.run.count")} class="@container flex flex-col gap-2">
   {#each QUESTION_COUNT_ROWS as row, index (index)}
-    <div class="grid grid-cols-5 gap-2">
+    <div class="grid grid-cols-2 gap-2 @min-[10rem]:grid-cols-3 @min-[13rem]:grid-cols-5">
       {#each row as count (count)}
         <Chip
           size="sm"

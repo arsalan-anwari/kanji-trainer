@@ -1,0 +1,91 @@
+{
+  "progress": "שאלה {index} מתוך {total}",
+  "runProgress": "התקדמות הסבב",
+  "announce": "שאלה {index} מתוך {total}. {prompt}",
+  "prompt": {
+    "kanji-kana": "איך קוראים את המילה הזו?",
+    "kana-kanji": "איזו מילה זו?",
+    "kanji-meaning": "מה פירוש המילה הזו?",
+    "meaning-kanji": "איזו מילה פירושה זה?",
+    "kana-meaning": "מה פירוש המילה הזו?",
+    "meaning-kana": "איך קוראים את המילה הזו?",
+    "image-kanji": "איזו מילה זו?",
+    "image-kana": "איך קוראים את המילה הזו?",
+    "audio-kana": "איך קוראים את המילה ששמעת?",
+    "audio-kanji": "איזו מילה שמעת?",
+    "kanji-audio": "איזו הקלטה היא המילה הזו?",
+    "replay": "השמעת המילה שוב",
+    "imageAlt": "תמונה שממחישה את המילה",
+    "kana-assemble": "הרכבת המילה הזו"
+  },
+  "choices": "תשובות",
+  "soundTile": "הקלטה {slot}",
+  "check": "בדיקה",
+  "soundHint": "הקשה על הקלטה משמיעה אותה, ואז בודקים.",
+  "soundCompare": "הקשה על הקלטה משמיעה אותה שוב.",
+  "typed": {
+    "label": "תשובה",
+    "placeholder": "הקלדת התשובה",
+    "submit": "בדיקה"
+  },
+  "correct": "נכון",
+  "wrong": "לא נכון",
+  "answerWas": "התשובה הייתה {answer}",
+  "alsoReads": "נקרא גם {list}",
+  "reveal": {
+    "reading": "קריאה",
+    "written": "כתיב",
+    "gloss": "משמעות"
+  },
+  "hint": {
+    "open": "הצגת רמז",
+    "close": "סגירת הרמז",
+    "picture": "תמונה שרומזת על התשובה",
+    "kind": {
+      "romaji": "איך זה נשמע",
+      "clue": "רמז",
+      "look": "איך זה נכתב",
+      "image": "תמונה",
+      "ghost": "כמה חלקים"
+    }
+  },
+  "next": "הבא",
+  "continue": "המשך",
+  "finish": "לציון",
+  "quit": "יציאה",
+  "quitTitle": "לצאת מהסבב?",
+  "quitBody": "השאלות שכבר נענו לא יישמרו.",
+  "quitConfirm": "יציאה",
+  "quitCancel": "להמשיך",
+  "score": "{score} מתוך {answered} נכונות",
+  "time": {
+    "out": "הזמן נגמר",
+    "warning": "נותרו חמש שניות",
+    "questionLeft": "הזמן שנותר לשאלה הזו",
+    "runLeft": "הזמן שנותר לסבב"
+  },
+  "assemble": {
+    "slots": "משבצות",
+    "pile": "קוביות",
+    "tray": "{kind} {index}",
+    "kanji": "קאנג'י",
+    "kana": "קאנה",
+    "empty": "ריקה",
+    "slot": "{tray}, {position}, {content}",
+    "placed": "{block} הונח ב{slot}",
+    "lifted": "{block} הוצא מ{slot}",
+    "done": "{character} הושלם",
+    "position": {
+      "whole": "שלם",
+      "center": "מרכז",
+      "left": "שמאל",
+      "right": "ימין",
+      "top": "למעלה",
+      "bottom": "למטה",
+      "top-left": "למעלה משמאל",
+      "top-right": "למעלה מימין",
+      "bottom-left": "למטה משמאל",
+      "bottom-right": "למטה מימין"
+    }
+  }
+}

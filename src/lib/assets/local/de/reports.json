@@ -1,0 +1,104 @@
+{
+  "none": "Es wurde noch kein Durchgang beendet.",
+  "entry": "{score} von {total} richtig",
+  "window": {
+    "all": "Alle",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "custom": "Benutzerdefiniert",
+    "range": "{from} – {to}"
+  },
+  "range": {
+    "pick": "Datumsbereich auswählen",
+    "title": "Datumsbereich",
+    "close": "Datumsbereich schließen",
+    "from": "Von",
+    "to": "Bis",
+    "invalid": "Beginne am oder vor dem Ende, und nicht früher als {earliest}."
+  },
+  "filters": {
+    "title": "Filter",
+    "format": "Format",
+    "answering": "Antworten",
+    "level": "Stufe",
+    "packs": "Pakete",
+    "clear": "Filter zurücksetzen"
+  },
+  "list": {
+    "shown": "{count} angezeigt",
+    "pickedOf": "{picked} von {total}",
+    "selectAll": "Alle angezeigten Durchgänge auswählen",
+    "clearSelection": "Auswahl aufheben",
+    "remove": "Löschen",
+    "export": "Exportieren",
+    "import": "Importieren",
+    "actions": "Durchgangsaktionen"
+  },
+  "pages": {
+    "label": "Berichtseiten",
+    "previous": "Vorherige Seite",
+    "next": "Nächste Seite",
+    "at": "Seite {page} von {pages}"
+  },
+  "deleted": "Gelöscht.",
+  "exported": "Exportiert.",
+  "imported": "Importiert.",
+  "importedSome": "Importiert. Einige Durchgänge waren bereits vorhanden.",
+  "confirmTitle": "Diese Durchgänge löschen?",
+  "confirmBody": "{count} Durchgänge werden von diesem Gerät entfernt.",
+  "stat": {
+    "runs": "Durchgänge",
+    "answers": "Antworten",
+    "accuracy": "Genauigkeit"
+  },
+  "diagnosis": {
+    "kanji": {
+      "title": "Kanji",
+      "description": "Genauigkeit pro Kanji.",
+      "empty": "Noch keine Antworten in dieser Auswahl."
+    },
+    "sets": {
+      "title": "Sets",
+      "description": "Genauigkeit pro Set.",
+      "empty": "Noch keine Antworten in dieser Auswahl."
+    },
+    "formats": {
+      "title": "Formate",
+      "description": "Genauigkeit pro Format.",
+      "empty": "Noch keine Antworten in dieser Auswahl.",
+      "columns": {
+        "group": "Format / Variante",
+        "accuracy": "Genauigkeit",
+        "bar": "Fortschritt",
+        "score": "Ergebnis"
+      }
+    },
+    "mistakes": {
+      "title": "Fehler nach Wort",
+      "description": "Falsche Antworten, nach Wort.",
+      "empty": "Keine Fehler in dieser Auswahl."
+    },
+    "time": {
+      "title": "Geschwindigkeit",
+      "description": "Zeit pro Frage.",
+      "empty": "Noch keine Antworten in dieser Auswahl."
+    }
+  },
+  "practise": {
+    "button": "Diese Fehler üben",
+    "empty": "Keine Fehler zum Üben.",
+    "loaded": "Die Wörter, bei denen du Fehler gemacht hast, wurden in die Einrichtung geladen."
+  },
+  "mastery": {
+    "new": "Neu",
+    "shaky": "Unsicher",
+    "learning": "Lernend",
+    "steady": "Stetig",
+    "mastered": "Beherrscht"
+  },
+  "tip": {
+    "stat": "{correct} von {total} richtig, {mastery}",
+    "speed": "{label}: {averageMs}ms Durchschnitt"
+  },
+  "packMissing": "Ein in diesem Durchgang verwendetes Paket ist deaktiviert oder wurde entfernt, daher wird es in den untenstehenden Gesamtwerten nicht berücksichtigt."
+}

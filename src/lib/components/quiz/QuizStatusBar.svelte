@@ -10,7 +10,10 @@
   });
 </script>
 
-<div data-section class="flex flex-col gap-2">
+<!-- Its own compositor layer: under WebKitGTK on Wayland the fixed backdrop's
+     layer otherwise paints over this bar, and the Quit button only surfaced
+     while pressed. -->
+<div data-section class="flex flex-col gap-2 will-change-transform">
   <div class="flex items-center gap-2 sm:gap-3">
     <Button size="sm" variant="ghost" onclick={() => app.askQuit()}>{t("quiz.quit")}</Button>
     <Progress

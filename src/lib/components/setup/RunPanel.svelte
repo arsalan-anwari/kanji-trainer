@@ -59,7 +59,7 @@
 
 <Card title={t("setup.direction.title")} description={t("setup.direction.description")}>
   {#snippet icon()}<Icon name="filter" class="size-5" />{/snippet}
-  <div role="group" aria-label={t("setup.direction.title")} class="grid gap-3 sm:grid-cols-2">
+  <div role="group" aria-label={t("setup.direction.title")} class="grid grid-cols-1 gap-3 sm:grid-cols-2">
     {#each DIRECTIONS_BY_CATEGORY[category] as direction (direction)}
       <OptionCard
         active={app.settings.format === direction}
@@ -74,7 +74,7 @@
 {#if !isAssembly(app.settings.format)}
 <Card title={t("setup.answerStyle.title")} description={t("setup.answerStyle.description")}>
   {#snippet icon()}<Icon name="keyboard" class="size-5" />{/snippet}
-  <div role="group" aria-label={t("setup.answerStyle.title")} class="grid gap-3 sm:grid-cols-2">
+  <div role="group" aria-label={t("setup.answerStyle.title")} class="grid grid-cols-1 gap-3 sm:grid-cols-2">
     {#each answerStylesFor(app.settings.format) as style (style)}
       <OptionCard
         active={app.settings.answerStyle === style}
@@ -89,7 +89,7 @@
 
 <Card title={t("setup.difficulty.title")} description={t("setup.difficulty.description")}>
   {#snippet icon()}<Icon name="flame" class="size-5" />{/snippet}
-  <div role="group" aria-label={t("setup.difficulty.title")} class="grid gap-3 sm:grid-cols-3">
+  <div role="group" aria-label={t("setup.difficulty.title")} class="grid grid-cols-1 gap-3 sm:grid-cols-3">
     {#each DIFFICULTIES as difficulty (difficulty)}
       <OptionCard
         active={app.settings.difficulty === difficulty}

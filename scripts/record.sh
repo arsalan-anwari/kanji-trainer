@@ -15,8 +15,9 @@
 #   PROMO_TRIM=0.8 ...            cut more off the front of the clip
 #
 # Needs ffmpeg, the playwright chromium browser and data/
-# (scripts/sync_data.sh --download). The app ships its own japanese face, so no
-# system CJK font is needed.
+# (scripts/sync_data.sh --download), with the nl and he pack locales: both the
+# stills and the clip end on a run in Dutch and one right to left in Hebrew. The
+# app ships its own japanese face, so no system CJK font is needed.
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

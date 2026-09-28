@@ -1,0 +1,37 @@
+{
+  "title": "Overzicht",
+  "play": "{word} afspelen",
+  "flip": "{word} omdraaien",
+  "empty": "Geen woord past bij deze filters.",
+  "export": {
+    "open": "Flashcards exporteren",
+    "title": "Flashcards exporteren",
+    "selected": "{count} woorden gekozen voor de pdf",
+    "back": "Terug naar het overzicht",
+    "pdf": "Als pdf downloaden",
+    "busyNote": "Er loopt al een export. Wacht erop of annuleer hem op de pagina Overzicht.",
+    "grid": {
+      "title": "Kaarten per pagina",
+      "description": "Kies een raster voor elke A4-pagina. Elke kaart heeft dezelfde maat en tekst, en elke lezing wordt volledig afgedrukt.",
+      "size": "{size}×{size}",
+      "all": "Alle",
+      "pages": "{cards} kaarten op {pages} pagina's, voor- en achterkant",
+      "pagesAll": "{cards} kaarten in {files} pdf's, één per raster, {pages} pagina's in totaal",
+      "start": "Export starten"
+    },
+    "state": {
+      "running": "De flashcard-pdf wordt gemaakt…",
+      "ready": "De flashcard-pdf is klaar.",
+      "readyAll": "De flashcard-pdf's zijn klaar.",
+      "failed": "De flashcard-pdf kon niet worden gemaakt."
+    },
+    "progress": "Pagina {done} van {total}",
+    "summary": "{cards} kaarten op {pages} pagina's, {size}×{size} per pagina.",
+    "summaryAll": "{cards} kaarten in {files} pdf's: {grids}.",
+    "download": "Pdf downloaden",
+    "downloadAll": "Pdf's in een map opslaan",
+    "discard": "Weggooien",
+    "saved": "Flashcard-pdf opgeslagen.",
+    "savedAll": "Flashcard-pdf's opgeslagen."
+  }
+}

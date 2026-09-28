@@ -1,0 +1,104 @@
+{
+  "none": "Henüz tamamlanmış bir çalışma yok.",
+  "entry": "{total} üzerinden {score} doğru",
+  "window": {
+    "all": "Tümü",
+    "today": "Bugün",
+    "yesterday": "Dün",
+    "custom": "Özel",
+    "range": "{from} – {to}"
+  },
+  "range": {
+    "pick": "Bir tarih aralığı seçin",
+    "title": "Tarih aralığı",
+    "close": "Tarih aralığını kapat",
+    "from": "Başlangıç",
+    "to": "Bitiş",
+    "invalid": "Başlangıç tarihi bitiş tarihinden önce veya aynı olmalı ve {earliest} tarihinden daha eski olmamalıdır."
+  },
+  "filters": {
+    "title": "Filtreler",
+    "format": "Biçim",
+    "answering": "Cevaplama",
+    "level": "Seviye",
+    "packs": "Paketler",
+    "clear": "Filtreleri temizle"
+  },
+  "list": {
+    "shown": "{count} adet gösteriliyor",
+    "pickedOf": "{total} üzerinden {picked} seçildi",
+    "selectAll": "Gösterilen tüm çalışmaları seç",
+    "clearSelection": "Seçimi temizle",
+    "remove": "Sil",
+    "export": "Dışa aktar",
+    "import": "İçe aktar",
+    "actions": "Çalışma işlemleri"
+  },
+  "pages": {
+    "label": "Rapor sayfaları",
+    "previous": "Önceki sayfa",
+    "next": "Sonraki sayfa",
+    "at": "Sayfa {pages} / {page}"
+  },
+  "deleted": "Silindi.",
+  "exported": "Dışa aktarıldı.",
+  "imported": "İçe aktarıldı.",
+  "importedSome": "İçe aktarıldı. Bazı çalışmalar zaten mevcuttu.",
+  "confirmTitle": "Bu çalışmalar silinsin mi?",
+  "confirmBody": "{count} çalışma bu cihazdan kaldırılacak.",
+  "stat": {
+    "runs": "Çalışmalar",
+    "answers": "Cevaplar",
+    "accuracy": "Doğruluk"
+  },
+  "diagnosis": {
+    "kanji": {
+      "title": "Kanji",
+      "description": "Kanji başına doğruluk.",
+      "empty": "Bu seçimde henüz cevap yok."
+    },
+    "sets": {
+      "title": "Setler",
+      "description": "Set başına doğruluk.",
+      "empty": "Bu seçimde henüz cevap yok."
+    },
+    "formats": {
+      "title": "Biçimler",
+      "description": "Biçim başına doğruluk.",
+      "empty": "Bu seçimde henüz cevap yok.",
+      "columns": {
+        "group": "Biçim / varyant",
+        "accuracy": "Doğruluk",
+        "bar": "İlerleme",
+        "score": "Skor"
+      }
+    },
+    "mistakes": {
+      "title": "Kelime bazlı hatalar",
+      "description": "Kelime bazlı yanlış cevaplar.",
+      "empty": "Bu seçimde hata yok."
+    },
+    "time": {
+      "title": "Hız",
+      "description": "Soru başına süre.",
+      "empty": "Bu seçimde henüz cevap yok."
+    }
+  },
+  "practise": {
+    "button": "Bu hatalar üzerinde çalış",
+    "empty": "Üzerinde çalışılacak hata yok.",
+    "loaded": "Hatalı yaptığınız kelimeler kuruluma yüklendi."
+  },
+  "mastery": {
+    "new": "Yeni",
+    "shaky": "Zayıf",
+    "learning": "Öğreniliyor",
+    "steady": "İstikrarlı",
+    "mastered": "Ustalık kazanıldı"
+  },
+  "tip": {
+    "stat": "{total} üzerinden {correct} doğru, {mastery}",
+    "speed": "{label}: ortalama {averageMs}ms"
+  },
+  "packMissing": "Bu çalışmada kullanılan bir paket kapalı veya kaldırılmış, bu yüzden aşağıdaki toplamların dışında bırakılmıştır."
+}

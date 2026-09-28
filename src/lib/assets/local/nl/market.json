@@ -1,0 +1,88 @@
+{
+  "title": "Winkel",
+  "tagline": "Voeg niveaus en woordpakketten per thema toe. Alles wat je downloadt blijft op dit apparaat en werkt offline.",
+  "stats": {
+    "installed": "Geïnstalleerd",
+    "updates": "Updates",
+    "available": "Te ontdekken"
+  },
+  "catalog": {
+    "fresh": "Catalogus is bijgewerkt",
+    "stale": "Offline: de catalogus van je laatste verbinding wordt getoond",
+    "none": "Catalogus niet geladen: alleen wat geïnstalleerd is wordt getoond",
+    "refresh": "Zoeken naar nieuwe pakketten"
+  },
+  "filter": {
+    "theme": "Thema",
+    "level": "Niveau",
+    "all": "Alle"
+  },
+  "theme": {
+    "base": "Basisniveau",
+    "plus": "Meer kanji",
+    "extra": "Moeilijkere kanji",
+    "kana": "Kanawoorden",
+    "travel": "Reizen",
+    "food": "Eten en drinken",
+    "work": "Werk",
+    "school": "School",
+    "culture": "Cultuur",
+    "media": "Anime en manga"
+  },
+  "section": {
+    "updates": "Updates",
+    "installed": "Jouw pakketten",
+    "available": "Ontdekken"
+  },
+  "badge": {
+    "installed": "Geïnstalleerd",
+    "update": "Update",
+    "new": "Nieuw",
+    "off": "Uit",
+    "required": "Vereist"
+  },
+  "meta": {
+    "words": "{count} woorden",
+    "kanji": "{count} kanji",
+    "size": "{size} MB",
+    "version": "v{version}"
+  },
+  "action": {
+    "download": "Downloaden",
+    "update": "Bijwerken",
+    "details": "Details",
+    "detailsOf": "Details van {title}",
+    "use": "Gebruiken bij het oefenen",
+    "useHint": "De sets en woorden verschijnen bij Oefenen en Overzicht",
+    "alwaysOn": "Altijd aan: elke ronde bouwt erop voort",
+    "delete": "{title} verwijderen",
+    "retry": "Opnieuw proberen"
+  },
+  "progress": "{done} van {total} MB gedownload",
+  "progressLabel": "Download van {title}",
+  "failed": "De download is niet afgemaakt. Controleer je verbinding en probeer het opnieuw.",
+  "needsNetwork": "Maak verbinding met internet om te downloaden.",
+  "browserOnly": "Pakketten worden door de app geïnstalleerd. Bouw in de browser data/ in plaats daarvan.",
+  "empty": "Geen pakket past bij deze filters.",
+  "source": "Pakketten komen uit de Kanji Trainer-dataset op Hugging Face.",
+  "remove": {
+    "title": "{title} verwijderen?",
+    "body": "De woorden verdwijnen uit Oefenen en Overzicht. Eerdere rondes met deze woorden blijven bewaard, maar krijgen een waarschuwing en tellen niet mee tot je het pakket opnieuw downloadt.",
+    "confirm": "Verwijderen",
+    "cancel": "Houden"
+  },
+  "gate": {
+    "title": "De basis downloaden",
+    "description": "Kanji Trainer heeft eerst de basispakketten nodig. Dat is een eenmalige download; daarna werkt de app offline.",
+    "total": "{size} MB in totaal",
+    "start": "Downloaden",
+    "offline": "De pakketcatalogus kon niet worden geladen. Controleer je internetverbinding en probeer het opnieuw; blijft het mislukken, dan is de catalogus misschien nog niet gepubliceerd.",
+    "retry": "Opnieuw proberen",
+    "busy": "{title} wordt gedownload…"
+  },
+  "description": {
+    "loading": "De beschrijving wordt geladen…",
+    "missing": "De beschrijving kon niet worden geladen. Maak verbinding met internet om hem voor het downloaden te lezen."
+  },
+  "newerApp": "Dit pakket heeft een nieuwere versie van Kanji Trainer nodig. Werk de app bij om het te gebruiken."
+}

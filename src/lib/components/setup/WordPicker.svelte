@@ -103,7 +103,7 @@
     <div class="flex shrink-0 flex-wrap gap-2">
       <ExpandAllButton />
       <Button variant="outline" onclick={() => app.go("setup")}>
-        <Icon name="chevron-left" />
+        <Icon name="chevron-left" class="size-4 rtl:-scale-x-100" />
         {t("setup.words.back")}
       </Button>
     </div>
@@ -120,7 +120,7 @@
           {activeFilters}
         </span>
       {/if}
-      <div class="ml-auto flex flex-wrap items-center gap-2 font-normal">
+      <div class="ms-auto flex flex-wrap items-center gap-2 font-normal">
         <UnsuitedWarning />
         <Button
           size="sm"
@@ -221,7 +221,7 @@
       </div>
 
       {#each categoryFilter as category (category)}
-        <div class="flex flex-wrap items-center gap-2 pl-5">
+        <div class="flex flex-wrap items-center gap-2 ps-5">
           <Icon name="chevron-down" class="size-3.5 -rotate-90 text-muted-foreground" />
           <span class="text-xs font-bold text-muted-foreground">{t(`common.set.${category}`)}</span>
           <div

@@ -1,5 +1,7 @@
 use std::fs;
+use std::io::{stdout, IsTerminal, Write};
 use std::path::{Path, PathBuf};
+use std::time::{Duration, Instant};
 
 use percent_encoding::percent_decode_str;
 use serde::{Deserialize, Serialize};
@@ -11,15 +13,21 @@ use crate::packs::check_pack_id;
 pub const USAGE: &str = "\
 Usage: kanji-trainer --export-flashcards [--data <dir>]
 
-Renders the flashcard PDFs of every pack in <dir>/packs/ without showing a
-window, and replaces the kanji-flashcards-*.pdf files in <dir>/flashcards/.
-<dir> defaults to ./data. Progress goes to stdout, errors to stderr.
+Renders the flashcard PDFs of every pack in <dir>/packs/, plus n5-all with
+every pack combined, in English and in every locale the packs ship, without
+showing a window. Replaces the kanji-flashcards-*.pdf files in
+<dir>/flashcards/{locale}/{pack}/.
+<dir> defaults to ./data. Progress goes to stdout (a live bar when it is a
+terminal), errors to stderr.
 
 Meant for Linux development: the Windows release build has no console, so it
 prints nothing there.";
 
 const PREFIX: &str = "kanji-flashcards-";
 const SUFFIX: &str = ".pdf";
+const BAR: usize = 20;
+/// Clears the terminal line the progress bar is drawn on.
+const CLEAR: &str = "\r\x1b[2K";
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Mode {
@@ -31,6 +39,7 @@ pub enum Mode {
 pub struct Export {
     pub packs: PathBuf,
     pub out: PathBuf,
+    pub started: Instant,
 }
 
 #[derive(Serialize)]
@@ -44,6 +53,20 @@ pub struct ExportFile {
     name: String,
     bytes: usize,
     pages: usize,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Progress {
+    locale: String,
+    locale_at: usize,
+    locales: usize,
+    target: String,
+    size: usize,
+    page: usize,
+    pages: usize,
+    done: usize,
+    total: usize,
 }
 
 pub fn parse_args(args: &[String]) -> Result<Mode, String> {
@@ -72,7 +95,52 @@ pub fn resolve(data: &Path, cwd: &Path) -> Result<Export, String> {
     Ok(Export {
         packs,
         out: root.join("flashcards"),
+        started: Instant::now(),
     })
+}
+
+fn clock(seconds: u64) -> String {
+    format!("{}:{:02}:{:02}", seconds / 3600, seconds / 60 % 60, seconds % 60)
+}
+
+// ponytail: fixed width, about 90 columns; a narrower terminal wraps the bar.
+pub fn progress_line(progress: &Progress, elapsed: Duration) -> String {
+    let share = if progress.total == 0 {
+        1.0
+    } else {
+        (progress.done as f64 / progress.total as f64).min(1.0)
+    };
+    let filled = (share * BAR as f64).round() as usize;
+    let left = if progress.done == 0 {
+        "-:--:--".to_string()
+    } else {
+        let rest = progress.total.saturating_sub(progress.done) as f64;
+        clock((elapsed.as_secs_f64() * rest / progress.done as f64) as u64)
+    };
+    let size = progress.size;
+    format!(
+        "{} {}/{}  {} {size}x{size} {}/{}  [{}{}] {:5.1}%  {}/{}  {} ~{} left",
+        progress.locale,
+        progress.locale_at,
+        progress.locales,
+        progress.target,
+        progress.page,
+        progress.pages,
+        "█".repeat(filled),
+        "░".repeat(BAR - filled),
+        share * 100.0,
+        progress.done,
+        progress.total,
+        clock(elapsed.as_secs()),
+        left
+    )
+}
+
+/// Starts a printed line on a fresh terminal line, over the progress bar.
+fn clear_bar() {
+    if stdout().is_terminal() {
+        print!("{CLEAR}");
+    }
 }
 
 pub fn grid_of(name: &str) -> Option<&str> {
@@ -111,6 +179,17 @@ pub fn replace_flashcards(dir: &Path, files: &[(&str, &[u8])]) -> Result<(), Str
     Ok(())
 }
 
+pub fn check_locale(tag: &str) -> Result<(), String> {
+    let plain = !tag.is_empty()
+        && !tag.starts_with('-')
+        && tag.chars().all(|c| c.is_ascii_alphanumeric() || c == '-');
+    if plain {
+        Ok(())
+    } else {
+        Err(format!("\"{tag}\" is not a locale tag"))
+    }
+}
+
 fn header(request: &Request<'_>, name: &str) -> Result<String, String> {
     let encoded = request
         .headers()
@@ -141,6 +220,8 @@ pub fn export_request(state: State<'_, Option<Export>>) -> Option<ExportRequest>
 #[tauri::command]
 pub fn export_write(state: State<'_, Option<Export>>, request: Request<'_>) -> Result<(), String> {
     let export = active(&state)?;
+    let locale = header(&request, "locale")?;
+    check_locale(&locale)?;
     let target = header(&request, "target")?;
     check_pack_id(&target)?;
     let manifest: Vec<ExportFile> =
@@ -157,10 +238,22 @@ pub fn export_write(state: State<'_, Option<Export>>, request: Request<'_>) -> R
         files.push((file.name.as_str(), &body[start..start + file.bytes]));
         start += file.bytes;
     }
-    replace_flashcards(&export.out.join(&target), &files)?;
+    replace_flashcards(&export.out.join(&locale).join(&target), &files)?;
+    clear_bar();
     for file in &manifest {
         let grid = grid_of(&file.name).unwrap_or_default();
-        println!("{target} {grid}: {} pages", file.pages);
+        println!("{locale} {target} {grid}: {} pages", file.pages);
+    }
+    Ok(())
+}
+
+#[tauri::command]
+pub fn export_progress(state: State<'_, Option<Export>>, progress: Progress) -> Result<(), String> {
+    let export = active(&state)?;
+    let mut out = stdout();
+    if out.is_terminal() {
+        print!("{CLEAR}{}", progress_line(&progress, export.started.elapsed()));
+        out.flush().map_err(|error| error.to_string())?;
     }
     Ok(())
 }
@@ -172,8 +265,11 @@ pub fn export_finish<R: Runtime>(
     ok: bool,
     message: String,
 ) -> Result<(), String> {
-    active(&state)?;
-    if !ok {
+    let export = active(&state)?;
+    clear_bar();
+    if ok {
+        println!("done in {}", clock(export.started.elapsed().as_secs()));
+    } else {
         eprintln!("{message}");
     }
     app.exit(if ok { 0 } else { 1 });
@@ -224,6 +320,35 @@ mod tests {
     fn refuses_a_data_folder_without_a_pack_index() {
         let missing = Path::new("/nonexistent");
         assert!(resolve(missing, Path::new("/")).is_err());
+    }
+
+    #[test]
+    fn draws_the_bar_with_the_time_left() {
+        let progress = Progress {
+            locale: "pt-BR".to_string(),
+            locale_at: 6,
+            locales: 17,
+            target: "n5-base".to_string(),
+            size: 3,
+            page: 12,
+            pages: 48,
+            done: 250,
+            total: 1000,
+        };
+        assert_eq!(
+            progress_line(&progress, Duration::from_secs(90)),
+            "pt-BR 6/17  n5-base 3x3 12/48  [█████░░░░░░░░░░░░░░░]  25.0%  250/1000  0:01:30 ~0:04:30 left"
+        );
+    }
+
+    #[test]
+    fn accepts_only_plain_locale_tags() {
+        for tag in ["en", "pt-BR", "zh-TW"] {
+            assert_eq!(check_locale(tag), Ok(()), "{tag}");
+        }
+        for tag in ["", "-en", "..", "en/../x", "pt_BR"] {
+            assert!(check_locale(tag).is_err(), "{tag}");
+        }
     }
 
     #[test]

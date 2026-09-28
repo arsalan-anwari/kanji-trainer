@@ -1,0 +1,104 @@
+{
+  "none": "还没有完成过任何练习。",
+  "entry": "{total} 题中答对 {score} 题",
+  "window": {
+    "all": "全部",
+    "today": "今天",
+    "yesterday": "昨天",
+    "custom": "自定义",
+    "range": "{from} – {to}"
+  },
+  "range": {
+    "pick": "选择日期范围",
+    "title": "日期范围",
+    "close": "关闭日期范围",
+    "from": "从",
+    "to": "到",
+    "invalid": "开始日期须不晚于结束日期，且不早于 {earliest}。"
+  },
+  "filters": {
+    "title": "筛选",
+    "format": "形式",
+    "answering": "答题方式",
+    "level": "级别",
+    "packs": "词包",
+    "clear": "清除筛选"
+  },
+  "list": {
+    "shown": "已显示 {count} 条",
+    "pickedOf": "{total} 条中的 {picked} 条",
+    "selectAll": "选择所有已显示的练习",
+    "clearSelection": "清除选择",
+    "remove": "删除",
+    "export": "导出",
+    "import": "导入",
+    "actions": "练习操作"
+  },
+  "pages": {
+    "label": "报告页",
+    "previous": "上一页",
+    "next": "下一页",
+    "at": "第 {page} 页，共 {pages} 页"
+  },
+  "deleted": "已删除。",
+  "exported": "已导出。",
+  "imported": "已导入。",
+  "importedSome": "已导入。部分练习已存在。",
+  "confirmTitle": "删除这些练习？",
+  "confirmBody": "{count} 个练习将从本设备中移除。",
+  "stat": {
+    "runs": "练习次数",
+    "answers": "答题数",
+    "accuracy": "正确率"
+  },
+  "diagnosis": {
+    "kanji": {
+      "title": "汉字",
+      "description": "每个汉字的正确率。",
+      "empty": "此选择中还没有答题记录。"
+    },
+    "sets": {
+      "title": "词组",
+      "description": "每个词组的正确率。",
+      "empty": "此选择中还没有答题记录。"
+    },
+    "formats": {
+      "title": "形式",
+      "description": "每种形式的正确率。",
+      "empty": "此选择中还没有答题记录。",
+      "columns": {
+        "group": "形式 / 变体",
+        "accuracy": "正确率",
+        "bar": "进度",
+        "score": "得分"
+      }
+    },
+    "mistakes": {
+      "title": "按词语统计错误",
+      "description": "按词语统计的错误答案。",
+      "empty": "此选择中没有错误。"
+    },
+    "time": {
+      "title": "速度",
+      "description": "每题用时。",
+      "empty": "此选择中还没有答题记录。"
+    }
+  },
+  "practise": {
+    "button": "练习这些错误",
+    "empty": "没有可练习的错误。",
+    "loaded": "已将你答错的词语载入设置。"
+  },
+  "mastery": {
+    "new": "新学",
+    "shaky": "不牢",
+    "learning": "学习中",
+    "steady": "稳定",
+    "mastered": "已掌握"
+  },
+  "tip": {
+    "stat": "{total} 题中答对 {correct} 题，{mastery}",
+    "speed": "{label}：平均 {averageMs} 毫秒"
+  },
+  "packMissing": "该练习使用的某个词包已关闭或被移除，因此未计入下方总计。"
+}

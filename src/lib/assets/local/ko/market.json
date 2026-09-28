@@ -1,0 +1,88 @@
+{
+  "title": "마켓",
+  "tagline": "레벨과 테마별 단어 팩을 추가하세요. 다운로드한 모든 콘텐츠는 이 기기에 저장되며 오프라인에서도 사용할 수 있습니다.",
+  "stats": {
+    "installed": "설치됨",
+    "updates": "업데이트",
+    "available": "탐색"
+  },
+  "catalog": {
+    "fresh": "카탈로그 최신 상태",
+    "stale": "오프라인: 마지막 접속 시점의 카탈로그를 표시합니다",
+    "none": "카탈로그가 로드되지 않았습니다: 설치된 항목만 표시합니다",
+    "refresh": "새 팩 확인"
+  },
+  "filter": {
+    "theme": "테마",
+    "level": "레벨",
+    "all": "전체"
+  },
+  "theme": {
+    "base": "기본 레벨",
+    "plus": "한자 추가",
+    "extra": "더 어려운 한자",
+    "kana": "가나 단어",
+    "travel": "여행",
+    "food": "음식과 음료",
+    "work": "직장",
+    "school": "학교",
+    "culture": "문화",
+    "media": "애니메이션과 만화"
+  },
+  "section": {
+    "updates": "업데이트",
+    "installed": "내 팩",
+    "available": "탐색"
+  },
+  "badge": {
+    "installed": "설치됨",
+    "update": "업데이트",
+    "new": "신규",
+    "off": "꺼짐",
+    "required": "필수"
+  },
+  "meta": {
+    "words": "단어 {count}개",
+    "kanji": "한자 {count}개",
+    "size": "{size} MB",
+    "version": "v{version}"
+  },
+  "action": {
+    "download": "다운로드",
+    "update": "업데이트",
+    "details": "자세히",
+    "detailsOf": "{title} 상세 정보",
+    "use": "연습에 사용",
+    "useHint": "이 팩의 세트와 단어가 연습 및 차트 화면에 표시됩니다",
+    "alwaysOn": "항상 사용: 모든 세션이 이 팩을 기반으로 합니다",
+    "delete": "{title} 삭제",
+    "retry": "다시 시도"
+  },
+  "progress": "{total} MB 중 {done} MB 다운로드 중",
+  "progressLabel": "{title} 다운로드",
+  "failed": "다운로드가 완료되지 않았습니다. 연결을 확인하고 다시 시도하세요.",
+  "needsNetwork": "다운로드하려면 인터넷에 연결하세요.",
+  "browserOnly": "팩은 앱에서 설치합니다. 브라우저에서는 대신 data/를 빌드하세요.",
+  "empty": "이 필터에 해당하는 팩이 없습니다.",
+  "source": "팩은 Hugging Face의 Kanji Trainer 데이터셋에서 제공됩니다.",
+  "remove": {
+    "title": "{title}을(를) 삭제할까요?",
+    "body": "이 팩의 단어는 연습과 차트에서 제외됩니다. 이 단어들을 사용한 이전 세션은 유지되지만, 경고가 표시되고 다시 다운로드하기 전까지는 합계에 반영되지 않습니다.",
+    "confirm": "삭제",
+    "cancel": "유지"
+  },
+  "gate": {
+    "title": "기본 팩 다운로드",
+    "description": "Kanji Trainer는 무엇보다 먼저 기본 팩이 필요합니다. 한 번만 다운로드하면 그 후에는 앱이 오프라인에서 작동합니다.",
+    "total": "총 {size} MB",
+    "start": "다운로드",
+    "offline": "팩 카탈로그를 불러올 수 없습니다. 인터넷 연결을 확인하고 다시 시도하세요. 계속 실패하면 카탈로그가 아직 게시되지 않았을 수 있습니다.",
+    "retry": "다시 시도",
+    "busy": "{title} 다운로드 중…"
+  },
+  "description": {
+    "loading": "설명을 불러오는 중…",
+    "missing": "설명을 불러올 수 없습니다. 다운로드하기 전에 인터넷에 연결해 확인하세요."
+  },
+  "newerApp": "이 팩에는 최신 버전의 Kanji Trainer가 필요합니다. 사용하려면 앱을 업데이트하세요."
+}

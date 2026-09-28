@@ -1,0 +1,88 @@
+{
+  "title": "Marketplace",
+  "tagline": "Adicione níveis e pacotes de palavras temáticos. Tudo o que você baixa permanece neste dispositivo e funciona offline.",
+  "stats": {
+    "installed": "Instalado",
+    "updates": "Atualizações",
+    "available": "Para descobrir"
+  },
+  "catalog": {
+    "fresh": "Catálogo atualizado",
+    "stale": "Offline: exibindo o catálogo da sua última conexão",
+    "none": "Catálogo não carregado: exibindo apenas o que está instalado",
+    "refresh": "Verificar novos pacotes"
+  },
+  "filter": {
+    "theme": "Tema",
+    "level": "Nível",
+    "all": "Todos"
+  },
+  "theme": {
+    "base": "Nível base",
+    "plus": "Mais kanji",
+    "extra": "Kanji mais difícil",
+    "kana": "Palavras em kana",
+    "travel": "Viagem",
+    "food": "Comida e bebida",
+    "work": "Trabalho",
+    "school": "Escola",
+    "culture": "Cultura",
+    "media": "Anime e mangá"
+  },
+  "section": {
+    "updates": "Atualizações",
+    "installed": "Seus pacotes",
+    "available": "Descobrir"
+  },
+  "badge": {
+    "installed": "Instalado",
+    "update": "Atualizar",
+    "new": "Novo",
+    "off": "Desativado",
+    "required": "Obrigatório"
+  },
+  "meta": {
+    "words": "{count} palavras",
+    "kanji": "{count} kanji",
+    "size": "{size} MB",
+    "version": "v{version}"
+  },
+  "action": {
+    "download": "Baixar",
+    "update": "Atualizar",
+    "details": "Detalhes",
+    "detailsOf": "Detalhes de {title}",
+    "use": "Usar na prática",
+    "useHint": "Seus conjuntos e palavras aparecem em Prática e Gráfico",
+    "alwaysOn": "Sempre ativo: cada execução é baseada nele",
+    "delete": "Remover {title}",
+    "retry": "Tentar novamente"
+  },
+  "progress": "Baixando {done} de {total} MB",
+  "progressLabel": "Download de {title}",
+  "failed": "O download não foi concluído. Verifique sua conexão e tente novamente.",
+  "needsNetwork": "Conecte-se à internet para baixar.",
+  "browserOnly": "Os pacotes são instalados pelo aplicativo. No navegador, crie o diretório data/ em vez disso.",
+  "empty": "Nenhum pacote corresponde a esses filtros.",
+  "source": "Os pacotes vêm do conjunto de dados do Kanji Trainer no Hugging Face.",
+  "remove": {
+    "title": "Remover {title}?",
+    "body": "Suas palavras sairão de Prática e Gráfico. Execuções passadas que as utilizaram são mantidas, mas exibem um aviso e ficam fora dos seus totais até que você as baixe novamente.",
+    "confirm": "Remover",
+    "cancel": "Manter"
+  },
+  "gate": {
+    "title": "Baixar o básico",
+    "description": "O Kanji Trainer precisa de seus pacotes básicos antes de qualquer outra coisa. É um download único; depois disso, o aplicativo funciona offline.",
+    "total": "{size} MB no total",
+    "start": "Baixar",
+    "offline": "O catálogo de pacotes não pôde ser carregado. Verifique sua conexão com a internet e tente novamente; se continuar falhando, o catálogo pode ainda não ter sido publicado.",
+    "retry": "Tentar novamente",
+    "busy": "Baixando {title}…"
+  },
+  "description": {
+    "loading": "Carregando a descrição…",
+    "missing": "A descrição não pôde ser carregada. Conecte-se à internet para lê-la antes de baixar."
+  },
+  "newerApp": "Este pacote precisa de uma versão mais recente do Kanji Trainer. Atualize o aplicativo para usá-lo."
+}

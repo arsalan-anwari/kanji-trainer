@@ -1,0 +1,91 @@
+{
+  "progress": "ข้อที่ {index} จาก {total}",
+  "runProgress": "ความคืบหน้าของรอบนี้",
+  "announce": "ข้อที่ {index} จาก {total}. {prompt}",
+  "prompt": {
+    "kanji-kana": "คำนี้อ่านว่าอย่างไร?",
+    "kana-kanji": "คำนี้คือคำว่าอะไร?",
+    "kanji-meaning": "คำนี้แปลว่าอะไร?",
+    "meaning-kanji": "คำไหนแปลว่าสิ่งนี้?",
+    "kana-meaning": "คำนี้แปลว่าอะไร?",
+    "meaning-kana": "คำนี้อ่านว่าอย่างไร?",
+    "image-kanji": "คำนี้คือคำว่าอะไร?",
+    "image-kana": "คำนี้อ่านว่าอย่างไร?",
+    "audio-kana": "คำที่คุณได้ยินอ่านว่าอย่างไร?",
+    "audio-kanji": "คำที่คุณได้ยินคือคำว่าอะไร?",
+    "kanji-audio": "ไฟล์เสียงนี้คือคำว่าอะไร?",
+    "replay": "เล่นเสียงคำนี้อีกครั้ง",
+    "imageAlt": "รูปภาพประกอบคำนี้",
+    "kana-assemble": "ประกอบคำนี้"
+  },
+  "choices": "คำตอบ",
+  "soundTile": "ไฟล์เสียง {slot}",
+  "check": "ตรวจสอบ",
+  "soundHint": "แตะที่ไฟล์เสียงเพื่อฟัง แล้วกดตรวจสอบ",
+  "soundCompare": "แตะที่ไฟล์เสียงเพื่อฟังอีกครั้ง",
+  "typed": {
+    "label": "คำตอบ",
+    "placeholder": "พิมพ์คำตอบของคุณ",
+    "submit": "ตรวจสอบ"
+  },
+  "correct": "ถูกต้อง",
+  "wrong": "ไม่ถูกต้อง",
+  "answerWas": "คำตอบคือ {answer}",
+  "alsoReads": "อ่านว่า {list} ได้ด้วย",
+  "reveal": {
+    "reading": "คำอ่าน",
+    "written": "ตัวเขียน",
+    "gloss": "ความหมาย"
+  },
+  "hint": {
+    "open": "แสดงคำใบ้",
+    "close": "ปิดคำใบ้",
+    "picture": "รูปภาพใบ้คำตอบ",
+    "kind": {
+      "romaji": "ออกเสียงอย่างไร",
+      "clue": "คำใบ้",
+      "look": "เขียนอย่างไร",
+      "image": "รูปภาพ",
+      "ghost": "บางส่วนของคำ"
+    }
+  },
+  "next": "ถัดไป",
+  "continue": "ดำเนินการต่อ",
+  "finish": "ดูคะแนน",
+  "quit": "ออก",
+  "quitTitle": "ต้องการออกจากรอบนี้ใช่ไหม?",
+  "quitBody": "คำถามที่ตอบไปแล้วจะไม่ถูกบันทึก",
+  "quitConfirm": "ออก",
+  "quitCancel": "ทำต่อ",
+  "score": "ตอบถูก {score} จาก {answered} ข้อ",
+  "time": {
+    "out": "หมดเวลา",
+    "warning": "เหลือเวลาอีก 5 วินาที",
+    "questionLeft": "เวลาที่เหลือสำหรับข้อนี้",
+    "runLeft": "เวลาที่เหลือในรอบนี้"
+  },
+  "assemble": {
+    "slots": "ช่องว่าง",
+    "pile": "บล็อก",
+    "tray": "{kind} {index}",
+    "kanji": "คันจิ",
+    "kana": "คานะ",
+    "empty": "ว่างเปล่า",
+    "slot": "{tray}, {position}, {content}",
+    "placed": "วาง {block} ใน {slot} แล้ว",
+    "lifted": "นำ {block} ออกจาก {slot} แล้ว",
+    "done": "{character} สมบูรณ์แล้ว",
+    "position": {
+      "whole": "ทั้งหมด",
+      "center": "ตรงกลาง",
+      "left": "ซ้าย",
+      "right": "ขวา",
+      "top": "บน",
+      "bottom": "ล่าง",
+      "top-left": "บนซ้าย",
+      "top-right": "บนขวา",
+      "bottom-left": "ล่างซ้าย",
+      "bottom-right": "ล่างขวา"
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "progress": "Frage {index} von {total}",
+  "runProgress": "Fortschritt der Runde",
+  "announce": "Frage {index} von {total}. {prompt}",
+  "prompt": {
+    "kanji-kana": "Wie wird dieses Wort gelesen?",
+    "kana-kanji": "Welches Wort ist das?",
+    "kanji-meaning": "Was bedeutet dieses Wort?",
+    "meaning-kanji": "Welches Wort bedeutet das?",
+    "kana-meaning": "Was bedeutet dieses Wort?",
+    "meaning-kana": "Wie wird dieses Wort gelesen?",
+    "image-kanji": "Welches Wort ist das?",
+    "image-kana": "Wie wird dieses Wort gelesen?",
+    "audio-kana": "Wie wird das gehörte Wort gelesen?",
+    "audio-kanji": "Welches Wort hast du gehört?",
+    "kanji-audio": "Welche Aufnahme ist dieses Wort?",
+    "replay": "Wort erneut abspielen",
+    "imageAlt": "Ein Bild, das das Wort veranschaulicht",
+    "kana-assemble": "Baue dieses Wort zusammen"
+  },
+  "choices": "Antworten",
+  "soundTile": "Aufnahme {slot}",
+  "check": "Prüfen",
+  "soundHint": "Tippe auf eine Aufnahme, um sie anzuhören, und prüfe dann.",
+  "soundCompare": "Tippe auf eine Aufnahme, um sie erneut anzuhören.",
+  "typed": {
+    "label": "Antwort",
+    "placeholder": "Gib deine Antwort ein",
+    "submit": "Prüfen"
+  },
+  "correct": "Richtig",
+  "wrong": "Falsch",
+  "answerWas": "Die Antwort war {answer}",
+  "alsoReads": "auch gelesen als {list}",
+  "reveal": {
+    "reading": "Lesung",
+    "written": "Schreibweise",
+    "gloss": "Bedeutung"
+  },
+  "hint": {
+    "open": "Hinweis anzeigen",
+    "close": "Hinweis schließen",
+    "picture": "Ein Bild, das einen Hinweis auf die Antwort gibt",
+    "kind": {
+      "romaji": "Wie es klingt",
+      "clue": "Ein Hinweis",
+      "look": "Wie es geschrieben wird",
+      "image": "Ein Bild",
+      "ghost": "Einige Teile"
+    }
+  },
+  "next": "Weiter",
+  "continue": "Fortfahren",
+  "finish": "Ergebnis ansehen",
+  "quit": "Beenden",
+  "quitTitle": "Diese Runde beenden?",
+  "quitBody": "Die bisher beantworteten Fragen werden nicht gespeichert.",
+  "quitConfirm": "Beenden",
+  "quitCancel": "Weitermachen",
+  "score": "{score} von {answered} richtig",
+  "time": {
+    "out": "Zeit abgelaufen",
+    "warning": "Noch fünf Sekunden",
+    "questionLeft": "Verbleibende Zeit für diese Frage",
+    "runLeft": "Verbleibende Zeit in dieser Runde"
+  },
+  "assemble": {
+    "slots": "Plätze",
+    "pile": "Blöcke",
+    "tray": "{kind} {index}",
+    "kanji": "Kanji",
+    "kana": "Kana",
+    "empty": "leer",
+    "slot": "{tray}, {position}, {content}",
+    "placed": "{block} in {slot} platziert",
+    "lifted": "{block} aus {slot} entfernt",
+    "done": "{character} ist vollständig",
+    "position": {
+      "whole": "ganz",
+      "center": "Mitte",
+      "left": "links",
+      "right": "rechts",
+      "top": "oben",
+      "bottom": "unten",
+      "top-left": "oben links",
+      "top-right": "oben rechts",
+      "bottom-left": "unten links",
+      "bottom-right": "unten rechts"
+    }
+  }
+}

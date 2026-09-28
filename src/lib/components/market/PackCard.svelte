@@ -121,7 +121,7 @@
       <IconButton
         icon="trash"
         variant="ghost"
-        class="ml-auto"
+        class="ms-auto"
         label={t("market.action.delete", { title: meta.title })}
         disabled={progress !== null}
         onclick={onremove}

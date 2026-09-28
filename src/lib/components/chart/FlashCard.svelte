@@ -36,7 +36,7 @@
 <div
   role="group"
   aria-label={label}
-  class="flex w-full flex-col gap-2 rounded-xl border-2 border-border bg-surface p-3 transition-transform ease-in-out"
+  class="flex w-full flex-col gap-2 rounded-xl border-2 border-border bg-surface p-3 transition-transform ease-in-out [overflow-wrap:anywhere]"
   style="transform: scaleX({squashed ? 0 : 1}); transition-duration: {FLIP_MS}ms"
 >
   <div class="grid flex-1 grid-cols-1">
@@ -62,19 +62,19 @@
       class="flex min-w-0 flex-col gap-1.5 [grid-area:1/1] {flipped ? '' : 'invisible'}"
     >
       <Glyph text={face.kana} class="text-3xl font-bold" />
-      <span class="text-lg text-muted-foreground">{face.romaji}</span>
-      <span class="text-xl leading-snug font-semibold">{face.meaning}</span>
+      <span lang="ja-Latn" dir="ltr" class="text-lg text-muted-foreground">{face.romaji}</span>
+      <bdi lang={face.lang} class="text-xl leading-snug font-semibold">{face.meaning}</bdi>
       {#if face.example !== null}
         <span data-example class="mt-1 flex flex-col gap-1.5 border-t border-wire pt-2">
           <span class="jp text-xl leading-snug" lang="ja">{face.example.japanese}</span>
-          <span class="text-base leading-snug text-muted-foreground">{face.example.romaji}</span>
-          <span class="text-lg leading-snug">{face.example.english}</span>
+          <span lang="ja-Latn" dir="ltr" class="text-base leading-snug text-muted-foreground">{face.example.romaji}</span>
+          <bdi lang={face.lang} class="text-lg leading-snug">{face.example.english}</bdi>
         </span>
       {/if}
     </div>
   </div>
 
-  <div class="flex items-center justify-center gap-3">
+  <div class="flex flex-wrap items-center justify-center gap-3">
     {#if audio !== null}
       <button
         type="button"

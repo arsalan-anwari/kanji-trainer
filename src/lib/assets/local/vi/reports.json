@@ -1,0 +1,104 @@
+{
+  "none": "Chưa có lượt học nào được hoàn thành.",
+  "entry": "{score}/{total} đúng",
+  "window": {
+    "all": "Tất cả",
+    "today": "Hôm nay",
+    "yesterday": "Hôm qua",
+    "custom": "Tùy chỉnh",
+    "range": "{from} – {to}"
+  },
+  "range": {
+    "pick": "Chọn khoảng thời gian",
+    "title": "Khoảng thời gian",
+    "close": "Đóng khoảng thời gian",
+    "from": "Từ",
+    "to": "Đến",
+    "invalid": "Ngày bắt đầu phải trước hoặc bằng ngày kết thúc, và không sớm hơn {earliest}."
+  },
+  "filters": {
+    "title": "Bộ lọc",
+    "format": "Định dạng",
+    "answering": "Cách trả lời",
+    "level": "Cấp độ",
+    "packs": "Bộ từ vựng",
+    "clear": "Xóa bộ lọc"
+  },
+  "list": {
+    "shown": "Đang hiển thị {count}",
+    "pickedOf": "{picked}/{total}",
+    "selectAll": "Chọn tất cả các lượt hiển thị",
+    "clearSelection": "Xóa lựa chọn",
+    "remove": "Xóa",
+    "export": "Xuất",
+    "import": "Nhập",
+    "actions": "Thao tác với lượt học"
+  },
+  "pages": {
+    "label": "Trang báo cáo",
+    "previous": "Trang trước",
+    "next": "Trang sau",
+    "at": "Trang {page}/{pages}"
+  },
+  "deleted": "Đã xóa.",
+  "exported": "Đã xuất.",
+  "imported": "Đã nhập.",
+  "importedSome": "Đã nhập. Một số lượt học đã có sẵn ở đây.",
+  "confirmTitle": "Xóa các lượt học này?",
+  "confirmBody": "{count} lượt học sẽ bị xóa khỏi thiết bị này.",
+  "stat": {
+    "runs": "Lượt học",
+    "answers": "Câu trả lời",
+    "accuracy": "Độ chính xác"
+  },
+  "diagnosis": {
+    "kanji": {
+      "title": "Kanji",
+      "description": "Độ chính xác theo từng kanji.",
+      "empty": "Chưa có câu trả lời nào trong lựa chọn này."
+    },
+    "sets": {
+      "title": "Bộ từ vựng",
+      "description": "Độ chính xác theo từng bộ.",
+      "empty": "Chưa có câu trả lời nào trong lựa chọn này."
+    },
+    "formats": {
+      "title": "Định dạng",
+      "description": "Độ chính xác theo từng định dạng.",
+      "empty": "Chưa có câu trả lời nào trong lựa chọn này.",
+      "columns": {
+        "group": "Định dạng / biến thể",
+        "accuracy": "Độ chính xác",
+        "bar": "Tiến độ",
+        "score": "Điểm số"
+      }
+    },
+    "mistakes": {
+      "title": "Lỗi sai theo từ",
+      "description": "Các câu trả lời sai, theo từ.",
+      "empty": "Không có lỗi sai trong lựa chọn này."
+    },
+    "time": {
+      "title": "Tốc độ",
+      "description": "Thời gian cho mỗi câu hỏi.",
+      "empty": "Chưa có câu trả lời nào trong lựa chọn này."
+    }
+  },
+  "practise": {
+    "button": "Luyện tập các lỗi sai này",
+    "empty": "Không có lỗi sai để luyện tập.",
+    "loaded": "Đã tải các từ bạn làm sai vào phần thiết lập."
+  },
+  "mastery": {
+    "new": "Mới",
+    "shaky": "Chưa chắc chắn",
+    "learning": "Đang học",
+    "steady": "Ổn định",
+    "mastered": "Đã thành thạo"
+  },
+  "tip": {
+    "stat": "{correct}/{total} đúng, {mastery}",
+    "speed": "{label}: trung bình {averageMs}ms"
+  },
+  "packMissing": "Một bộ từ vựng được sử dụng trong lượt học này đã bị tắt hoặc xóa, nên nó không được tính vào tổng số bên dưới."
+}

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Badge, Button, Card, EmptyState, Glyph, Icon, ResultSplash, Stat } from "kaizen-ui";
   import { app } from "../../state.svelte";
+  import { langOf } from "../../content/locale";
   import { tierBlurb, tierEmoji, tierHeadline } from "../../quiz/score";
   import { n, t } from "../../i18n.svelte";
 
@@ -73,7 +74,7 @@
                 <Badge tone="danger">{t("result.missed.timedOut")}</Badge>
               {/if}
             </span>
-            <span class="text-xs leading-snug text-muted-foreground">{word.meaning}</span>
+            <bdi lang={langOf(word)} class="text-xs leading-snug text-muted-foreground">{word.meaning}</bdi>
           </li>
         {/each}
       </ul>

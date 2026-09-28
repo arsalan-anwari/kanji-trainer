@@ -1,0 +1,88 @@
+{
+  "title": "Mağaza",
+  "tagline": "Seviyeler ve tematik kelime paketleri ekleyin. İndirdiğiniz her şey bu cihazda kalır ve çevrimdışı çalışır.",
+  "stats": {
+    "installed": "Yüklü",
+    "updates": "Güncellemeler",
+    "available": "Keşfetmek için"
+  },
+  "catalog": {
+    "fresh": "Katalog güncel",
+    "stale": "Çevrimdışı: son bağlantınızdaki katalog gösteriliyor",
+    "none": "Katalog yüklenemedi: sadece yüklü olanlar gösteriliyor",
+    "refresh": "Yeni paketleri kontrol et"
+  },
+  "filter": {
+    "theme": "Tema",
+    "level": "Seviye",
+    "all": "Tümü"
+  },
+  "theme": {
+    "base": "Temel seviye",
+    "plus": "Daha fazla kanji",
+    "extra": "Daha zor kanji",
+    "kana": "Kana kelimeleri",
+    "travel": "Seyahat",
+    "food": "Yiyecek ve içecek",
+    "work": "İş",
+    "school": "Okul",
+    "culture": "Kültür",
+    "media": "Anime ve manga"
+  },
+  "section": {
+    "updates": "Güncellemeler",
+    "installed": "Paketleriniz",
+    "available": "Keşfet"
+  },
+  "badge": {
+    "installed": "Yüklü",
+    "update": "Güncelle",
+    "new": "Yeni",
+    "off": "Kapalı",
+    "required": "Gerekli"
+  },
+  "meta": {
+    "words": "{count} kelime",
+    "kanji": "{count} kanji",
+    "size": "{size} MB",
+    "version": "v{version}"
+  },
+  "action": {
+    "download": "İndir",
+    "update": "Güncelle",
+    "details": "Detaylar",
+    "detailsOf": "{title} detayları",
+    "use": "Pratikte kullan",
+    "useHint": "Setleri ve kelimeleri Pratik ve Çizelge'de görünür",
+    "alwaysOn": "Her zaman açık: her çalışma bunun üzerine inşa edilir",
+    "delete": "{title} öğesini kaldır",
+    "retry": "Tekrar dene"
+  },
+  "progress": "{done} / {total} MB indiriliyor",
+  "progressLabel": "{title} indiriliyor",
+  "failed": "İndirme tamamlanamadı. Bağlantınızı kontrol edin ve tekrar deneyin.",
+  "needsNetwork": "İndirmek için internete bağlanın.",
+  "browserOnly": "Paketler uygulama tarafından yüklenir. Tarayıcıda bunun yerine data/ oluşturun.",
+  "empty": "Bu filtrelere uyan paket yok.",
+  "source": "Paketler, Hugging Face üzerindeki Kanji Trainer veri setinden gelmektedir.",
+  "remove": {
+    "title": "{title} kaldırılsın mı?",
+    "body": "Kelimeleri Pratik ve Çizelge'den kaldırılacak. Bunları kullanan geçmiş çalışmalar saklanır ancak uyarı gösterir ve siz tekrar indirene kadar toplamlarınızın dışında kalır.",
+    "confirm": "Kaldır",
+    "cancel": "Tut"
+  },
+  "gate": {
+    "title": "Temelleri indir",
+    "description": "Kanji Trainer'ın başka bir şeyden önce temel paketlerine ihtiyacı vardır. Bu tek seferlik bir indirmedir; sonrasında uygulama çevrimdışı çalışır.",
+    "total": "Toplam {size} MB",
+    "start": "İndir",
+    "offline": "Paket kataloğu yüklenemedi. İnternet bağlantınızı kontrol edin ve tekrar deneyin; hata devam ederse katalog henüz yayınlanmamış olabilir.",
+    "retry": "Tekrar dene",
+    "busy": "{title} indiriliyor…"
+  },
+  "description": {
+    "loading": "Açıklama yükleniyor…",
+    "missing": "Açıklama yüklenemedi. İndirmeden önce okumak için internete bağlanın."
+  },
+  "newerApp": "Bu paket, Kanji Trainer'ın daha yeni bir sürümünü gerektiriyor. Kullanmak için uygulamayı güncelleyin."
+}

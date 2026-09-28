@@ -18,7 +18,7 @@ KA_DATA = "https://raw.githubusercontent.com/kanjialive/kanji-data-media/master/
 KA_AUDIO = "https://media.kanjialive.com/examples_audio/audio-mp3.zip"
 KA_LICENCE = "CC BY 4.0"
 JPOD = "https://assets.languagepod101.com/dictionary/japanese/audiomp3.php"
-JPOD_LICENCE = "unlicensed"
+JPOD_LICENCE = "Used with permission"
 JPOD_UNAVAILABLE = "ae6398b5a27bc8c0a771df6c907ade794be15518174773c58c7c7ddd17098906"
 COMMONS = "https://commons.wikimedia.org/w/api.php"
 # Recordings no fetcher finds by search, pinned by their Wikimedia Commons title.

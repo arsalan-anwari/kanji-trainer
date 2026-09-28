@@ -1,0 +1,128 @@
+{
+  "title": "Atur sesi latihan",
+  "level": {
+    "title": "Level",
+    "description": "Daftar yang digunakan untuk sesi latihan.",
+    "unavailable": "{level} belum tersedia di versi ini."
+  },
+  "sets": {
+    "title": "Set kata",
+    "description": "Pilih kata yang akan digunakan untuk sesi latihan.",
+    "selectAll": "Pilih semua",
+    "clear": "Bersihkan",
+    "count": "{count} kata",
+    "empty": "Tidak ada set di level ini."
+  },
+  "format": {
+    "title": "Format pertanyaan",
+    "description": "Apa yang ditampilkan dan apa yang harus dijawab.",
+    "reading": "Latih kanji kata dengan kana-nya.",
+    "meaning": "Latih kata dengan artinya.",
+    "visualize": "Kenali kata dari gambar.",
+    "listening": "Dengarkan satu kata, atau pilih cara pengucapannya.",
+    "kanji-kana": "Lihat kata, jawab cara bacanya",
+    "kana-kanji": "Lihat cara baca, pilih kata tertulisnya",
+    "kanji-meaning": "Lihat kata, pilih artinya",
+    "meaning-kanji": "Lihat arti, pilih katanya",
+    "kana-meaning": "Lihat cara baca, pilih artinya",
+    "meaning-kana": "Lihat arti, pilih cara bacanya",
+    "image-kanji": "Lihat gambar, pilih katanya",
+    "image-kana": "Lihat gambar, pilih cara bacanya",
+    "audio-kana": "Dengar kata, jawab cara bacanya",
+    "audio-kanji": "Dengar kata, jawab kata tertulisnya",
+    "kanji-audio": "Lihat kata, pilih rekaman yang tepat",
+    "assemble": "Susun kata dari bagian-bagiannya.",
+    "kana-assemble": "Lihat cara baca dan arti, susun kata tertulisnya"
+  },
+  "direction": {
+    "title": "Arah",
+    "description": "Sisi kata mana yang digunakan format ini."
+  },
+  "answerStyle": {
+    "title": "Gaya jawaban",
+    "description": "Ketuk jawaban atau ketik jawabannya.",
+    "choice": "Pilih salah satu jawaban",
+    "typing": "Ketik jawabannya"
+  },
+  "wordShapes": {
+    "title": "Bentuk kata",
+    "description": "Filter berdasarkan struktur kata.",
+    "1-kanji": "Kanji tunggal (一)",
+    "2-kanji": "Kata majemuk (学校)",
+    "okurigana": "Kanji dengan okurigana (上げる)",
+    "hint": "Biarkan kosong untuk semua.",
+    "kana": "Hanya kana (これ)"
+  },
+  "difficulty": {
+    "title": "Tingkat kesulitan",
+    "description": "Seberapa meyakinkan jawaban yang salah.",
+    "beginner": "Jawaban salah tidak mirip dengan jawaban yang benar.",
+    "advanced": "Satu jawaban salah menyerupai jawaban yang benar.",
+    "expert": "Setiap jawaban salah menyerupai jawaban yang benar."
+  },
+  "run": {
+    "title": "Opsi sesi latihan",
+    "description": "Berapa lama sesi latihan berlangsung.",
+    "count": "Jumlah pertanyaan",
+    "onePass": "Satu putaran"
+  },
+  "presets": {
+    "label": "Sesi tersimpan",
+    "none": "Preset",
+    "some": "Pilih sesi yang tersimpan",
+    "create": "Simpan sesi ini",
+    "update": "Perbarui",
+    "restore": "Muat",
+    "delete": "Hapus",
+    "name": "Beri nama sesi ini",
+    "saved": "Tersimpan.",
+    "firstSteps": "Langkah awal",
+    "firstStepsDone": "Pengaturan untuk sesi pertama: sepuluh pertanyaan, angka.",
+    "confirmTitle": "Hapus sesi tersimpan ini?",
+    "confirmBody": "\"{name}\" akan dihapus dari perangkat ini."
+  },
+  "start": {
+    "button": "Mulai",
+    "study": "Pelajari ini terlebih dahulu",
+    "inPlay": "Kata yang digunakan",
+    "questions": "Pertanyaan"
+  },
+  "startHint": "Pilih setidaknya satu set untuk memulai.",
+  "study": {
+    "title": "Sesi belajar",
+    "description": "Baca terlebih dahulu sebelum latihan.",
+    "back": "Kembali ke pengaturan",
+    "empty": "Pilih set untuk dipelajari."
+  },
+  "words": {
+    "button": "Pengaturan lanjutan",
+    "title": "Pengaturan lanjutan",
+    "inPlay": "{count} kata dipilih.",
+    "taken": "{taken} dari {total} disimpan",
+    "back": "Kembali ke pengaturan",
+    "unselectAll": "Batalkan pilihan semua",
+    "selectAll": "Pilih semua",
+    "all": "Semua",
+    "clear": "Tidak ada",
+    "empty": "Pilih set untuk melihat kata-katanya.",
+    "group": "Kata dalam {label}",
+    "filters": "Filter",
+    "filtersHint": "Persempit daftar sebelum memilih kata.",
+    "search": "Cari kata",
+    "category": "Kategori",
+    "subcategory": "Sub-kategori",
+    "noMatch": "Tidak ada kata yang cocok dengan pencarian ini.",
+    "packs": "Paket",
+    "unsuited": "Tidak dapat menggunakan {packs} untuk jenis kuis ini",
+    "unsuitedWord": "Jenis kuis ini tidak dapat menanyakan kata ini"
+  },
+  "time": {
+    "perQuestion": "Waktu per pertanyaan",
+    "wholeRun": "Waktu untuk seluruh sesi",
+    "seconds": "Detik per pertanyaan",
+    "minutes": "Menit untuk sesi latihan",
+    "secondsShort": "{count}d",
+    "minutesShort": "{count}m"
+  },
+  "kanaHint": "Kata kana tidak memiliki bentuk kanji. Pilih format arti, gambar, atau mendengarkan yang tidak menampilkan kanji."
+}

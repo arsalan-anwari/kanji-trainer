@@ -1,0 +1,91 @@
+{
+  "progress": "Pregunta {index} de {total}",
+  "runProgress": "Progreso de la sesión",
+  "announce": "Pregunta {index} de {total}. {prompt}",
+  "prompt": {
+    "kanji-kana": "¿Cómo se lee esta palabra?",
+    "kana-kanji": "¿Qué palabra es esta?",
+    "kanji-meaning": "¿Qué significa esta palabra?",
+    "meaning-kanji": "¿Qué palabra significa esto?",
+    "kana-meaning": "¿Qué significa esta palabra?",
+    "meaning-kana": "¿Cómo se lee esta palabra?",
+    "image-kanji": "¿Qué palabra es esta?",
+    "image-kana": "¿Cómo se lee esta palabra?",
+    "audio-kana": "¿Cómo se lee la palabra que escuchaste?",
+    "audio-kanji": "¿Qué palabra escuchaste?",
+    "kanji-audio": "¿Qué grabación es esta palabra?",
+    "replay": "Reproducir la palabra de nuevo",
+    "imageAlt": "Una imagen que ilustra la palabra",
+    "kana-assemble": "Construye esta palabra"
+  },
+  "choices": "Respuestas",
+  "soundTile": "Grabación {slot}",
+  "check": "Comprobar",
+  "soundHint": "Toca una grabación para escucharla, luego comprueba.",
+  "soundCompare": "Toca una grabación para escucharla de nuevo.",
+  "typed": {
+    "label": "Respuesta",
+    "placeholder": "Escribe tu respuesta",
+    "submit": "Comprobar"
+  },
+  "correct": "Correcto",
+  "wrong": "Incorrecto",
+  "answerWas": "La respuesta era {answer}",
+  "alsoReads": "también se lee {list}",
+  "reveal": {
+    "reading": "Lectura",
+    "written": "Escritura",
+    "gloss": "Significado"
+  },
+  "hint": {
+    "open": "Mostrar una pista",
+    "close": "Cerrar la pista",
+    "picture": "Una imagen que da una pista sobre la respuesta",
+    "kind": {
+      "romaji": "Cómo suena",
+      "clue": "Una pista",
+      "look": "Cómo se escribe",
+      "image": "Una imagen",
+      "ghost": "Algunas piezas"
+    }
+  },
+  "next": "Siguiente",
+  "continue": "Continuar",
+  "finish": "Ver la puntuación",
+  "quit": "Salir",
+  "quitTitle": "¿Salir de esta sesión?",
+  "quitBody": "Las preguntas respondidas hasta ahora no se guardarán.",
+  "quitConfirm": "Salir",
+  "quitCancel": "Continuar",
+  "score": "{score} de {answered} correctas",
+  "time": {
+    "out": "Se acabó el tiempo",
+    "warning": "Quedan cinco segundos",
+    "questionLeft": "Tiempo restante para esta pregunta",
+    "runLeft": "Tiempo restante en la sesión"
+  },
+  "assemble": {
+    "slots": "Espacios",
+    "pile": "Bloques",
+    "tray": "{kind} {index}",
+    "kanji": "kanji",
+    "kana": "kana",
+    "empty": "vacío",
+    "slot": "{tray}, {position}, {content}",
+    "placed": "Se colocó {block} en {slot}",
+    "lifted": "Se retiró {block} de {slot}",
+    "done": "{character} está completo",
+    "position": {
+      "whole": "entero",
+      "center": "centro",
+      "left": "izquierda",
+      "right": "derecha",
+      "top": "arriba",
+      "bottom": "abajo",
+      "top-left": "arriba a la izquierda",
+      "top-right": "arriba a la derecha",
+      "bottom-left": "abajo a la izquierda",
+      "bottom-right": "abajo a la derecha"
+    }
+  }
+}

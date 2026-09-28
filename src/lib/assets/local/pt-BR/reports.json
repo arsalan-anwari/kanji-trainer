@@ -1,0 +1,104 @@
+{
+  "none": "Nenhuma sessão foi finalizada ainda.",
+  "entry": "{score} de {total} corretas",
+  "window": {
+    "all": "Tudo",
+    "today": "Hoje",
+    "yesterday": "Ontem",
+    "custom": "Personalizado",
+    "range": "{from} – {to}"
+  },
+  "range": {
+    "pick": "Escolha um intervalo de datas",
+    "title": "Intervalo de datas",
+    "close": "Fechar o intervalo de datas",
+    "from": "De",
+    "to": "Até",
+    "invalid": "Comece em ou antes do fim, e não antes de {earliest}."
+  },
+  "filters": {
+    "title": "Filtros",
+    "format": "Formato",
+    "answering": "Respondendo",
+    "level": "Nível",
+    "packs": "Pacotes",
+    "clear": "Limpar filtros"
+  },
+  "list": {
+    "shown": "{count} exibidos",
+    "pickedOf": "{picked} de {total}",
+    "selectAll": "Selecionar todas as sessões exibidas",
+    "clearSelection": "Limpar a seleção",
+    "remove": "Excluir",
+    "export": "Exportar",
+    "import": "Importar",
+    "actions": "Ações da sessão"
+  },
+  "pages": {
+    "label": "Páginas de relatório",
+    "previous": "Página anterior",
+    "next": "Próxima página",
+    "at": "Página {page} de {pages}"
+  },
+  "deleted": "Excluído.",
+  "exported": "Exportado.",
+  "imported": "Importado.",
+  "importedSome": "Importado. Algumas sessões já estavam aqui.",
+  "confirmTitle": "Excluir estas sessões?",
+  "confirmBody": "{count} sessões serão removidas deste dispositivo.",
+  "stat": {
+    "runs": "Sessões",
+    "answers": "Respostas",
+    "accuracy": "Precisão"
+  },
+  "diagnosis": {
+    "kanji": {
+      "title": "Kanji",
+      "description": "Precisão por kanji.",
+      "empty": "Nenhuma resposta nesta seleção ainda."
+    },
+    "sets": {
+      "title": "Conjuntos",
+      "description": "Precisão por conjunto.",
+      "empty": "Nenhuma resposta nesta seleção ainda."
+    },
+    "formats": {
+      "title": "Formatos",
+      "description": "Precisão por formato.",
+      "empty": "Nenhuma resposta nesta seleção ainda.",
+      "columns": {
+        "group": "Formato / variante",
+        "accuracy": "Precisão",
+        "bar": "Progresso",
+        "score": "Pontuação"
+      }
+    },
+    "mistakes": {
+      "title": "Erros por palavra",
+      "description": "Respostas incorretas, por palavra.",
+      "empty": "Nenhum erro nesta seleção."
+    },
+    "time": {
+      "title": "Velocidade",
+      "description": "Tempo por pergunta.",
+      "empty": "Nenhuma resposta nesta seleção ainda."
+    }
+  },
+  "practise": {
+    "button": "Praticar estes erros",
+    "empty": "Nenhum erro para praticar.",
+    "loaded": "Palavras que você errou foram carregadas na configuração."
+  },
+  "mastery": {
+    "new": "Novo",
+    "shaky": "Instável",
+    "learning": "Aprendendo",
+    "steady": "Estável",
+    "mastered": "Dominado"
+  },
+  "tip": {
+    "stat": "{correct} de {total} corretas, {mastery}",
+    "speed": "{label}: média de {averageMs}ms"
+  },
+  "packMissing": "Um pacote usado nesta sessão está desativado ou foi removido, por isso ele foi deixado de fora dos totais abaixo."
+}

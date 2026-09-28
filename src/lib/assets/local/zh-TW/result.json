@@ -1,0 +1,32 @@
+{
+  "title": "練習結束",
+  "score": "得分",
+  "accuracy": "正確率",
+  "asked": "題數",
+  "average": "每題平均",
+  "timedOut": "時間到",
+  "secondsShort": "{count} 秒",
+  "missed": {
+    "title": "需要再複習的單字",
+    "none": "每個單字都答對了。",
+    "count": "{count} 個單字",
+    "timedOut": "時間到"
+  },
+  "again": "再設定一輪練習",
+  "report": "查看過往紀錄",
+  "skip": "點任意處即可跳過",
+  "tier": {
+    "perfect": "完美",
+    "great": "幾近完美",
+    "good": "表現出色",
+    "fair": "漸入佳境",
+    "poor": "再接再厲"
+  },
+  "blurb": {
+    "perfect": "一個單字都沒答錯。",
+    "great": "離全對只差一步。",
+    "good": "大部分都答對了。",
+    "fair": "已經抓到感覺了。",
+    "poor": "每一次練習都會讓下一次更輕鬆。"
+  }
+}

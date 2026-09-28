@@ -13,17 +13,18 @@
   <PresetPicker />
 
   <div class="flex flex-wrap items-center gap-2">
-    <Button size="sm" variant="outline" onclick={() => app.selectAllSets()}>
+    <Button size="sm" variant="outline" wrap onclick={() => app.selectAllSets()}>
       <Icon name="select-all" />
       {t("setup.sets.selectAll")}
     </Button>
-    <Button size="sm" variant="outline" onclick={() => app.clearSets()}>
+    <Button size="sm" variant="outline" wrap onclick={() => app.clearSets()}>
       <Icon name="select-none" />
       {t("setup.sets.clear")}
     </Button>
     <Button
       size="sm"
       variant="outline"
+      wrap
       disabled={app.selectableWords.length === 0}
       onclick={() => app.go("words")}
     >

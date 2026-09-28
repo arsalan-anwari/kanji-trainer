@@ -74,6 +74,7 @@ pub fn run() {
             packs::delete_pack,
             export::export_request,
             export::export_write,
+            export::export_progress,
             export::export_finish
         ])
         .build(context)

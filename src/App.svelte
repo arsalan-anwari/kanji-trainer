@@ -1,5 +1,6 @@
 <script lang="ts">
   import {
+    AppControls,
     AppHeader,
     Button,
     Card,
@@ -20,11 +21,13 @@
   import PrintPicker from "./lib/components/chart/PrintPicker.svelte";
   import MarketScreen from "./lib/components/market/MarketScreen.svelte";
   import BaseGate from "./lib/components/market/BaseGate.svelte";
-  import { t } from "./lib/i18n.svelte";
+  import { i18n, t } from "./lib/i18n.svelte";
 
   app.load();
 
   let headerHeight = $state(0);
+  let windowHeight = $state(0);
+  const pinned = $derived(headerHeight * 3 <= windowHeight);
   let menu = $state(false);
 
   const prefsLabels = $derived({
@@ -46,6 +49,20 @@
     effectsHint: t("common.prefs.effectsHint"),
     language: t("common.prefs.language"),
     persist: t("common.prefs.persist")
+  });
+
+  const controlLabels = $derived({
+    language: t("common.prefs.language"),
+    close: t("common.close"),
+    themeSystem: t("common.prefs.themeIsSystem"),
+    themeLight: t("common.prefs.themeIsLight"),
+    themeDark: t("common.prefs.themeIsDark"),
+    themeLocked: t("common.prefs.themeLocked"),
+    contrast: t("common.prefs.contrast"),
+    soundOn: t("common.prefs.soundOn"),
+    soundOff: t("common.prefs.soundOff"),
+    zoomIn: t("common.prefs.zoomIn"),
+    zoomOut: t("common.prefs.zoomOut")
   });
 
   // The run owns the screen: paging away mid-question would lose the answers.
@@ -70,6 +87,9 @@
   );
 
   $effect(() => focusMain(app.route));
+  $effect(() => {
+    void app.loadPackLocales(i18n.locale, app.enabledPackIds);
+  });
   // A route change lands on a fresh screen; carrying over scroll from a
   // long previous screen leaves its top slipped under the sticky header.
   $effect(() => {
@@ -78,18 +98,17 @@
   });
 </script>
 
-<svelte:window onkeydown={(event) => keynav.handle(event)} />
+<svelte:window bind:innerHeight={windowHeight} onkeydown={(event) => keynav.handle(event)} />
 
 <div
   class="flex min-h-dvh w-full flex-col [--edge-x:1rem] [--edge-y:0.75rem] pr-[calc(env(safe-area-inset-right,0px)+var(--edge-x))] pl-[calc(env(safe-area-inset-left,0px)+var(--edge-x))] sm:[--edge-x:1.5rem] sm:[--edge-y:1.75rem] lg:[--edge-x:2.5rem] lg:[--edge-y:2.25rem]"
-  style="--header-height: {headerHeight}px"
 >
   <PageBackdrop />
   <KeyNavBadge label={t("common.shortcuts.mode")} />
 
   <div
     bind:clientHeight={headerHeight}
-    class="scrim sticky top-0 z-20 -mr-[calc(env(safe-area-inset-right,0px)+var(--edge-x))] -ml-[calc(env(safe-area-inset-left,0px)+var(--edge-x))] pt-[calc(var(--status-bar)+var(--edge-y))] pr-[calc(env(safe-area-inset-right,0px)+var(--edge-x))] pb-6 pl-[calc(env(safe-area-inset-left,0px)+var(--edge-x))] sm:pb-8"
+    class="scrim z-20 {pinned ? 'sticky top-0' : 'relative'} -mr-[calc(env(safe-area-inset-right,0px)+var(--edge-x))] -ml-[calc(env(safe-area-inset-left,0px)+var(--edge-x))] pt-[calc(var(--status-bar)+var(--edge-y))] pr-[calc(env(safe-area-inset-right,0px)+var(--edge-x))] pb-6 pl-[calc(env(safe-area-inset-left,0px)+var(--edge-x))] sm:pb-8"
   >
     <div class="mx-auto w-full max-w-7xl">
       <AppHeader
@@ -104,7 +123,11 @@
         settingsLabel={t("common.settings")}
         onsettings={() => (menu = true)}
         navLabel={t("common.navLabel")}
-      />
+      >
+        {#snippet controls()}
+          <AppControls labels={controlLabels} />
+        {/snippet}
+      </AppHeader>
     </div>
   </div>
 

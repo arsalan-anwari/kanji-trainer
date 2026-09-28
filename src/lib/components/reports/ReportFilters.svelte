@@ -135,7 +135,7 @@
           {active}
         </span>
       {/if}
-      <Icon name="chevron-down" class="ml-auto size-4" />
+      <Icon name="chevron-down" class="ms-auto size-4" />
     </summary>
 
     <div class="flex flex-col gap-3 border-t border-border px-3 py-3">
@@ -143,7 +143,7 @@
         <span class="text-[0.625rem] font-bold tracking-wide text-muted-foreground uppercase">
           {t("reports.filters.format")}
         </span>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
           <Select
             size="sm"
             value={from}
@@ -152,7 +152,7 @@
             closeLabel={t("common.close")}
             onchange={setFrom}
           />
-          <Icon name="chevron-right" class="size-4 shrink-0 text-muted-foreground" />
+          <Icon name="chevron-right" class="size-4 shrink-0 text-muted-foreground rtl:-scale-x-100" />
           <Select
             size="sm"
             value={to}

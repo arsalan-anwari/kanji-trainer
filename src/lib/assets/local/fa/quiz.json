@@ -1,0 +1,91 @@
+{
+  "progress": "سوال {index} از {total}",
+  "runProgress": "پیشرفت دور",
+  "announce": "سوال {index} از {total}. {prompt}",
+  "prompt": {
+    "kanji-kana": "این کلمه چطور خوانده می‌شود؟",
+    "kana-kanji": "این کدام کلمه است؟",
+    "kanji-meaning": "این کلمه چه معنایی دارد؟",
+    "meaning-kanji": "کدام کلمه این معنا را دارد؟",
+    "kana-meaning": "این کلمه چه معنایی دارد؟",
+    "meaning-kana": "این کلمه چطور خوانده می‌شود؟",
+    "image-kanji": "این کدام کلمه است؟",
+    "image-kana": "این کلمه چطور خوانده می‌شود؟",
+    "audio-kana": "کلمه‌ای که شنیدید چطور خوانده می‌شود؟",
+    "audio-kanji": "کدام کلمه را شنیدید؟",
+    "kanji-audio": "کدام فایل صوتی مربوط به این کلمه است؟",
+    "replay": "پخش دوباره کلمه",
+    "imageAlt": "تصویری که کلمه را نشان می‌دهد",
+    "kana-assemble": "این کلمه را بسازید"
+  },
+  "choices": "پاسخ‌ها",
+  "soundTile": "فایل صوتی {slot}",
+  "check": "بررسی",
+  "soundHint": "برای شنیدن، روی یک فایل صوتی ضربه بزنید، سپس بررسی کنید.",
+  "soundCompare": "برای شنیدن دوباره، روی یک فایل صوتی ضربه بزنید.",
+  "typed": {
+    "label": "پاسخ",
+    "placeholder": "پاسخ خود را تایپ کنید",
+    "submit": "بررسی"
+  },
+  "correct": "درست",
+  "wrong": "نادرست",
+  "answerWas": "پاسخ {answer} بود",
+  "alsoReads": "همچنین به صورت {list} خوانده می‌شود",
+  "reveal": {
+    "reading": "تلفظ",
+    "written": "نوشتار",
+    "gloss": "معنی"
+  },
+  "hint": {
+    "open": "نمایش راهنما",
+    "close": "بستن راهنما",
+    "picture": "تصویری که به پاسخ اشاره می‌کند",
+    "kind": {
+      "romaji": "نحوه تلفظ",
+      "clue": "یک سرنخ",
+      "look": "نحوه نوشتن",
+      "image": "یک تصویر",
+      "ghost": "برخی از قطعات"
+    }
+  },
+  "next": "بعدی",
+  "continue": "ادامه",
+  "finish": "مشاهده امتیاز",
+  "quit": "خروج",
+  "quitTitle": "خروج از این دور؟",
+  "quitBody": "سوالاتی که تا اینجا پاسخ داده شده‌اند ذخیره نخواهند شد.",
+  "quitConfirm": "خروج",
+  "quitCancel": "ادامه دادن",
+  "score": "{score} پاسخ درست از {answered} سوال",
+  "time": {
+    "out": "زمان تمام شد",
+    "warning": "پنج ثانیه باقی‌مانده",
+    "questionLeft": "زمان باقی‌مانده برای این سوال",
+    "runLeft": "زمان باقی‌مانده از این دور"
+  },
+  "assemble": {
+    "slots": "جایگاه‌ها",
+    "pile": "بلوک‌ها",
+    "tray": "{kind} {index}",
+    "kanji": "کانجی",
+    "kana": "کانا",
+    "empty": "خالی",
+    "slot": "{tray}، {position}، {content}",
+    "placed": "{block} در {slot} قرار گرفت",
+    "lifted": "{block} از {slot} برداشته شد",
+    "done": "{character} کامل شد",
+    "position": {
+      "whole": "کامل",
+      "center": "مرکز",
+      "left": "چپ",
+      "right": "راست",
+      "top": "بالا",
+      "bottom": "پایین",
+      "top-left": "بالا سمت چپ",
+      "top-right": "بالا سمت راست",
+      "bottom-left": "پایین سمت چپ",
+      "bottom-right": "پایین سمت راست"
+    }
+  }
+}

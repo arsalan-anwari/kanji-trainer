@@ -3,11 +3,14 @@ import { applySeed, seedPayload } from "./seed";
 import { installStage, Stage } from "./stage";
 import {
   answering,
+  answers,
   blocksInOrder,
   forgetHeard,
   installClipTap,
+  pickLanguage,
   rightRecording,
-  rightSlot
+  rightSlot,
+  say
 } from "../showcase/drive";
 
 const intro = { title: "Kanji Trainer", lines: ["JLPT vocabulary, written in kanji"] };
@@ -38,7 +41,9 @@ const TOUR: [caption: string, category: string, direction: string, kind: Kind][]
   ["Assemble: build the word from its pieces", "Assemble", "", "blocks"]
 ];
 
-const answers = (page: Page) => page.getByRole("group", { name: "Answers" }).getByRole("button");
+// The app in two other languages, one of them right to left.
+const TRANSLATED = { tag: "nl", name: "Nederlands" };
+const RIGHT_TO_LEFT = { tag: "he", name: "עברית" };
 
 async function question(page: Page, number: number): Promise<void> {
   await expect(page.getByText(`${number} / ${QUESTIONS}`)).toBeVisible();
@@ -211,8 +216,8 @@ test("record the promo", async ({ page }) => {
   await stage.tap(theme, 300);
 
   await stage.caption("Scale the whole app to fit the screen it is on");
-  const zoomOut = button("Zoom out");
-  const zoomIn = button("Zoom in");
+  const zoomOut = button(say("en", "common.prefs.zoomOut"), true);
+  const zoomIn = button(say("en", "common.prefs.zoomIn"), true);
   await stage.tap(zoomOut, 260);
   await stage.tap(zoomOut, 480);
   await stage.tap(zoomIn, 260);
@@ -224,6 +229,39 @@ test("record the promo", async ({ page }) => {
   await stage.tap(contrast, 300);
   await stage.hideCaption();
   stage.mark("appearance");
+
+  await stage.caption("In 17 languages, right to left included");
+  await stage.tap(page.getByRole("tab", { name: "Practice" }), 300);
+  await stage.tap(button(/^Meaning/).first(), 180);
+  await stage.tap(button(/^Kanji to romaji/).first(), 300);
+  await pickLanguage(page, "en", TRANSLATED.name, (target) => stage.tap(target, 450));
+  await stage.beat(700);
+
+  await stage.caption("Meanings and hints in your language too");
+  await stage.tap(button(say(TRANSLATED.tag, "setup.start.button"), true), 550);
+  await answering(page);
+  await stage.beat(700);
+  await stage.tap(button(say(TRANSLATED.tag, "quiz.hint.open")), 1600);
+  await stage.tap(button(say(TRANSLATED.tag, "quiz.hint.close")), 300);
+  await stage.tap(answers(page).nth(await rightSlot(page)), 1000, true);
+  await stage.tap(button(say(TRANSLATED.tag, "quiz.quit"), true).first(), 240);
+  await stage.tap(
+    page
+      .getByLabel(say(TRANSLATED.tag, "quiz.quitTitle"))
+      .getByRole("button", { name: say(TRANSLATED.tag, "quiz.quitConfirm"), exact: true }),
+    260
+  );
+  stage.mark("translated run");
+
+  await stage.caption("Right to left, where the language reads that way");
+  await pickLanguage(page, TRANSLATED.tag, RIGHT_TO_LEFT.name, (target) => stage.tap(target, 450));
+  await stage.beat(900);
+  await stage.tap(button(say(RIGHT_TO_LEFT.tag, "setup.start.button"), true), 550);
+  await answering(page);
+  await stage.beat(700);
+  await stage.tap(answers(page).nth(await rightSlot(page)), 1200, true);
+  await stage.hideCaption();
+  stage.mark("right to left run");
 
   await stage.card(outro, 5000);
   stage.mark("end");

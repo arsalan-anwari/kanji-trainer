@@ -10,7 +10,9 @@ import {
   installShowcase,
   moveOn,
   pickFormat,
+  pickLanguage,
   quitRun,
+  say,
   Showcase,
   splash
 } from "./drive";
@@ -20,6 +22,11 @@ const CLOCK = Date.UTC(2026, 8, 26, 20, 30);
 const SEED = 20260926;
 
 const MISSED = new Set([3, 7]);
+
+// The app in two other languages, one of them right to left. Each needs its
+// interface bundle and pack locale.
+const TRANSLATED = { tag: "nl", name: "Nederlands", still: "Dutch" };
+const RIGHT_TO_LEFT = { tag: "he", name: "עברית", still: "Hebrew" };
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 
@@ -208,6 +215,31 @@ test("record the showcase", async ({ page }, testInfo) => {
     await shots.shot("30_Marketplace_HighContrast");
     await button("High contrast", true).click();
   }
+
+  // A meaning question and its hint in another language, then the same run
+  // right to left. The advanced clue is the hint, so it shows translated too.
+  await page.getByRole("tab", { name: "Practice" }).click();
+  await pickFormat(page, "Meaning", "Kanji to romaji");
+  await pickLanguage(page, "en", TRANSLATED.name);
+  await page.getByRole("button", { name: say(TRANSLATED.tag, "setup.start.button"), exact: true }).click();
+  await answering(page);
+  await shots.top();
+  await shots.shot(`31_Quiz_KanjiMeaning_${TRANSLATED.still}`);
+
+  await button(say(TRANSLATED.tag, "quiz.hint.open")).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await shots.shot(`32_Quiz_Hint_${TRANSLATED.still}`);
+  await button(say(TRANSLATED.tag, "quiz.hint.close")).click();
+  await quitRun(page, TRANSLATED.tag);
+
+  await pickLanguage(page, TRANSLATED.tag, RIGHT_TO_LEFT.name);
+  await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+  await shots.top();
+  await shots.shot(`33_Setup_${RIGHT_TO_LEFT.still}`);
+  await page.getByRole("button", { name: say(RIGHT_TO_LEFT.tag, "setup.start.button"), exact: true }).click();
+  await answering(page);
+  await shots.top();
+  await shots.shot(`34_Quiz_KanjiMeaning_${RIGHT_TO_LEFT.still}`);
 
   console.log(`  ${shots.count} stills in packaging/repo/${testInfo.project.name}`);
 });

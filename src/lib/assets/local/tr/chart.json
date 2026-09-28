@@ -1,0 +1,37 @@
+{
+  "title": "Çizelge",
+  "play": "{word} çal",
+  "flip": "{word} çevir",
+  "empty": "Bu filtrelere uyan kelime yok.",
+  "export": {
+    "open": "Bilgi kartlarını dışa aktar",
+    "title": "Bilgi kartlarını dışa aktar",
+    "selected": "PDF için {count} kelime seçildi",
+    "back": "Çizelgeye dön",
+    "pdf": "PDF olarak indir",
+    "busyNote": "Zaten bir dışa aktarma işlemi devam ediyor. Bekleyin veya Çizelge sayfasından iptal edin.",
+    "grid": {
+      "title": "Sayfa başı kart sayısı",
+      "description": "Her A4 sayfası için bir ızgara seçin. Her kart aynı boyutta ve metne sahiptir, ayrıca her okunuş tam olarak yazdırılır.",
+      "size": "{size}×{size}",
+      "all": "Tümü",
+      "pages": "{pages} sayfada {cards} kart, ön ve arka yüzler",
+      "pagesAll": "{files} PDF içinde {cards} kart, ızgara başına bir tane, toplam {pages} sayfa",
+      "start": "Dışa aktarmayı başlat"
+    },
+    "state": {
+      "running": "Bilgi kartı PDF'i oluşturuluyor…",
+      "ready": "Bilgi kartı PDF'i hazır.",
+      "readyAll": "Bilgi kartı PDF'leri hazır.",
+      "failed": "Bilgi kartı PDF'i oluşturulamadı."
+    },
+    "progress": "{total} sayfadan {done}. sayfa",
+    "summary": "{pages} sayfada {cards} kart, sayfa başı {size}×{size}.",
+    "summaryAll": "{files} PDF içinde {cards} kart: {grids}.",
+    "download": "PDF'i indir",
+    "downloadAll": "PDF'leri bir klasöre kaydet",
+    "discard": "Vazgeç",
+    "saved": "Bilgi kartı PDF'i kaydedildi.",
+    "savedAll": "Bilgi kartı PDF'leri kaydedildi."
+  }
+}

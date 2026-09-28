@@ -12,4 +12,7 @@ for _kjt_script in "$KJT_ROOT"/scripts/*.sh; do
 done
 unset _kjt_script
 
-echo "kanji-trainer: $(cd "$KJT_ROOT/scripts" && ls *.sh | sed 's/\.sh$//' | tr '\n' ' ')"
+# The release binary from `npm run tauri:build`.
+kanji-trainer() { "$KJT_ROOT/src-tauri/target/release/kanji-trainer" "$@"; }
+
+echo "kanji-trainer: kanji-trainer $(cd "$KJT_ROOT/scripts" && ls *.sh | sed 's/\.sh$//' | tr '\n' ' ')"

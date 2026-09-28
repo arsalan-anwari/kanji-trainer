@@ -1,0 +1,128 @@
+{
+  "title": "Een ronde instellen",
+  "level": {
+    "title": "Niveau",
+    "description": "Uit welke lijst de ronde put.",
+    "unavailable": "{level} zit nog niet in deze versie."
+  },
+  "sets": {
+    "title": "Woordsets",
+    "description": "Kies uit welke woorden de ronde put.",
+    "selectAll": "Alles kiezen",
+    "clear": "Wissen",
+    "count": "{count} woorden",
+    "empty": "Geen sets op dit niveau."
+  },
+  "format": {
+    "title": "Vraagvorm",
+    "description": "Wat je ziet en wat je antwoordt.",
+    "reading": "Oefen de kanji van een woord tegen de kana.",
+    "meaning": "Oefen het woord tegen zijn betekenis.",
+    "visualize": "Herken het woord aan een afbeelding.",
+    "listening": "Hoor een los woord, of kies hoe het klinkt.",
+    "kanji-kana": "Zie het woord, geef de lezing",
+    "kana-kanji": "Zie de lezing, kies het geschreven woord",
+    "kanji-meaning": "Zie het woord, kies wat het betekent",
+    "meaning-kanji": "Zie een betekenis, kies het woord",
+    "kana-meaning": "Zie de lezing, kies wat het betekent",
+    "meaning-kana": "Zie een betekenis, kies de lezing",
+    "image-kanji": "Zie een afbeelding, kies het woord",
+    "image-kana": "Zie een afbeelding, kies de lezing",
+    "audio-kana": "Hoor het woord, geef de lezing",
+    "audio-kanji": "Hoor het woord, geef het geschreven woord",
+    "kanji-audio": "Zie het woord, kies de juiste opname",
+    "assemble": "Bouw het woord uit zijn stukken.",
+    "kana-assemble": "Zie de lezing en betekenis, bouw het geschreven woord"
+  },
+  "direction": {
+    "title": "Richting",
+    "description": "Welke kant van het woord deze vraagvorm gebruikt."
+  },
+  "answerStyle": {
+    "title": "Antwoordwijze",
+    "description": "Tik een antwoord aan of typ het.",
+    "choice": "Kies een van de antwoorden",
+    "typing": "Typ het antwoord"
+  },
+  "wordShapes": {
+    "title": "Woordvormen",
+    "description": "Filter op opbouw van het woord.",
+    "1-kanji": "Losse kanji (一)",
+    "2-kanji": "Samenstelling (学校)",
+    "okurigana": "Kanji met okurigana (上げる)",
+    "hint": "Leeg laten voor alles.",
+    "kana": "Alleen kana (これ)"
+  },
+  "difficulty": {
+    "title": "Moeilijkheid",
+    "description": "Hoe geloofwaardig de foute antwoorden zijn.",
+    "beginner": "Foute antwoorden lijken totaal niet op het goede.",
+    "advanced": "Eén fout antwoord lijkt op het goede.",
+    "expert": "Elk fout antwoord lijkt op het goede."
+  },
+  "run": {
+    "title": "Opties voor de ronde",
+    "description": "Hoe lang de ronde duurt.",
+    "count": "Aantal vragen",
+    "onePass": "Eén keer rond"
+  },
+  "presets": {
+    "label": "Bewaarde rondes",
+    "none": "Voorkeuzes",
+    "some": "Een bewaarde ronde kiezen",
+    "create": "Deze ronde bewaren",
+    "update": "Bijwerken",
+    "restore": "Laden",
+    "delete": "Verwijderen",
+    "name": "Geef deze ronde een naam",
+    "saved": "Bewaard.",
+    "firstSteps": "Eerste stappen",
+    "firstStepsDone": "Klaar voor een eerste ronde: tien vragen, getallen.",
+    "confirmTitle": "Deze bewaarde ronde verwijderen?",
+    "confirmBody": "\"{name}\" wordt van dit apparaat verwijderd."
+  },
+  "start": {
+    "button": "Starten",
+    "study": "Eerst bestuderen",
+    "inPlay": "Woorden in het spel",
+    "questions": "Vragen"
+  },
+  "startHint": "Kies minstens één set om te starten.",
+  "study": {
+    "title": "Bestuderen",
+    "description": "Lees ze door voor je gaat oefenen.",
+    "back": "Terug naar instellen",
+    "empty": "Kies een set om te bestuderen."
+  },
+  "words": {
+    "button": "Geavanceerde instellingen",
+    "title": "Geavanceerde instellingen",
+    "inPlay": "{count} woorden gekozen.",
+    "taken": "{taken} van {total} gehouden",
+    "back": "Terug naar instellen",
+    "unselectAll": "Niets kiezen",
+    "selectAll": "Alles kiezen",
+    "all": "Alle",
+    "clear": "Geen",
+    "empty": "Kies een set om de woorden te zien.",
+    "group": "Woorden in {label}",
+    "filters": "Filters",
+    "filtersHint": "Maak de lijst kleiner voor je woorden kiest.",
+    "search": "Woorden zoeken",
+    "category": "Categorie",
+    "subcategory": "Subcategorie",
+    "noMatch": "Geen woord past bij deze zoekopdracht.",
+    "packs": "Pakketten",
+    "unsuited": "{packs} is niet bruikbaar voor deze vraagvorm",
+    "unsuitedWord": "Deze vraagvorm kan dit woord niet vragen"
+  },
+  "time": {
+    "perQuestion": "Tijd per vraag",
+    "wholeRun": "Tijd voor de hele ronde",
+    "seconds": "Seconden per vraag",
+    "minutes": "Minuten voor de ronde",
+    "secondsShort": "{count} s",
+    "minutesShort": "{count} min"
+  },
+  "kanaHint": "Kanawoorden hebben geen kanjivorm. Kies een betekenis-, beeld- of luistervorm die de kanji niet toont."
+}

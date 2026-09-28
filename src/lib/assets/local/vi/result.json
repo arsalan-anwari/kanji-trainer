@@ -1,0 +1,32 @@
+{
+  "title": "Đã hoàn thành lượt chạy",
+  "score": "Điểm số",
+  "accuracy": "Độ chính xác",
+  "asked": "Câu hỏi",
+  "average": "Trung bình mỗi câu hỏi",
+  "timedOut": "Hết thời gian",
+  "secondsShort": "{count}s",
+  "missed": {
+    "title": "Từ cần xem lại",
+    "none": "Mọi từ đều đúng.",
+    "count": "{count} từ",
+    "timedOut": "Hết thời gian"
+  },
+  "again": "Thiết lập lượt chạy khác",
+  "report": "Xem các lượt chạy trước",
+  "skip": "Chạm vào bất kỳ đâu để bỏ qua",
+  "tier": {
+    "perfect": "Hoàn hảo",
+    "great": "Gần như hoàn hảo",
+    "good": "Lượt chạy tốt",
+    "fair": "Đang tiến bộ",
+    "poor": "Tiếp tục luyện tập"
+  },
+  "blurb": {
+    "perfect": "Không sai từ nào.",
+    "great": "Suýt nữa là hoàn hảo.",
+    "good": "Hầu hết đều đúng.",
+    "fair": "Đã nắm được cơ bản.",
+    "poor": "Mỗi lượt chạy đều giúp lượt sau dễ dàng hơn."
+  }
+}

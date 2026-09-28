@@ -52,7 +52,7 @@
   >
     <span
       aria-hidden="true"
-      class="jp pointer-events-none absolute -top-6 -right-4 text-[11rem] leading-none font-bold text-brand opacity-10 select-none"
+      class="jp pointer-events-none absolute -top-6 -end-4 text-[11rem] leading-none font-bold text-brand opacity-10 select-none"
     >
       店
     </span>
