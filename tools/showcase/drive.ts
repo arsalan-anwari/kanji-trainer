@@ -181,18 +181,18 @@ for (const id of ids) {
 }
 const meaningsOf = (word: Word): string[] => [word.meaning, ...(translated.get(word.id) ?? [])];
 
-const local = fileURLToPath(new URL("../../src/lib/assets/local/", import.meta.url));
+const strings = fileURLToPath(new URL("../../src/lib/assets/locale/", import.meta.url));
 
 /** An interface string by its key, `quiz.hint.open`, in the locale `tag`. */
 export function say(tag: string, key: string): string {
   const [file, ...path] = key.split(".");
-  let node: unknown = JSON.parse(readFileSync(`${local}${tag}/${file}.json`, "utf8"));
+  let node: unknown = JSON.parse(readFileSync(`${strings}${tag}/${file}.json`, "utf8"));
   for (const part of path) node = (node as Record<string, unknown>)[part];
   return node as string;
 }
 
 const escaped = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const choices = new RegExp(`^(${readdirSync(local).map((tag) => escaped(say(tag, "quiz.choices"))).join("|")})$`);
+const choices = new RegExp(`^(${readdirSync(strings).map((tag) => escaped(say(tag, "quiz.choices"))).join("|")})$`);
 
 // A word's picture and recording share one path under the pack.
 const isAssetOf = (path: string, word: Word): boolean =>

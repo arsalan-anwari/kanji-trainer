@@ -24,20 +24,38 @@ export function componentIndex(kanji: readonly Kanji[]): ComponentIndex {
   return new Map(kanji.map((entry) => [entry.character, entry.components]));
 }
 
+// Scoring distractors folds each reading once per word pair, hundreds of
+// thousands of times a run; the vocabulary is small, so remember every fold.
+const folded = new Map<string, string>();
+
 export function foldReading(reading: string): string {
+  const known = folded.get(reading);
+  if (known !== undefined) return known;
   const letters = toRomaji(reading)
     .replace(/(.)\1/g, (doubled, letter: string) => (letter === "n" ? doubled : letter))
     .replace(/tch/g, "ch")
     .replace(/[gzjdbpf]/g, (letter) => UNVOICED[letter]);
-  return letters.replace(LONG, "$1");
+  const fold = letters.replace(LONG, "$1");
+  folded.set(reading, fold);
+  return fold;
 }
 
 function shareAnything(left: readonly string[], right: readonly string[]): boolean {
   return left.some((entry) => right.includes(entry));
 }
 
-function componentsOf(word: Word, components: ComponentIndex): string[] {
-  return word.kanji.flatMap((character) => [...(components.get(character) ?? [])]);
+// Built once per word and index, for the same reason as the folded readings.
+const parts = new WeakMap<ComponentIndex, WeakMap<Word, readonly string[]>>();
+
+function componentsOf(word: Word, components: ComponentIndex): readonly string[] {
+  let known = parts.get(components);
+  if (known === undefined) parts.set(components, (known = new WeakMap()));
+  let found = known.get(word);
+  if (found === undefined) {
+    found = word.kanji.flatMap((character) => [...(components.get(character) ?? [])]);
+    known.set(word, found);
+  }
+  return found;
 }
 
 function writtenScore(target: Word, candidate: Word, components: ComponentIndex): number {

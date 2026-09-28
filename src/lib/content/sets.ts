@@ -254,21 +254,29 @@ export type KanjiGroup<T> = {
   words: T[];
 };
 
-export function groupWordsByKanji<T extends { kanji: string[] }>(
+/**
+ * Files each word under the first kanji it carries, or under its first kana
+ * when it carries none, so kana-only words are listed rather than dropped.
+ * Kanji groups follow `order`; kana groups follow them in kana order.
+ */
+export function groupWordsByKanji<T extends { kanji: string[]; reading: string }>(
   words: readonly T[],
   order: readonly string[]
 ): KanjiGroup<T>[] {
   const rank = new Map(order.map((character, index) => [character, index]));
   const grouped = new Map<string, T[]>();
   for (const word of words) {
-    const head = word.kanji[0];
+    const head = word.kanji[0] ?? [...word.reading][0];
     if (head === undefined) continue;
     const found = grouped.get(head);
     if (found === undefined) grouped.set(head, [word]);
     else found.push(word);
   }
   return [...grouped]
-    .sort(([a], [b]) => (rank.get(a) ?? order.length) - (rank.get(b) ?? order.length))
+    .sort(
+      ([a], [b]) =>
+        (rank.get(a) ?? order.length) - (rank.get(b) ?? order.length) || a.localeCompare(b, "ja")
+    )
     .map(([character, words]) => ({ character, words }));
 }
 
@@ -357,7 +365,7 @@ if (import.meta.vitest) {
 
   test("names every set, subcategory and family in every locale", async () => {
     const { readdirSync, readFileSync } = await import("node:fs");
-    const root = new URL("../assets/local/", import.meta.url);
+    const root = new URL(/* @vite-ignore */ "../assets/locale/", import.meta.url);
     for (const locale of readdirSync(root)) {
       const common = JSON.parse(readFileSync(new URL(`${locale}/common.json`, root), "utf8"));
       const missing = [
@@ -492,7 +500,7 @@ if (import.meta.vitest) {
   });
 
   describe("groupWordsByKanji", () => {
-    const word = (id: string, kanji: string[]) => ({ id, kanji });
+    const word = (id: string, kanji: string[], reading = "") => ({ id, kanji, reading });
 
     test("files a word under the first kanji it carries", () => {
       const grouped = groupWordsByKanji([word("学校", ["学", "校"])], ["学", "校"]);
@@ -513,8 +521,13 @@ if (import.meta.vitest) {
       expect(grouped.map((group) => group.character)).toEqual(["水", "山"]);
     });
 
-    test("drops a word carrying no kanji of the level", () => {
-      expect(groupWordsByKanji([word("とても", [])], ["水"])).toEqual([]);
+    test("files a word carrying no kanji of the level under its first kana, after the kanji", () => {
+      const grouped = groupWordsByKanji(
+        [word("もう", [], "もう"), word("水", ["水"]), word("とても", [], "とても"), word("もっと", [], "もっと")],
+        ["水"]
+      );
+      expect(grouped.map((group) => group.character)).toEqual(["水", "と", "も"]);
+      expect(grouped[2].words.map((entry) => entry.id)).toEqual(["もう", "もっと"]);
     });
   });
 

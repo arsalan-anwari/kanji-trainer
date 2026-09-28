@@ -13,7 +13,7 @@ import {
   type PageImage,
   type Rect
 } from "./pdf";
-import { layoutRows, sharedUnit, type Row } from "./layout";
+import { breakable, layoutRows, sharedUnit, type Row } from "./layout";
 
 const FONT = '"Kaizen JP", sans-serif';
 const INK = "#1f1d18";
@@ -35,7 +35,6 @@ type BackRow = {
   items: string[];
   weight: 400 | 700;
   color: string;
-  spaced: boolean;
   /** Room above the row, in lines of its own size; a rule is drawn in it. */
   space: number;
 };
@@ -156,10 +155,9 @@ function textRow(
   items: string[],
   weight: 400 | 700,
   color: string,
-  spaced = false,
   space = 0
 ): BackRow {
-  return { size, items, weight, color, spaced, space };
+  return { size, items, weight, color, space };
 }
 
 // One item per character, so Japanese wraps anywhere, except that small kana,
@@ -174,14 +172,14 @@ function backRows(face: CardFace): BackRow[] {
   const rows = [
     textRow(1.5, glyphs(face.kana), 700, INK),
     textRow(1, separated(face.romaji.split("-"), "-"), 400, MUTED),
-    textRow(1.1, face.meaning.split(" "), 400, INK, true)
+    textRow(1.1, breakable(face.meaning, face.lang), 400, INK)
   ];
   if (face.example === null) return rows;
   return [
     ...rows,
-    textRow(1, glyphs(face.example.japanese), 400, INK, false, 0.6),
-    textRow(0.85, face.example.romaji.split(" "), 400, MUTED, true),
-    textRow(0.85, face.example.english.split(" "), 400, INK, true)
+    textRow(1, glyphs(face.example.japanese), 400, INK, 0.6),
+    textRow(0.85, breakable(face.example.romaji, "en"), 400, MUTED),
+    textRow(0.85, breakable(face.example.english, face.lang), 400, INK)
   ];
 }
 
@@ -193,7 +191,7 @@ function measured(ctx: CanvasRenderingContext2D, row: BackRow): Row {
     space: row.space,
     lead: 0,
     items: row.items.map(text),
-    gap: row.spaced ? text(" ") : 0
+    gap: 0
   };
 }
 
@@ -239,7 +237,7 @@ function drawBack(ctx: CanvasRenderingContext2D, rect: Rect, back: Back, unit: n
     }
     for (const line of placed[index] ?? []) {
       top += size * LINE_HEIGHT;
-      const text = line.map((item) => row.items[item] ?? "").join(row.spaced ? " " : "");
+      const text = line.map((item) => row.items[item] ?? "").join("");
       drawParts(ctx, [{ text, weight: row.weight, color: row.color }], inner.x, top - size * 0.3, size);
     }
   });

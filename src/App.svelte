@@ -8,7 +8,8 @@
     keynav,
     KeyNavBadge,
     PageBackdrop,
-    SettingsMenu
+    SettingsMenu,
+    ShortcutHelp
   } from "kaizen-ui";
   import { app, TAB_ROUTES, type TabRoute } from "./lib/state.svelte";
   import SetupScreen from "./lib/components/setup/SetupScreen.svelte";
@@ -22,6 +23,7 @@
   import MarketScreen from "./lib/components/market/MarketScreen.svelte";
   import BaseGate from "./lib/components/market/BaseGate.svelte";
   import { i18n, t } from "./lib/i18n.svelte";
+  import { shortcuts } from "./lib/shortcuts";
 
   app.load();
 
@@ -172,4 +174,13 @@
 
 {#if menu}
   <SettingsMenu labels={prefsLabels} onclose={() => (menu = false)} />
+{/if}
+
+{#if keynav.help}
+  <ShortcutHelp
+    title={t("common.shortcuts.title")}
+    closeLabel={t("common.close")}
+    groups={shortcuts()}
+    onclose={() => (keynav.help = false)}
+  />
 {/if}

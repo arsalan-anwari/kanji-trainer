@@ -124,7 +124,9 @@ function pickIds(value: unknown): string[] {
 class AppState {
   route = $state<Route>("setup");
   installed = $state<InstalledPack[]>([]);
-  packContents = $state<Record<string, Content>>({});
+  // Raw: content is only ever replaced, and proxied words make every field read in
+  // question building go through a trap, seconds per run on WebKitGTK.
+  packContents = $state.raw<Record<string, Content>>({});
   packsLoaded = $state(false);
   contentFailed = $state(false);
   catalog = $state<CatalogEntry[]>([]);
@@ -139,8 +141,8 @@ class AppState {
   #chosenPreset = $state("");
   message = $state("");
 
-  questions = $state<Question[]>([]);
-  answers = $state<Answer[]>([]);
+  questions = $state.raw<Question[]>([]);
+  answers = $state.raw<Answer[]>([]);
   index = $state(0);
   phase = $state<Phase>("answering");
   typed = $state("");
@@ -161,17 +163,19 @@ class AppState {
   pausedAt = 0;
   timer: ReturnType<typeof setInterval> | null = null;
 
-  reports = $state<Report[]>([]);
+  reports = $state.raw<Report[]>([]);
   chartFilter = $state<WordFilter>(emptyFilter(DEFAULT_SETTINGS.level));
   printExcluded = $state<Set<string>>(new Set());
   lastReport = $state<Report | null>(null);
   splash = $state<FanfareGrade | null>(null);
+  /** A run is being built; a long one-pass run takes a moment. */
+  starting = $state(false);
 
   enabledPackIds = $derived<string[]>(enabledPacks(this.installed, this.disabledPacks));
   merged = $derived(
     mergeContents(this.enabledPackIds.flatMap((id) => this.packContents[id] ?? []))
   );
-  packLocale = $state<{ lang: string; translation: PackLocale }>({ lang: CONTENT_LANG, translation: NO_PACK_LOCALE });
+  packLocale = $state.raw<{ lang: string; translation: PackLocale }>({ lang: CONTENT_LANG, translation: NO_PACK_LOCALE });
   words = $derived<Word[]>(translateWords(this.merged.words, this.packLocale.translation, this.packLocale.lang));
   kanji = $derived<Kanji[]>(translateKanji(this.merged.kanji, this.packLocale.translation, this.packLocale.lang));
   ready = $derived(this.words.length > 0);
@@ -506,7 +510,19 @@ class AppState {
     this.chosenPreset = "";
   }
 
-  start(): void {
+  async start(): Promise<void> {
+    if (this.starting) return;
+    this.starting = true;
+    // Let the Start button paint its busy state before building blocks the page.
+    await new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve)));
+    try {
+      this.#begin();
+    } finally {
+      this.starting = false;
+    }
+  }
+
+  #begin(): void {
     const questions = buildQuestions(
       this.settings,
       this.words,

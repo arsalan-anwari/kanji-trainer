@@ -28,8 +28,15 @@
     <p class="text-xs leading-snug font-bold text-success">{t(app.message)}</p>
   {/if}
 
-  <Button size="xl" variant="brand" full disabled={!app.canStart} onclick={() => app.start()}>
-    {t("setup.start.button")}
+  <Button
+    size="xl"
+    variant="brand"
+    full
+    disabled={!app.canStart || app.starting}
+    aria-busy={app.starting}
+    onclick={() => void app.start()}
+  >
+    {app.starting ? t("setup.start.preparing") : t("setup.start.button")}
   </Button>
 
   <Button size="sm" variant="outline" full disabled={!app.canStart} onclick={() => app.go("study")}>

@@ -1,0 +1,129 @@
+{
+  "title": "設定一輪練習",
+  "level": {
+    "title": "等級",
+    "description": "練習要從哪個清單出題。",
+    "unavailable": "{level} 目前版本尚未收錄。"
+  },
+  "sets": {
+    "title": "單字集",
+    "description": "選擇練習要從哪些單字出題。",
+    "selectAll": "全選",
+    "clear": "清除",
+    "count": "{count} 個單字",
+    "empty": "此等級沒有單字集。"
+  },
+  "format": {
+    "title": "題目形式",
+    "description": "顯示什麼、要回答什麼。",
+    "reading": "對照單字的假名來練習漢字。",
+    "meaning": "對照單字的意思來練習單字。",
+    "visualize": "從圖片辨認單字。",
+    "listening": "聽單字發音，或選出它的讀法。",
+    "kanji-kana": "看單字，回答讀音",
+    "kana-kanji": "看讀音，選出對應的單字",
+    "kanji-meaning": "看單字，選出它的意思",
+    "meaning-kanji": "看意思，選出對應的單字",
+    "kana-meaning": "看讀音，選出它的意思",
+    "meaning-kana": "看意思，選出對應的讀音",
+    "image-kanji": "看圖片，選出對應的單字",
+    "image-kana": "看圖片，選出對應的讀音",
+    "audio-kana": "聽單字，回答讀音",
+    "audio-kanji": "聽單字，回答對應的單字",
+    "kanji-audio": "看單字，選出正確的錄音",
+    "assemble": "用單字的組成部分拼出單字。",
+    "kana-assemble": "看讀音和意思，拼出對應的單字"
+  },
+  "direction": {
+    "title": "方向",
+    "description": "此形式使用單字的哪一邊。"
+  },
+  "answerStyle": {
+    "title": "作答方式",
+    "description": "點選答案或自行輸入。",
+    "choice": "從選項中挑一個",
+    "typing": "輸入答案"
+  },
+  "wordShapes": {
+    "title": "單字結構",
+    "description": "依單字結構篩選。",
+    "1-kanji": "單一漢字（一）",
+    "2-kanji": "複合詞（学校）",
+    "okurigana": "漢字加送假名（上げる）",
+    "hint": "留空表示全部。",
+    "kana": "純假名（これ）"
+  },
+  "difficulty": {
+    "title": "難度",
+    "description": "錯誤選項有多逼真。",
+    "beginner": "錯誤選項和正確答案完全不同。",
+    "advanced": "有一個錯誤選項和正確答案相似。",
+    "expert": "所有錯誤選項都和正確答案相似。"
+  },
+  "run": {
+    "title": "練習選項",
+    "description": "練習的長度。",
+    "count": "題數",
+    "onePass": "單輪"
+  },
+  "presets": {
+    "label": "已儲存的練習",
+    "none": "預設組合",
+    "some": "選擇一個已儲存的練習",
+    "create": "儲存此練習",
+    "update": "更新",
+    "restore": "載入",
+    "delete": "刪除",
+    "name": "為此練習命名",
+    "saved": "已儲存。",
+    "firstSteps": "入門練習",
+    "firstStepsDone": "第一次練習的設定：十題、數字。",
+    "confirmTitle": "刪除這個已儲存的練習？",
+    "confirmBody": "「{name}」將從此裝置移除。"
+  },
+  "start": {
+    "button": "開始",
+    "preparing": "正在準備…",
+    "study": "先研讀這些",
+    "inPlay": "出題範圍單字",
+    "questions": "題目"
+  },
+  "startHint": "請至少選一個單字集才能開始。",
+  "study": {
+    "title": "研讀階段",
+    "description": "先瀏覽一遍再開始練習。",
+    "back": "回到設定",
+    "empty": "請選一個單字集來研讀。"
+  },
+  "words": {
+    "button": "進階設定",
+    "title": "進階設定",
+    "inPlay": "已選取 {count} 個單字。",
+    "taken": "保留 {taken} / {total} 個",
+    "back": "回到設定",
+    "unselectAll": "取消全選",
+    "selectAll": "全選",
+    "all": "全部",
+    "clear": "無",
+    "empty": "請選一個單字集以查看其單字。",
+    "group": "{label} 中的單字",
+    "filters": "篩選",
+    "filtersHint": "先縮小清單範圍再挑選單字。",
+    "search": "搜尋單字",
+    "category": "分類",
+    "subcategory": "子分類",
+    "noMatch": "沒有符合此搜尋的單字。",
+    "packs": "單字包",
+    "unsuited": "此題型無法使用 {packs}",
+    "unsuitedWord": "此題型無法出這個單字"
+  },
+  "time": {
+    "perQuestion": "每題時間",
+    "wholeRun": "整輪練習時間",
+    "seconds": "每題秒數",
+    "minutes": "整輪分鐘數",
+    "secondsShort": "{count}秒",
+    "minutesShort": "{count}分"
+  },
+  "kanaHint": "純假名單字沒有漢字形式。請選擇不會顯示漢字的意思、圖片或聽力題型。"
+}

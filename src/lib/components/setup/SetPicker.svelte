@@ -12,7 +12,7 @@
 <div class="flex flex-col gap-4">
   <PresetPicker />
 
-  <div class="flex flex-wrap items-center gap-2">
+  <div data-section class="flex flex-wrap items-center gap-2">
     <Button size="sm" variant="outline" wrap onclick={() => app.selectAllSets()}>
       <Icon name="select-all" />
       {t("setup.sets.selectAll")}
@@ -43,7 +43,9 @@
           {t(`common.family.${family}`)}
         </h3>
         {#each sets as id (id)}
-          <SetRow {id} subcategories={app.subcategoriesInSet[id]} />
+          <div data-section>
+            <SetRow {id} subcategories={app.subcategoriesInSet[id]} />
+          </div>
         {/each}
       </section>
     {:else}

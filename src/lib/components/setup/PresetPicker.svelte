@@ -53,7 +53,7 @@
   }
 </script>
 
-<div class="flex flex-col gap-2">
+<div data-section class="flex flex-col gap-2">
   <ActionSelect
     bind:value={app.chosenPreset}
     options={names}

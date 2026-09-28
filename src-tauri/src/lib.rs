@@ -19,7 +19,7 @@ fn export_mode() -> Option<export::Export> {
             println!("{}", export::USAGE);
             std::process::exit(0);
         }
-        export::Mode::Export(data) => export::resolve(&data, &cwd).map(Some),
+        export::Mode::Export(options) => export::resolve(options, &cwd).map(Some),
     }) {
         Ok(export) => export,
         Err(message) => {
@@ -74,7 +74,7 @@ pub fn run() {
             packs::delete_pack,
             export::export_request,
             export::export_write,
-            export::export_progress,
+            export::export_emit,
             export::export_finish
         ])
         .build(context)

@@ -1,13 +1,13 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pydantic-ai-slim[openrouter]>=2.51,<3", "tqdm>=4.66"]
+# dependencies = ["pydantic-ai-slim[openrouter]>=2.51,<3", "rich>=13"]
 # ///
 """Translate the interface strings and the pack hint text through OpenRouter.
 
 Two kinds of file are written. Both are rebuilt from their English source, so
 their keys cannot drift from it:
 
-  app     src/lib/assets/local/{lang}/{file}.json, from local/en/{file}.json
+  app     src/lib/assets/locale/{lang}/{file}.json, from locale/en/{file}.json
   {pack}  data/packs/{pack}/locale/{lang}.json, from data/packs/{pack}/content.json:
           { "words": { id: { meaning, glosses, clue, example? } }, "looks": { kanji: text } }
 
@@ -36,7 +36,6 @@ scripts/translate_locale.sh does the same with the key pulled from Bitwarden.
 import argparse
 import asyncio
 import collections
-import itertools
 import json
 import os
 import pathlib
@@ -47,7 +46,7 @@ from dataclasses import dataclass
 from typing import NamedTuple
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-APP = ROOT / "src" / "lib" / "assets" / "local"
+APP = ROOT / "src" / "lib" / "assets" / "locale"
 PACKS = ROOT / "data" / "packs"
 SKIPLIST = pathlib.Path(__file__).with_name("skiplist.txt")
 LOGS = ROOT / ".cache" / "locale"
@@ -342,10 +341,28 @@ def clock(seconds):
 
 
 class Progress:
-    """The live bar on the terminal, and a log file with every event plus a status line a minute."""
+    """Live bars on the terminal, and a log file with every event plus a status line a minute."""
 
     def __init__(self, batches):
-        from tqdm import tqdm
+        from rich.console import Console
+        from rich.progress import (
+            BarColumn,
+            MofNCompleteColumn,
+            SpinnerColumn,
+            TaskProgressColumn,
+            TextColumn,
+            TimeElapsedColumn,
+            TimeRemainingColumn,
+        )
+        from rich.progress import Progress as Bars
+        from rich.text import Text
+
+        status = self.status
+
+        class WithStatus(Bars):
+            def get_renderables(self):
+                yield self.make_tasks_table(self.tasks)
+                yield Text.from_markup(status())
 
         self.strings, self.strings_done = sum(len(paths) for _, paths in batches), 0
         self.left = collections.Counter(job.lang for job, _ in batches)  # requests left per language
@@ -358,28 +375,42 @@ class Progress:
         self.log_path = LOGS / f"translate-{time.strftime('%Y%m%d-%H%M%S')}.log"
         self.log_path.parent.mkdir(parents=True, exist_ok=True)
         self.file = self.log_path.open("a", buffering=1)
-        self.bar = tqdm(
-            total=len(batches),
-            unit="req",
-            dynamic_ncols=True,
-            smoothing=0.05,
-            disable=None,  # no bar when not on a terminal; the log file still gets a line a minute
-            bar_format="{desc:<6}{percentage:5.1f}% |{bar}| {n_fmt}/{total_fmt} req [{elapsed}<{remaining}]{postfix}",
+        self.console = Console(stderr=True, highlight=False)
+        self.bars = WithStatus(
+            SpinnerColumn(finished_text="[green]✓"),
+            TextColumn("{task.description}"),
+            BarColumn(bar_width=None, complete_style="green", finished_style="bold green"),
+            TaskProgressColumn(),
+            MofNCompleteColumn(),
+            TextColumn("req"),
+            TimeElapsedColumn(),
+            TimeRemainingColumn(),
+            console=self.console,
+            expand=True,
+            refresh_per_second=2,
+            speed_estimate_period=600,  # a request takes up to minutes; a short window makes the estimate jump
+            disable=not self.console.is_terminal,  # the log file still gets a line a minute
         )
+        self.overall = self.bars.add_task("[bold magenta]  all", total=len(batches))
+        self.rows = {
+            lang: self.bars.add_task(f"[bold cyan]{lang:>5}[/] [dim]{LANGS[lang][1].split('/')[1].split('-')[0]}[/]", total=n)
+            for lang, n in self.left.items()
+        }
+        self.bars.start()
 
     def status(self):
         langs = sum(1 for n in self.left.values() if n == 0)
         quiet = int(time.monotonic() - self.last_reply)
         return (
-            f"{self.strings_done}/{self.strings} strings, {langs}/{len(self.left)} languages, ${self.spent:.3f} spent, "
+            f"{self.strings_done}/{self.strings} strings, {langs}/{len(self.left)} languages, [green]${self.spent:.3f}[/] spent, "
             f"{self.in_flight} in flight, last reply {quiet}s ago"
-            + (f", {self.tokens['reasoning']} REASONING tokens" if self.tokens["reasoning"] else "")
-            + (f", {self.failed} FAILED" if self.failed else "")
+            + (f", [yellow]{self.tokens['reasoning']} REASONING tokens[/]" if self.tokens["reasoning"] else "")
+            + (f", [bold red]{self.failed} FAILED[/]" if self.failed else "")
         )
 
-    def log(self, text):
+    def log(self, text, style=None):
         line = f"{time.strftime('%H:%M:%S')} {text}"
-        self.bar.write(line, file=sys.stderr)
+        self.console.print(line, style=style, markup=False)
         self.file.write(line + "\n")
 
     def reply(self, result):
@@ -402,28 +433,27 @@ class Progress:
         self.failed += not ok and not skipped
         self.in_a_row = 0 if ok else self.in_a_row + 1
         self.left[job.lang] -= 1
-        self.bar.set_description_str(job.lang, refresh=False)
-        self.bar.set_postfix_str(self.status(), refresh=False)
-        self.bar.update()
+        self.bars.advance(self.overall)
+        self.bars.advance(self.rows[job.lang])
         if self.left[job.lang] == 0 and not self.stopped:
-            self.log(f"done {job.lang}")
+            self.log(f"done {job.lang}", "green")
         if self.in_a_row >= GIVE_UP and not self.stopped:
             self.stopped = True
-            self.log(f"{GIVE_UP} requests failed in a row: out of credit, a bad key or no network? Stopping.")
+            self.log(f"{GIVE_UP} requests failed in a row: out of credit, a bad key or no network? Stopping.", "bold red")
 
     async def heartbeat(self):
-        """Keeps the bar moving while nothing finishes, so a stall shows as a growing 'last reply' time."""
-        for tick in itertools.count(1):
-            await asyncio.sleep(5)
-            self.bar.set_postfix_str(self.status())
-            if tick % 12 == 0:
-                line = f"{time.strftime('%H:%M:%S')} {self.done}/{self.total} requests ({self.done / self.total:.1%}), {self.status()}"
-                self.file.write(line + "\n")
-                if self.bar.disable:
-                    print(line, file=sys.stderr)
+        """A status line a minute in the log; the live status line redraws itself, so a stall shows as a growing 'last reply' time."""
+        from rich.text import Text
+
+        while True:
+            await asyncio.sleep(60)
+            line = f"{time.strftime('%H:%M:%S')} {self.done}/{self.total} requests ({self.done / self.total:.1%}), {Text.from_markup(self.status()).plain}"
+            self.file.write(line + "\n")
+            if self.bars.disable:
+                print(line, file=sys.stderr)
 
     def close(self, elapsed):
-        self.bar.close()
+        self.bars.stop()
         self.log(
             f"{self.strings_done}/{self.strings} strings translated in {elapsed}, {self.tokens['in']} tokens in, "
             f"{self.tokens['out']} out ({self.tokens['reasoning']} reasoning), ${self.spent:.3f} spent"
@@ -482,10 +512,10 @@ async def run(jobs, batch_size):
                     # a rejected request (bad setting, bad key, no credit) fails the same way every time
                     permanent = status is not None and 400 <= status < 500 and status not in (408, 429)
                     if permanent or attempt == ATTEMPTS:  # the file keeps what it had for these strings
-                        progress.log(f"failed {name} after {attempt} attempt(s): {reason}")
+                        progress.log(f"failed {name} after {attempt} attempt(s): {reason}", "red")
                         progress.step(job, len(paths), False)
                         return False
-                    progress.log(f"retrying {name} in {30 * attempt}s (attempt {attempt}/{ATTEMPTS}): {reason}")
+                    progress.log(f"retrying {name} in {30 * attempt}s (attempt {attempt}/{ATTEMPTS}): {reason}", "yellow")
                     await asyncio.sleep(30 * attempt)
         # saved after every request, so a stopped run keeps its work; --missing picks up the rest
         values[job.out].update(got)

@@ -72,6 +72,11 @@
       return;
     }
 
+    if (keynav.active && event.key === "h" && app.phase === "answering" && !app.ghosted) {
+      app.showHint();
+      return;
+    }
+
     const slot = Number(event.key);
     const inRange = keynav.active && slot >= 1 && slot <= question.choices.length;
 

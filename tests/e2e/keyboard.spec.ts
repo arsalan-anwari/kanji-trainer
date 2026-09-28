@@ -17,8 +17,8 @@ async function reach(page: Page, target: Locator): Promise<void> {
       if (here !== null) seen.add(here);
       return { hit: here === element, seen: again };
     }, handle);
-  for (let up = 0; up < 20; up += 1) await page.keyboard.press("Shift+ArrowUp");
-  for (let section = 0; section < 20; section += 1) {
+  for (let up = 0; up < 60; up += 1) await page.keyboard.press("Shift+ArrowUp");
+  for (let section = 0; section < 60; section += 1) {
     await page.evaluate(() => ((window as { seen?: WeakSet<Element> }).seen = new WeakSet<Element>()));
     for (let press = 0; press < 300; press += 1) {
       const { hit, seen } = await focused();
@@ -84,4 +84,39 @@ test("configures, finishes and reviews a run without the mouse", async ({ page, 
   await press(page, page.getByRole("button", { name: "Back to setup" }).first());
   await press(page, page.getByRole("button", { name: "Study these first" }));
   await expect(page.getByRole("button", { name: "Back to setup" }).first()).toBeVisible();
+});
+
+test("? opens the shortcut sheet and Esc closes it", async ({ page, isMobile }) => {
+  test.skip(isMobile, "keyboard mode is desktop only");
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Start" })).toBeVisible();
+
+  await page.keyboard.press("?");
+  const sheet = page.getByRole("dialog", { name: "Keyboard shortcuts" });
+  await expect(sheet).toBeVisible();
+  await expect(sheet.getByText("Start keyboard mode")).toBeVisible();
+  await expect(sheet.getByText("Show a hint")).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await expect(sheet).toHaveCount(0);
+});
+
+test("Tab picks up on the next question once the answered one is gone", async ({
+  page,
+  isMobile
+}) => {
+  test.skip(isMobile, "keyboard mode is desktop only");
+  await page.goto("/");
+  await page.getByRole("button", { name: /^Nature/ }).click();
+  await page.getByRole("button", { name: "Start" }).click();
+  await expect(page.getByText("1 / 20")).toBeVisible();
+  await keyMode(page);
+
+  const choices = page.getByRole("group", { name: "Answers" });
+  await press(page, choices.getByRole("button").first());
+  if (await wasWrong(page, 1, 20)) await page.keyboard.press("Enter");
+  await expect(page.getByText("2 / 20")).toBeVisible();
+  await page.mouse.click(1, 1);
+  await page.keyboard.press("Tab");
+  await expect(choices.getByRole("button").first()).toBeFocused();
 });

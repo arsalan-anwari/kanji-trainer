@@ -7,6 +7,22 @@ export type Row = {
 };
 
 const SEARCH_STEPS = 24;
+const OPENING = /[([{「『“‘"'¿¡]$/u;
+
+// Splits text into the pieces a line may break between. Spaces cannot be relied
+// on: Thai and Chinese write words without them, so a whole sentence would be one
+// piece too wide for any card. Spaces and punctuation stay on the piece before,
+// opening brackets and quotes on the piece after.
+export function breakable(text: string, lang: string): string[] {
+  const items: string[] = [];
+  for (const { segment, isWordLike } of new Intl.Segmenter(lang, { granularity: "word" }).segment(text)) {
+    const last = items.at(-1);
+    if (last === undefined || /\s$/u.test(last) || (isWordLike === true && !OPENING.test(last)))
+      items.push(segment);
+    else items[items.length - 1] = last + segment;
+  }
+  return items;
+}
 
 function span(widths: readonly number[], line: readonly number[], gap: number): number {
   return line.reduce((sum, index) => sum + (widths[index] ?? 0), 0) + gap * (line.length - 1);
@@ -88,6 +104,18 @@ if (import.meta.vitest) {
   function row(items: number[], extra: Partial<Row> = {}): Row {
     return { size: 1, space: 0, lead: 0, items, gap: 0, ...extra };
   }
+
+  describe("splitting text where a line may break", () => {
+    test("breaks after spaces, keeping punctuation and brackets on their word", () => {
+      expect(breakable("I eat (a lot).", "en")).toEqual(["I ", "eat ", "(a ", "lot)."]);
+    });
+
+    test("breaks between words of a language written without spaces", () => {
+      const items = breakable("ฉันทำข้าวกล่องทุกวัน", "th");
+      expect(items.length).toBeGreaterThan(1);
+      expect(items.join("")).toBe("ฉันทำข้าวกล่องทุกวัน");
+    });
+  });
 
   describe("wrapping items onto lines", () => {
     test("fills each line greedily and starts a new one when the next item overflows", () => {

@@ -45,7 +45,7 @@
       {#each branch.groups as group (group.subcategory)}
         {@const groupIds = group.words.map((word) => word.id).filter(isUsable)}
         {@const groupLabel = t(`common.subcategory.${group.subcategory}`)}
-        <details use:openWhen={openByDefault} class="rounded-xl border-2 border-border bg-surface">
+        <details data-section use:openWhen={openByDefault} class="rounded-xl border-2 border-border bg-surface">
           <summary
             class="flex cursor-pointer list-none flex-wrap items-center gap-2 px-3 py-2 font-bold [&::-webkit-details-marker]:hidden"
           >

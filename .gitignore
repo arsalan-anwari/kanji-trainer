@@ -38,3 +38,6 @@ playwright-report
 # Signing keys
 *.jks
 *.keystore
+
+# Flashcard export progress, removed when an export finishes
+tools/export/skiplist.txt

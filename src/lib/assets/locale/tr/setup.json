@@ -1,0 +1,129 @@
+{
+  "title": "Bir çalışma ayarla",
+  "level": {
+    "title": "Seviye",
+    "description": "Çalışmanın hangi listeden çekileceği.",
+    "unavailable": "{level} henüz bu sürümde yok."
+  },
+  "sets": {
+    "title": "Kelime setleri",
+    "description": "Çalışmanın hangi kelimelerden çekileceğini seç.",
+    "selectAll": "Tümünü seç",
+    "clear": "Temizle",
+    "count": "{count} kelime",
+    "empty": "Bu seviyede set yok."
+  },
+  "format": {
+    "title": "Soru formatı",
+    "description": "Neyin gösterileceği ve neye cevap vereceğin.",
+    "reading": "Kelimenin kanji bilgisini kana karşılığıyla çalış.",
+    "meaning": "Kelimeyi anlamıyla çalış.",
+    "visualize": "Kelimeyi bir resimden tanı.",
+    "listening": "Tek bir kelime duy veya nasıl seslendiğini seç.",
+    "kanji-kana": "Kelimeyi gör, okunuşunu cevapla",
+    "kana-kanji": "Okunuşu gör, yazılı kelimeyi seç",
+    "kanji-meaning": "Kelimeyi gör, ne anlama geldiğini seç",
+    "meaning-kanji": "Bir anlamı gör, kelimeyi seç",
+    "kana-meaning": "Okunuşu gör, ne anlama geldiğini seç",
+    "meaning-kana": "Bir anlamı gör, okunuşunu seç",
+    "image-kanji": "Bir resim gör, kelimeyi seç",
+    "image-kana": "Bir resim gör, okunuşunu seç",
+    "audio-kana": "Kelimeyi duy, okunuşunu cevapla",
+    "audio-kanji": "Kelimeyi duy, yazılı kelimeyi cevapla",
+    "kanji-audio": "Kelimeyi gör, doğru kaydı seç",
+    "assemble": "Kelimeyi parçalarından oluştur.",
+    "kana-assemble": "Okunuşu ve anlamı gör, yazılı kelimeyi oluştur"
+  },
+  "direction": {
+    "title": "Yön",
+    "description": "Bu formatın kelimenin hangi tarafını kullandığı."
+  },
+  "answerStyle": {
+    "title": "Cevap stili",
+    "description": "Bir cevaba dokun veya yaz.",
+    "choice": "Cevaplardan birini seç",
+    "typing": "Cevabı yaz"
+  },
+  "wordShapes": {
+    "title": "Kelime şekilleri",
+    "description": "Kelime yapısına göre filtrele.",
+    "1-kanji": "Tek kanji (一)",
+    "2-kanji": "Birleşik (学校)",
+    "okurigana": "Okurigana içeren kanji (上げる)",
+    "hint": "Hepsi için boş bırak.",
+    "kana": "Sadece kana (これ)"
+  },
+  "difficulty": {
+    "title": "Zorluk",
+    "description": "Yanlış cevapların ne kadar inandırıcı olduğu.",
+    "beginner": "Yanlış cevaplar doğru olana hiç benzemez.",
+    "advanced": "Bir yanlış cevap doğru olana benzer.",
+    "expert": "Her yanlış cevap doğru olana benzer."
+  },
+  "run": {
+    "title": "Çalışma seçenekleri",
+    "description": "Çalışmanın ne kadar süreceği.",
+    "count": "Soru sayısı",
+    "onePass": "Tek geçiş"
+  },
+  "presets": {
+    "label": "Kaydedilmiş çalışmalar",
+    "none": "Hazır ayarlar",
+    "some": "Kaydedilmiş bir çalışma seç",
+    "create": "Bu çalışmayı kaydet",
+    "update": "Güncelle",
+    "restore": "Yükle",
+    "delete": "Sil",
+    "name": "Bu çalışmayı adlandır",
+    "saved": "Kaydedildi.",
+    "firstSteps": "İlk adımlar",
+    "firstStepsDone": "İlk çalışma için ayarlandı: on soru, sayılar.",
+    "confirmTitle": "Bu kaydedilmiş çalışmayı sil?",
+    "confirmBody": "\"{name}\" bu cihazdan kaldırılacak."
+  },
+  "start": {
+    "button": "Başlat",
+    "preparing": "Hazırlanıyor…",
+    "study": "Önce bunları çalış",
+    "inPlay": "Devredeki kelimeler",
+    "questions": "Sorular"
+  },
+  "startHint": "Başlamak için en az bir set seç.",
+  "study": {
+    "title": "Çalışma geçişi",
+    "description": "Alıştırma yapmadan önce gözden geçir.",
+    "back": "Ayarlara dön",
+    "empty": "Çalışmak için bir set seç."
+  },
+  "words": {
+    "button": "Gelişmiş ayarlar",
+    "title": "Gelişmiş ayarlar",
+    "inPlay": "{count} kelime seçildi.",
+    "taken": "{total} kelimeden {taken} tanesi tutuldu",
+    "back": "Ayarlara dön",
+    "unselectAll": "Tüm seçimleri kaldır",
+    "selectAll": "Tümünü seç",
+    "all": "Hepsi",
+    "clear": "Hiçbiri",
+    "empty": "Kelimelerini görmek için bir set seç.",
+    "group": "{label} içindeki kelimeler",
+    "filters": "Filtreler",
+    "filtersHint": "Kelimeleri seçmeden önce listeyi daralt.",
+    "search": "Kelime ara",
+    "category": "Kategori",
+    "subcategory": "Alt kategori",
+    "noMatch": "Bu aramayla eşleşen kelime yok.",
+    "packs": "Paketler",
+    "unsuited": "Bu sınav türü için {packs} kullanılamaz",
+    "unsuitedWord": "Bu sınav türü bu kelimeyi soramaz"
+  },
+  "time": {
+    "perQuestion": "Soru başına süre",
+    "wholeRun": "Tüm çalışma için süre",
+    "seconds": "Soru başına saniye",
+    "minutes": "Çalışma için dakika",
+    "secondsShort": "{count}sn",
+    "minutesShort": "{count}dk"
+  },
+  "kanaHint": "Kana kelimelerinin kanji formu yoktur. Kanji göstermeyen bir anlam, resim veya dinleme formatı seç."
+}

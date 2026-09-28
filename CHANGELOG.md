@@ -22,7 +22,6 @@ Platform parity: the standard Kana Trainer already ships at, on every target.
 - End-to-end checks for WCAG 2.2 AA on every screen, keyboard-only use, screen
   reader announcements, switching language and layout in long and right to
   left languages.
-- All flashcards in all locales for all available packs.
 
 ### Changed
 - Layout holds from small phones at large font sizes to wide desktops.
@@ -30,10 +29,16 @@ Platform parity: the standard Kana Trainer already ships at, on every target.
   background instead of running full-bleed on white.
 - The 279 JapanesePod101 recordings are now used with the publisher's
   permission.
+- Removed flashcards from `data/`.
 
 ### Fixed
 - Picture questions announce their prompt to screen readers instead of the
   image URL.
+- Pressing `?` opens the keyboard shortcut sheet again.
+- Starting a run no longer freezes the app for seconds on WebKitGTK: a pass
+  over every word now starts in under a second instead of up to four. The
+  Start button reads "Preparing…" while the run is built.
+- Tab navigation of browser was conflicting with our keyboard mode. Fixed now. 
 
 ## [1.0.0] - 2026-09-27
 

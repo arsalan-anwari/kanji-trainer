@@ -31,12 +31,17 @@
 <svelte:window onkeydown={keydown} />
 
 {#if app.hint !== null && !app.ghosted}
-  <IconButton
-    icon="lightbulb"
-    label={t("quiz.hint.open")}
-    class="fixed end-[calc(max(env(safe-area-inset-left,0px),env(safe-area-inset-right,0px))+var(--edge-x))] bottom-[calc(var(--nav-bar)+var(--edge-y))] z-30 animate-none hover:animate-pulse focus-visible:animate-pulse motion-reduce:animate-none"
-    onclick={() => app.showHint()}
-  />
+  <div
+    data-section
+    class="fixed end-[calc(max(env(safe-area-inset-left,0px),env(safe-area-inset-right,0px))+var(--edge-x))] bottom-[calc(var(--nav-bar)+var(--edge-y))] z-30"
+  >
+    <IconButton
+      icon="lightbulb"
+      label={t("quiz.hint.open")}
+      class="animate-none hover:animate-pulse focus-visible:animate-pulse motion-reduce:animate-none"
+      onclick={() => app.showHint()}
+    />
+  </div>
 {/if}
 
 {#if app.hintOpen && shown !== null}

@@ -1,0 +1,129 @@
+{
+  "title": "세션 설정",
+  "level": {
+    "title": "레벨",
+    "description": "세션이 가져올 목록입니다.",
+    "unavailable": "{level}은(는) 아직 이 빌드에 없습니다."
+  },
+  "sets": {
+    "title": "단어 세트",
+    "description": "세션이 가져올 단어를 선택합니다.",
+    "selectAll": "전체 선택",
+    "clear": "지우기",
+    "count": "{count}개 단어",
+    "empty": "이 레벨에는 세트가 없습니다."
+  },
+  "format": {
+    "title": "문제 형식",
+    "description": "무엇이 보이고 무엇을 답하는지입니다.",
+    "reading": "가나와 함께 단어의 한자를 연습합니다.",
+    "meaning": "뜻과 함께 단어를 연습합니다.",
+    "visualize": "그림으로 단어를 알아봅니다.",
+    "listening": "단어를 듣거나, 단어의 소리를 고릅니다.",
+    "kanji-kana": "단어를 보고 읽기를 답합니다",
+    "kana-kanji": "읽기를 보고 단어를 고릅니다",
+    "kanji-meaning": "단어를 보고 뜻을 고릅니다",
+    "meaning-kanji": "뜻을 보고 단어를 고릅니다",
+    "kana-meaning": "읽기를 보고 뜻을 고릅니다",
+    "meaning-kana": "뜻을 보고 읽기를 고릅니다",
+    "image-kanji": "그림을 보고 단어를 고릅니다",
+    "image-kana": "그림을 보고 읽기를 고릅니다",
+    "audio-kana": "단어를 듣고 읽기를 답합니다",
+    "audio-kanji": "단어를 듣고 표기된 단어를 답합니다",
+    "kanji-audio": "단어를 보고 올바른 음성을 고릅니다",
+    "assemble": "조각으로 단어를 조립합니다.",
+    "kana-assemble": "읽기와 뜻을 보고 단어를 조립합니다"
+  },
+  "direction": {
+    "title": "방향",
+    "description": "이 형식이 단어의 어느 쪽을 사용하는지입니다."
+  },
+  "answerStyle": {
+    "title": "답변 방식",
+    "description": "답을 탭하거나 입력합니다.",
+    "choice": "답 중 하나를 고릅니다",
+    "typing": "답을 입력합니다"
+  },
+  "wordShapes": {
+    "title": "단어 형태",
+    "description": "단어 구조로 걸러냅니다.",
+    "1-kanji": "한자 하나 (一)",
+    "2-kanji": "복합어 (学校)",
+    "okurigana": "송리가 있는 한자 (上げる)",
+    "hint": "비워 두면 전체를 사용합니다.",
+    "kana": "가나만 (これ)"
+  },
+  "difficulty": {
+    "title": "난이도",
+    "description": "오답이 얼마나 그럴듯한지입니다.",
+    "beginner": "오답이 정답과 전혀 닮지 않습니다.",
+    "advanced": "오답 하나가 정답과 닮습니다.",
+    "expert": "모든 오답이 정답과 닮습니다."
+  },
+  "run": {
+    "title": "세션 옵션",
+    "description": "세션의 길이입니다.",
+    "count": "문제 수",
+    "onePass": "한 번 통과"
+  },
+  "presets": {
+    "label": "저장된 세션",
+    "none": "프리셋",
+    "some": "저장된 세션을 선택하세요",
+    "create": "이 세션 저장",
+    "update": "업데이트",
+    "restore": "불러오기",
+    "delete": "삭제",
+    "name": "세션 이름 짓기",
+    "saved": "저장되었습니다.",
+    "firstSteps": "첫걸음",
+    "firstStepsDone": "첫 세션 설정: 문제 10개, 숫자.",
+    "confirmTitle": "이 저장된 세션을 삭제할까요?",
+    "confirmBody": "\"{name}\"이(가) 이 기기에서 삭제됩니다."
+  },
+  "start": {
+    "button": "시작",
+    "preparing": "준비 중…",
+    "study": "먼저 학습하기",
+    "inPlay": "출제 단어",
+    "questions": "문제"
+  },
+  "startHint": "시작하려면 세트를 하나 이상 선택하세요.",
+  "study": {
+    "title": "학습 단계",
+    "description": "연습 전에 읽어 봅니다.",
+    "back": "설정으로 돌아가기",
+    "empty": "학습할 세트를 선택하세요."
+  },
+  "words": {
+    "button": "고급 설정",
+    "title": "고급 설정",
+    "inPlay": "{count}개 단어가 선택되었습니다.",
+    "taken": "{total}개 중 {taken}개 유지",
+    "back": "설정으로 돌아가기",
+    "unselectAll": "전체 해제",
+    "selectAll": "전체 선택",
+    "all": "전체",
+    "clear": "없음",
+    "empty": "세트를 선택하면 단어가 표시됩니다.",
+    "group": "{label}의 단어",
+    "filters": "필터",
+    "filtersHint": "단어를 고르기 전에 목록을 좁혀 보세요.",
+    "search": "단어 검색",
+    "category": "분류",
+    "subcategory": "하위 분류",
+    "noMatch": "이 검색과 일치하는 단어가 없습니다.",
+    "packs": "팩",
+    "unsuited": "{packs}은(는) 이 퀴즈 형식에 사용할 수 없습니다",
+    "unsuitedWord": "이 퀴즈 형식으로는 이 단어를 출제할 수 없습니다"
+  },
+  "time": {
+    "perQuestion": "문제당 시간",
+    "wholeRun": "세션 전체 시간",
+    "seconds": "문제당 초",
+    "minutes": "세션 시간(분)",
+    "secondsShort": "{count}초",
+    "minutesShort": "{count}분"
+  },
+  "kanaHint": "가나 단어에는 한자가 없습니다. 한자를 보여주지 않는 뜻, 그림 또는 듣기 형식을 선택하세요."
+}

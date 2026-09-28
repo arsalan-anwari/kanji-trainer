@@ -9,11 +9,12 @@ import { inTauri } from "../storage";
 import { flashcardFileName, GRID_SIZES, pageCount } from "./pdf";
 import { renderFlashcards } from "./render";
 
-export type ExportRequest = { packs: string; out: string };
+/** only: render that one "locale/target" job; plan: list the jobs and render none. */
+export type ExportRequest = { packs: string; out: string; only: string | null; plan: boolean };
 
 export type Target = { id: string; packs: string[] };
 
-export type ExportFile = { name: string; pages: number; pdf: Uint8Array };
+export type ExportFile = { name: string; pdf: Uint8Array };
 
 /** One pack, or n5-all, in one locale: the unit written to its own folder. */
 export type Job = { locale: string; target: string; words: Word[] };
@@ -27,7 +28,9 @@ const ALL = "n5-all";
 export function parseRequest(value: unknown): ExportRequest | null {
   if (typeof value !== "object" || value === null || !("packs" in value) || !("out" in value)) return null;
   const { packs, out } = value;
-  return typeof packs === "string" && typeof out === "string" ? { packs, out } : null;
+  const only = "only" in value && typeof value.only === "string" ? value.only : null;
+  const plan = "plan" in value && value.plan === true;
+  return typeof packs === "string" && typeof out === "string" ? { packs, out, only, plan } : null;
 }
 
 export function targetsOf(packIds: readonly string[]): Target[] {
@@ -36,6 +39,10 @@ export function targetsOf(packIds: readonly string[]): Target[] {
 
 export function targetWords(words: readonly Word[], target: Target): Word[] {
   return filterWords(words, { ...emptyFilter(LEVEL), packs: target.packs });
+}
+
+export function jobName(job: Job): string {
+  return `${job.locale}/${job.target}`;
 }
 
 export function totalPages(jobs: readonly Job[]): number {
@@ -76,11 +83,7 @@ async function renderTarget(words: readonly Word[], today: Date, onpage: OnPage)
       }
     });
     await reported;
-    files.push({
-      name: flashcardFileName(size, today),
-      pages: pageCount(words.length, size),
-      pdf
-    });
+    files.push({ name: flashcardFileName(size, today), pdf });
   }
   return files;
 }
@@ -126,30 +129,22 @@ export async function exportFlashcards(request: ExportRequest): Promise<void> {
     const { words } = mergeContents(contents);
     const today = new Date();
     const jobs = await planJobs(ids, words);
-    const tags = [...new Set(jobs.map((job) => job.locale))];
-    const total = totalPages(jobs);
-    let done = 0;
-    for (const job of jobs) {
-      const files = await renderTarget(job.words, today, (size, page, pages) => {
-        done += 1;
-        const progress = {
-          locale: job.locale,
-          localeAt: tags.indexOf(job.locale) + 1,
-          locales: tags.length,
-          target: job.target,
-          size,
-          page,
-          pages,
-          done,
-          total
-        };
-        return invoke<null>("export_progress", { progress });
-      });
-      const manifest = files.map((file) => ({
-        name: file.name,
-        bytes: file.pdf.length,
-        pages: file.pages
-      }));
+    if (request.plan) {
+      for (const job of jobs) {
+        await invoke<null>("export_emit", {
+          event: { locale: job.locale, target: job.target, pages: totalPages([job]) }
+        });
+      }
+      await invoke<null>("export_finish", { ok: true, message: "" });
+      return;
+    }
+    const chosen = request.only === null ? jobs : jobs.filter((job) => jobName(job) === request.only);
+    if (chosen.length === 0) throw new Error(`there is no job named ${request.only}`);
+    for (const job of chosen) {
+      const files = await renderTarget(job.words, today, (size, page, pages) =>
+        invoke<null>("export_emit", { event: { size, page, pages } })
+      );
+      const manifest = files.map((file) => ({ name: file.name, bytes: file.pdf.length }));
       await invoke<null>("export_write", joined(files), {
         headers: {
           locale: job.locale,
@@ -192,7 +187,15 @@ if (import.meta.vitest) {
     test("reads a request only when both folders are named", () => {
       expect(parseRequest({ packs: "/d/packs", out: "/d/flashcards" })).toEqual({
         packs: "/d/packs",
-        out: "/d/flashcards"
+        out: "/d/flashcards",
+        only: null,
+        plan: false
+      });
+      expect(parseRequest({ packs: "/p", out: "/o", only: "ko/n5-all", plan: true })).toEqual({
+        packs: "/p",
+        out: "/o",
+        only: "ko/n5-all",
+        plan: true
       });
       expect(parseRequest(null)).toBeNull();
       expect(parseRequest({ packs: "/d/packs" })).toBeNull();
@@ -200,8 +203,8 @@ if (import.meta.vitest) {
 
     test("sends the files back to back, in order", () => {
       const files = [
-        { name: "a", pages: 1, pdf: Uint8Array.from([1, 2]) },
-        { name: "b", pages: 1, pdf: Uint8Array.from([3]) }
+        { name: "a", pdf: Uint8Array.from([1, 2]) },
+        { name: "b", pdf: Uint8Array.from([3]) }
       ];
       expect([...joined(files)]).toEqual([1, 2, 3]);
     });

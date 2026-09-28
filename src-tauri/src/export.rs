@@ -1,7 +1,6 @@
 use std::fs;
-use std::io::{stdout, IsTerminal, Write};
+use std::io::{stdout, Write};
 use std::path::{Path, PathBuf};
-use std::time::{Duration, Instant};
 
 use percent_encoding::percent_decode_str;
 use serde::{Deserialize, Serialize};
@@ -11,62 +10,61 @@ use tauri::{AppHandle, Runtime, State};
 use crate::packs::check_pack_id;
 
 pub const USAGE: &str = "\
-Usage: kanji-trainer --export-flashcards [--data <dir>]
+Usage: kanji-trainer --export-flashcards [--data <dir>] [--plan | --only <locale>/<target>]
 
 Renders the flashcard PDFs of every pack in <dir>/packs/, plus n5-all with
 every pack combined, in English and in every locale the packs ship, without
 showing a window. Replaces the kanji-flashcards-*.pdf files in
 <dir>/flashcards/{locale}/{pack}/.
-<dir> defaults to ./data. Progress goes to stdout (a live bar when it is a
-terminal), errors to stderr.
+<dir> defaults to ./data.
+
+  --plan    Print every job as {\"locale\", \"target\", \"pages\"} and render nothing.
+  --only    Render that one job.
+
+Every rendered page prints {\"size\", \"page\", \"pages\"}: one JSON object per
+line on stdout. Errors go to stderr. tools/export/export_flashcards.py drives it one
+job per process, since one webview rendering every job outgrows WebKit's
+memory limit.
 
 Meant for Linux development: the Windows release build has no console, so it
 prints nothing there.";
 
 const PREFIX: &str = "kanji-flashcards-";
 const SUFFIX: &str = ".pdf";
-const BAR: usize = 20;
-/// Clears the terminal line the progress bar is drawn on.
-const CLEAR: &str = "\r\x1b[2K";
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Mode {
     App,
     Help,
-    Export(PathBuf),
+    Export(Options),
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct Options {
+    pub data: PathBuf,
+    pub only: Option<String>,
+    pub plan: bool,
 }
 
 pub struct Export {
     pub packs: PathBuf,
     pub out: PathBuf,
-    pub started: Instant,
+    pub only: Option<String>,
+    pub plan: bool,
 }
 
 #[derive(Serialize)]
 pub struct ExportRequest {
     packs: String,
     out: String,
+    only: Option<String>,
+    plan: bool,
 }
 
 #[derive(Deserialize)]
 pub struct ExportFile {
     name: String,
     bytes: usize,
-    pages: usize,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Progress {
-    locale: String,
-    locale_at: usize,
-    locales: usize,
-    target: String,
-    size: usize,
-    page: usize,
-    pages: usize,
-    done: usize,
-    total: usize,
 }
 
 pub fn parse_args(args: &[String]) -> Result<Mode, String> {
@@ -76,18 +74,23 @@ pub fn parse_args(args: &[String]) -> Result<Mode, String> {
     if !args.iter().any(|arg| arg == "--export-flashcards") {
         return Ok(Mode::App);
     }
-    match args.iter().position(|arg| arg == "--data") {
-        None => Ok(Mode::Export(PathBuf::from("data"))),
+    let value = |flag: &str, what: &str| match args.iter().position(|arg| arg == flag) {
+        None => Ok(None),
         Some(at) => args
             .get(at + 1)
             .filter(|value| !value.starts_with("--"))
-            .map(|value| Mode::Export(PathBuf::from(value)))
-            .ok_or_else(|| "--data needs a directory".to_string()),
-    }
+            .map(|value| Some(value.clone()))
+            .ok_or_else(|| format!("{flag} needs {what}")),
+    };
+    Ok(Mode::Export(Options {
+        data: PathBuf::from(value("--data", "a directory")?.unwrap_or_else(|| "data".to_string())),
+        only: value("--only", "a <locale>/<target> job")?,
+        plan: args.iter().any(|arg| arg == "--plan"),
+    }))
 }
 
-pub fn resolve(data: &Path, cwd: &Path) -> Result<Export, String> {
-    let root = cwd.join(data);
+pub fn resolve(options: Options, cwd: &Path) -> Result<Export, String> {
+    let root = cwd.join(&options.data);
     let packs = root.join("packs");
     if !packs.join("index.json").is_file() {
         return Err(format!("{} has no packs/index.json", root.display()));
@@ -95,52 +98,9 @@ pub fn resolve(data: &Path, cwd: &Path) -> Result<Export, String> {
     Ok(Export {
         packs,
         out: root.join("flashcards"),
-        started: Instant::now(),
+        only: options.only,
+        plan: options.plan,
     })
-}
-
-fn clock(seconds: u64) -> String {
-    format!("{}:{:02}:{:02}", seconds / 3600, seconds / 60 % 60, seconds % 60)
-}
-
-// ponytail: fixed width, about 90 columns; a narrower terminal wraps the bar.
-pub fn progress_line(progress: &Progress, elapsed: Duration) -> String {
-    let share = if progress.total == 0 {
-        1.0
-    } else {
-        (progress.done as f64 / progress.total as f64).min(1.0)
-    };
-    let filled = (share * BAR as f64).round() as usize;
-    let left = if progress.done == 0 {
-        "-:--:--".to_string()
-    } else {
-        let rest = progress.total.saturating_sub(progress.done) as f64;
-        clock((elapsed.as_secs_f64() * rest / progress.done as f64) as u64)
-    };
-    let size = progress.size;
-    format!(
-        "{} {}/{}  {} {size}x{size} {}/{}  [{}{}] {:5.1}%  {}/{}  {} ~{} left",
-        progress.locale,
-        progress.locale_at,
-        progress.locales,
-        progress.target,
-        progress.page,
-        progress.pages,
-        "█".repeat(filled),
-        "░".repeat(BAR - filled),
-        share * 100.0,
-        progress.done,
-        progress.total,
-        clock(elapsed.as_secs()),
-        left
-    )
-}
-
-/// Starts a printed line on a fresh terminal line, over the progress bar.
-fn clear_bar() {
-    if stdout().is_terminal() {
-        print!("{CLEAR}");
-    }
 }
 
 pub fn grid_of(name: &str) -> Option<&str> {
@@ -214,6 +174,8 @@ pub fn export_request(state: State<'_, Option<Export>>) -> Option<ExportRequest>
     state.inner().as_ref().map(|export| ExportRequest {
         packs: export.packs.to_string_lossy().into_owned(),
         out: export.out.to_string_lossy().into_owned(),
+        only: export.only.clone(),
+        plan: export.plan,
     })
 }
 
@@ -238,24 +200,20 @@ pub fn export_write(state: State<'_, Option<Export>>, request: Request<'_>) -> R
         files.push((file.name.as_str(), &body[start..start + file.bytes]));
         start += file.bytes;
     }
-    replace_flashcards(&export.out.join(&locale).join(&target), &files)?;
-    clear_bar();
-    for file in &manifest {
-        let grid = grid_of(&file.name).unwrap_or_default();
-        println!("{locale} {target} {grid}: {} pages", file.pages);
-    }
-    Ok(())
+    replace_flashcards(&export.out.join(&locale).join(&target), &files)
 }
 
+/// Prints one JSON line for the script driving the export.
 #[tauri::command]
-pub fn export_progress(state: State<'_, Option<Export>>, progress: Progress) -> Result<(), String> {
-    let export = active(&state)?;
-    let mut out = stdout();
-    if out.is_terminal() {
-        print!("{CLEAR}{}", progress_line(&progress, export.started.elapsed()));
-        out.flush().map_err(|error| error.to_string())?;
-    }
-    Ok(())
+pub fn export_emit(
+    state: State<'_, Option<Export>>,
+    event: serde_json::Value,
+) -> Result<(), String> {
+    active(&state)?;
+    let mut out = stdout().lock();
+    writeln!(out, "{event}")
+        .and_then(|()| out.flush())
+        .map_err(|error| error.to_string())
 }
 
 #[tauri::command]
@@ -265,11 +223,8 @@ pub fn export_finish<R: Runtime>(
     ok: bool,
     message: String,
 ) -> Result<(), String> {
-    let export = active(&state)?;
-    clear_bar();
-    if ok {
-        println!("done in {}", clock(export.started.elapsed().as_secs()));
-    } else {
+    active(&state)?;
+    if !ok {
         eprintln!("{message}");
     }
     app.exit(if ok { 0 } else { 1 });
@@ -290,22 +245,43 @@ mod tests {
         assert_eq!(parse_args(&args(&["--data", "x"])), Ok(Mode::App));
     }
 
+    fn export(data: &str, only: Option<&str>, plan: bool) -> Result<Mode, String> {
+        Ok(Mode::Export(Options {
+            data: PathBuf::from(data),
+            only: only.map(str::to_string),
+            plan,
+        }))
+    }
+
     #[test]
     fn exports_from_the_data_folder_unless_told_otherwise() {
         assert_eq!(
             parse_args(&args(&["--export-flashcards"])),
-            Ok(Mode::Export(PathBuf::from("data")))
+            export("data", None, false)
         );
         assert_eq!(
             parse_args(&args(&["--export-flashcards", "--data", "/tmp/d"])),
-            Ok(Mode::Export(PathBuf::from("/tmp/d")))
+            export("/tmp/d", None, false)
         );
     }
 
     #[test]
-    fn refuses_a_data_flag_without_a_directory() {
+    fn plans_or_renders_one_job_when_asked() {
+        assert_eq!(
+            parse_args(&args(&["--export-flashcards", "--plan"])),
+            export("data", None, true)
+        );
+        assert_eq!(
+            parse_args(&args(&["--export-flashcards", "--only", "pt-BR/n5-all"])),
+            export("data", Some("pt-BR/n5-all"), false)
+        );
+    }
+
+    #[test]
+    fn refuses_a_flag_without_its_value() {
         assert!(parse_args(&args(&["--export-flashcards", "--data"])).is_err());
         assert!(parse_args(&args(&["--data", "--export-flashcards"])).is_err());
+        assert!(parse_args(&args(&["--export-flashcards", "--only", "--plan"])).is_err());
     }
 
     #[test]
@@ -318,27 +294,12 @@ mod tests {
 
     #[test]
     fn refuses_a_data_folder_without_a_pack_index() {
-        let missing = Path::new("/nonexistent");
-        assert!(resolve(missing, Path::new("/")).is_err());
-    }
-
-    #[test]
-    fn draws_the_bar_with_the_time_left() {
-        let progress = Progress {
-            locale: "pt-BR".to_string(),
-            locale_at: 6,
-            locales: 17,
-            target: "n5-base".to_string(),
-            size: 3,
-            page: 12,
-            pages: 48,
-            done: 250,
-            total: 1000,
+        let missing = Options {
+            data: PathBuf::from("/nonexistent"),
+            only: None,
+            plan: false,
         };
-        assert_eq!(
-            progress_line(&progress, Duration::from_secs(90)),
-            "pt-BR 6/17  n5-base 3x3 12/48  [█████░░░░░░░░░░░░░░░]  25.0%  250/1000  0:01:30 ~0:04:30 left"
-        );
+        assert!(resolve(missing, Path::new("/")).is_err());
     }
 
     #[test]

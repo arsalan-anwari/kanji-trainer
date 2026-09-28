@@ -19,7 +19,7 @@
     "tauri:dev": "tauri dev -- --no-default-features",
     "tauri:build": "tauri build --no-bundle",
     "tauri:run": "./src-tauri/target/release/kanji-trainer",
-    "flashcards:export": "./src-tauri/target/release/kanji-trainer --export-flashcards",
+    "flashcards:export": "scripts/export_flashcards.sh",
     "sync:ui": "git -C vendor/kaizen-ui push origin HEAD:main && git add vendor/kaizen-ui"
   },
   "dependencies": {

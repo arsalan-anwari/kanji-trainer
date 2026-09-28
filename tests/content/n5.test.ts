@@ -159,7 +159,7 @@ describe("the shipped N5 content", () => {
 
   test("names every piece in English for a screen reader", () => {
     const names: Record<string, string> = JSON.parse(
-      readFileSync(new URL("../../src/lib/assets/local/en/components.json", import.meta.url), "utf8")
+      readFileSync(new URL("../../src/lib/assets/locale/en/components.json", import.meta.url), "utf8")
     );
     expect(content.taughtComponents.filter((piece) => !(piece in names))).toEqual([]);
   });

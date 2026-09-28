@@ -1,0 +1,129 @@
+{
+  "title": "Set up a run",
+  "level": {
+    "title": "Level",
+    "description": "Which list the run draws from.",
+    "unavailable": "{level} is not in this build yet."
+  },
+  "sets": {
+    "title": "Word sets",
+    "description": "Pick which words the run draws from.",
+    "selectAll": "Select all",
+    "clear": "Clear",
+    "count": "{count} words",
+    "empty": "No sets at this level."
+  },
+  "format": {
+    "title": "Question format",
+    "description": "What is shown and what you answer.",
+    "reading": "Train the word's kanji against its kana.",
+    "meaning": "Train the word against its meaning.",
+    "visualize": "Recognise the word from a picture.",
+    "listening": "Hear a single word, or pick how one sounds.",
+    "kanji-kana": "See the word, answer its reading",
+    "kana-kanji": "See the reading, pick the written word",
+    "kanji-meaning": "See the word, pick what it means",
+    "meaning-kanji": "See a meaning, pick the word",
+    "kana-meaning": "See the reading, pick what it means",
+    "meaning-kana": "See a meaning, pick the reading",
+    "image-kanji": "See a picture, pick the word",
+    "image-kana": "See a picture, pick the reading",
+    "audio-kana": "Hear the word, answer its reading",
+    "audio-kanji": "Hear the word, answer the written word",
+    "kanji-audio": "See the word, pick the right recording",
+    "assemble": "Build the word from its pieces.",
+    "kana-assemble": "See the reading and meaning, build the written word"
+  },
+  "direction": {
+    "title": "Direction",
+    "description": "Which side of the word this format uses."
+  },
+  "answerStyle": {
+    "title": "Answer style",
+    "description": "Tap an answer or type it.",
+    "choice": "Pick one of the answers",
+    "typing": "Type the answer"
+  },
+  "wordShapes": {
+    "title": "Word shapes",
+    "description": "Filter by word structure.",
+    "1-kanji": "Single kanji (一)",
+    "2-kanji": "Compound (学校)",
+    "okurigana": "Kanji with okurigana (上げる)",
+    "hint": "Leave blank for all.",
+    "kana": "Kana only (これ)"
+  },
+  "difficulty": {
+    "title": "Difficulty",
+    "description": "How believable the wrong answers are.",
+    "beginner": "Wrong answers look nothing like the right one.",
+    "advanced": "One wrong answer resembles the right one.",
+    "expert": "Every wrong answer resembles the right one."
+  },
+  "run": {
+    "title": "Run options",
+    "description": "How long the run is.",
+    "count": "Number of questions",
+    "onePass": "One pass"
+  },
+  "presets": {
+    "label": "Saved runs",
+    "none": "Presets",
+    "some": "Pick a saved run",
+    "create": "Save this run",
+    "update": "Update",
+    "restore": "Load",
+    "delete": "Delete",
+    "name": "Name this run",
+    "saved": "Saved.",
+    "firstSteps": "First steps",
+    "firstStepsDone": "Set up for a first run: ten questions, numbers.",
+    "confirmTitle": "Delete this saved run?",
+    "confirmBody": "\"{name}\" will be removed from this device."
+  },
+  "start": {
+    "button": "Start",
+    "preparing": "Preparing…",
+    "study": "Study these first",
+    "inPlay": "Words in play",
+    "questions": "Questions"
+  },
+  "startHint": "Pick at least one set to start.",
+  "study": {
+    "title": "Study pass",
+    "description": "Read through before drilling.",
+    "back": "Back to setup",
+    "empty": "Pick a set to study."
+  },
+  "words": {
+    "button": "Advanced settings",
+    "title": "Advanced settings",
+    "inPlay": "{count} words selected.",
+    "taken": "{taken} of {total} kept",
+    "back": "Back to setup",
+    "unselectAll": "Unselect all",
+    "selectAll": "Select all",
+    "all": "All",
+    "clear": "None",
+    "empty": "Pick a set to see its words.",
+    "group": "Words in {label}",
+    "filters": "Filters",
+    "filtersHint": "Narrow the list before picking words.",
+    "search": "Search words",
+    "category": "Category",
+    "subcategory": "Sub-category",
+    "noMatch": "No word matches this search.",
+    "packs": "Packs",
+    "unsuited": "Can't use {packs} for this quiz type",
+    "unsuitedWord": "This quiz type can't ask this word"
+  },
+  "time": {
+    "perQuestion": "Time per question",
+    "wholeRun": "Time for the whole run",
+    "seconds": "Seconds per question",
+    "minutes": "Minutes for the run",
+    "secondsShort": "{count}s",
+    "minutesShort": "{count}m"
+  },
+  "kanaHint": "Kana words have no kanji form. Pick a meaning, picture or listening format that does not show the kanji."
+}

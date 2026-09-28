@@ -121,7 +121,19 @@ export function soundsAlike(target: Word, candidate: Word): boolean {
  */
 export function sharesPrompt(target: Word, candidate: Word, format: Format): boolean {
   const heard = promptSurface(format) === "reading" || promptSurface(format) === "audio";
-  return (heard && soundsAlike(target, candidate)) || promptOf(target, format) === promptOf(candidate, format);
+  return (heard && soundsAlike(target, candidate)) || samePrompt(target, candidate, format);
+}
+
+// promptOf without building a URL per call: this runs for every word pair in a run.
+function samePrompt(target: Word, candidate: Word, format: Format): boolean {
+  const surface = promptSurface(format);
+  if (surface !== "image" && surface !== "audio") return target[surface] === candidate[surface];
+  return (
+    target.pack === candidate.pack &&
+    target.set === candidate.set &&
+    target.subcategory === candidate.subcategory &&
+    target.file === candidate.file
+  );
 }
 
 function byScore(
@@ -181,17 +193,20 @@ function buildChoices(
   const taken = new Set([answer]);
   const choices = [answer];
 
-  const take = (surfaces: readonly string[], limit: number) => {
+  const take = (surfaces: Iterable<string>, limit: number) => {
+    if (choices.length >= limit) return;
     for (const surface of surfaces) {
-      if (choices.length >= limit) break;
       if (taken.has(surface)) continue;
       taken.add(surface);
       choices.push(surface);
+      if (choices.length >= limit) break;
     }
   };
 
-  const surfaces = (candidates: readonly Word[]) =>
-    candidates.map((candidate) => answerOf(candidate, format));
+  // Lazy, so a question stops looking at candidates once its choices are full.
+  function* surfaces(candidates: readonly Word[], keep: (candidate: Word) => boolean = () => true) {
+    for (const candidate of candidates) if (keep(candidate)) yield answerOf(candidate, format);
+  }
 
   const listening = usesAudio(format);
   const fair = (candidates: readonly Word[]) =>
@@ -214,7 +229,7 @@ function buildChoices(
   const rest = [...shuffle(drawn, rng), ...shuffle(spare, rng)];
   if (listening && difficulty === "beginner") {
     const heardApart = (candidate: Word) => similarity(target, candidate, "reading") === 0;
-    take(surfaces(rest.filter(heardApart)), count);
+    take(surfaces(rest, heardApart), count);
   }
   take(surfaces(rest), count);
 

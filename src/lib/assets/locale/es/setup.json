@@ -1,0 +1,129 @@
+{
+  "title": "Configurar una sesión",
+  "level": {
+    "title": "Nivel",
+    "description": "De qué lista proviene la sesión.",
+    "unavailable": "{level} aún no está en esta versión."
+  },
+  "sets": {
+    "title": "Conjuntos de palabras",
+    "description": "Elige de qué palabras se nutre la sesión.",
+    "selectAll": "Seleccionar todo",
+    "clear": "Limpiar",
+    "count": "{count} palabras",
+    "empty": "No hay conjuntos en este nivel."
+  },
+  "format": {
+    "title": "Formato de pregunta",
+    "description": "Qué se muestra y qué respondes.",
+    "reading": "Entrena el kanji de la palabra frente a su kana.",
+    "meaning": "Entrena la palabra frente a su significado.",
+    "visualize": "Reconoce la palabra a partir de una imagen.",
+    "listening": "Escucha una palabra o elige cómo suena una.",
+    "kanji-kana": "Ver la palabra, responder su lectura",
+    "kana-kanji": "Ver la lectura, elegir la palabra escrita",
+    "kanji-meaning": "Ver la palabra, elegir qué significa",
+    "meaning-kanji": "Ver un significado, elegir la palabra",
+    "kana-meaning": "Ver la lectura, elegir qué significa",
+    "meaning-kana": "Ver un significado, elegir la lectura",
+    "image-kanji": "Ver una imagen, elegir la palabra",
+    "image-kana": "Ver una imagen, elegir la lectura",
+    "audio-kana": "Escuchar la palabra, responder su lectura",
+    "audio-kanji": "Escuchar la palabra, responder la palabra escrita",
+    "kanji-audio": "Ver la palabra, elegir la grabación correcta",
+    "assemble": "Construye la palabra a partir de sus piezas.",
+    "kana-assemble": "Ver la lectura y el significado, construir la palabra escrita"
+  },
+  "direction": {
+    "title": "Dirección",
+    "description": "Qué lado de la palabra usa este formato."
+  },
+  "answerStyle": {
+    "title": "Estilo de respuesta",
+    "description": "Toca una respuesta o escríbela.",
+    "choice": "Elegir una de las respuestas",
+    "typing": "Escribir la respuesta"
+  },
+  "wordShapes": {
+    "title": "Formas de las palabras",
+    "description": "Filtrar por estructura de palabra.",
+    "1-kanji": "Kanji único (一)",
+    "2-kanji": "Compuesto (学校)",
+    "okurigana": "Kanji con okurigana (上げる)",
+    "hint": "Dejar en blanco para todas.",
+    "kana": "Solo kana (これ)"
+  },
+  "difficulty": {
+    "title": "Dificultad",
+    "description": "Qué tan creíbles son las respuestas incorrectas.",
+    "beginner": "Las respuestas incorrectas no se parecen en nada a la correcta.",
+    "advanced": "Una respuesta incorrecta se parece a la correcta.",
+    "expert": "Todas las respuestas incorrectas se parecen a la correcta."
+  },
+  "run": {
+    "title": "Opciones de sesión",
+    "description": "Cuánto dura la sesión.",
+    "count": "Número de preguntas",
+    "onePass": "Una pasada"
+  },
+  "presets": {
+    "label": "Sesiones guardadas",
+    "none": "Preajustes",
+    "some": "Elige una sesión guardada",
+    "create": "Guardar esta sesión",
+    "update": "Actualizar",
+    "restore": "Cargar",
+    "delete": "Eliminar",
+    "name": "Ponle nombre a esta sesión",
+    "saved": "Guardado.",
+    "firstSteps": "Primeros pasos",
+    "firstStepsDone": "Configuración para una primera sesión: diez preguntas, números.",
+    "confirmTitle": "¿Eliminar esta sesión guardada?",
+    "confirmBody": "\"{name}\" se eliminará de este dispositivo."
+  },
+  "start": {
+    "button": "Iniciar",
+    "preparing": "Preparando…",
+    "study": "Estudiar esto primero",
+    "inPlay": "Palabras en juego",
+    "questions": "Preguntas"
+  },
+  "startHint": "Elige al menos un conjunto para empezar.",
+  "study": {
+    "title": "Sesión de estudio",
+    "description": "Lee antes de practicar.",
+    "back": "Volver a la configuración",
+    "empty": "Elige un conjunto para estudiar."
+  },
+  "words": {
+    "button": "Configuración avanzada",
+    "title": "Configuración avanzada",
+    "inPlay": "{count} palabras seleccionadas.",
+    "taken": "{taken} de {total} conservadas",
+    "back": "Volver a la configuración",
+    "unselectAll": "Deseleccionar todo",
+    "selectAll": "Seleccionar todo",
+    "all": "Todas",
+    "clear": "Ninguna",
+    "empty": "Elige un conjunto para ver sus palabras.",
+    "group": "Palabras en {label}",
+    "filters": "Filtros",
+    "filtersHint": "Reduce la lista antes de elegir palabras.",
+    "search": "Buscar palabras",
+    "category": "Categoría",
+    "subcategory": "Subcategoría",
+    "noMatch": "Ninguna palabra coincide con esta búsqueda.",
+    "packs": "Paquetes",
+    "unsuited": "No se pueden usar {packs} para este tipo de cuestionario",
+    "unsuitedWord": "Este tipo de cuestionario no puede preguntar esta palabra"
+  },
+  "time": {
+    "perQuestion": "Tiempo por pregunta",
+    "wholeRun": "Tiempo para toda la sesión",
+    "seconds": "Segundos por pregunta",
+    "minutes": "Minutos para la sesión",
+    "secondsShort": "{count}s",
+    "minutesShort": "{count}m"
+  },
+  "kanaHint": "Las palabras en kana no tienen forma de kanji. Elige un formato de significado, imagen o escucha que no muestre el kanji."
+}

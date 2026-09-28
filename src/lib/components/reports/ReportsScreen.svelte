@@ -171,7 +171,7 @@
   <div class="flex flex-col gap-3">
     <ReportFilters bind:query />
 
-    <div class="flex flex-wrap items-center justify-between gap-2">
+    <div data-section class="flex flex-wrap items-center justify-between gap-2">
       <button
         type="button"
         class="flex min-w-0 cursor-pointer items-center gap-2 rounded-lg py-1 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:cursor-default disabled:opacity-40"
@@ -285,16 +285,20 @@
       </div>
     </div>
 
-    <Pagination
-      bind:page
-      {pages}
-      class="[&_button]:h-20"
-      label={t("reports.pages.label")}
-      previousLabel={t("reports.pages.previous")}
-      nextLabel={t("reports.pages.next")}
-      describe={(at, total) => t("reports.pages.at", { page: at, pages: total })}
-      onpick={() => listTop?.scrollIntoView({ block: "nearest" })}
-    />
+    {#if pages > 1}
+      <div data-section>
+        <Pagination
+          bind:page
+          {pages}
+          class="[&_button]:h-20"
+          label={t("reports.pages.label")}
+          previousLabel={t("reports.pages.previous")}
+          nextLabel={t("reports.pages.next")}
+          describe={(at, total) => t("reports.pages.at", { page: at, pages: total })}
+          onpick={() => listTop?.scrollIntoView({ block: "nearest" })}
+        />
+      </div>
+    {/if}
   </div>
 
   <div class="flex flex-col gap-5">

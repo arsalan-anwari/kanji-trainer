@@ -25,7 +25,7 @@ export const locales = [
 export type LocaleTag = (typeof locales)[number]["tag"];
 
 const bundles = bundlesFromGlob(
-  import.meta.glob<Dict>("./assets/local/*/*.json", { eager: true, import: "default" })
+  import.meta.glob<Dict>("./assets/locale/*/*.json", { eager: true, import: "default" })
 );
 
 registerLocales({ bundles, locales: [...locales], fallback: FALLBACK });
