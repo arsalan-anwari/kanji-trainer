@@ -168,9 +168,6 @@ jobs:
           Copy-Item 'packaging/msix/Assets/Wide310x150Logo.png' "$layout/Assets"
 
           $manifest = Get-Content 'packaging/msix/AppxManifest.xml.in' -Raw
-          if ($manifest -match 'PARTNER_CENTER_') {
-            Write-Output "::warning::packaging/msix/AppxManifest.xml.in still holds its PARTNER_CENTER_ placeholders. This msix packs, but Partner Center will reject it until they are replaced with the values from the app's Product identity page."
-          }
           $manifest.Replace('@VERSION@', "$env:VERSION.0") |
             Set-Content "$layout/AppxManifest.xml" -Encoding utf8
 

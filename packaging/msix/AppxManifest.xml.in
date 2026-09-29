@@ -6,13 +6,13 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="PARTNER_CENTER_IDENTITY_NAME"
-    Publisher="PARTNER_CENTER_IDENTITY_PUBLISHER"
+    Name="ArsalanAnwari.KanjiTrainer"
+    Publisher="CN=2C7BAB62-BFE4-484E-B8D0-0F32C81D138F"
     Version="@VERSION@"
     ProcessorArchitecture="x64" />
 
   <Properties>
-    <DisplayName>Kanji-Trainer</DisplayName>
+    <DisplayName>Kanji_Trainer</DisplayName>
     <PublisherDisplayName>Arsalan Anwari</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
     <Description>Practice JLPT vocabulary written in kanji: readings, spellings and meanings, by multiple choice, typing, pictures and recordings.</Description>
@@ -29,7 +29,7 @@
   <Applications>
     <Application Id="KanjiTrainer" Executable="kanji-trainer.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        DisplayName="Kanji-Trainer"
+        DisplayName="Kanji_Trainer"
         Description="Practice JLPT vocabulary written in kanji: readings, spellings and meanings, by multiple choice, typing, pictures and recordings."
         BackgroundColor="#f7f2e7"
         Square150x150Logo="Assets\Square150x150Logo.png"
