@@ -17,7 +17,7 @@ test("sits a whole exam without the mouse and reads the score split by part", as
   await keyMode(page);
 
   await press(page, page.getByRole("button", { name: /^Exam/ }));
-  await expect(page.getByText(/21 questions in 20 minutes/)).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Exam/ })).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByRole("group", { name: "Direction" })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Start" })).toBeDisabled();
   await expect(page.getByText(/The exam asks 21 different words/)).toBeVisible();
