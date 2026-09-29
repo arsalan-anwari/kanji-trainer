@@ -1,0 +1,26 @@
+Categories:
+  - Science & Education
+License: Apache-2.0
+AuthorName: Arsalan Anwari
+WebSite: https://arsalan-anwari.github.io/kanji-trainer/
+SourceCode: https://github.com/arsalan-anwari/kanji-trainer
+IssueTracker: https://github.com/arsalan-anwari/kanji-trainer/issues
+Changelog: https://github.com/arsalan-anwari/kanji-trainer/blob/main/CHANGELOG.md
+
+Name: Kanji Trainer
+Summary: Practice JLPT vocabulary written in kanji
+Description: |-
+  Trainer for JLPT words written in kanji: how they are written, how they sound
+  and what they mean, on phone, tablet and desktop.
+
+  * Every N5 word, in topic sets you pick by hand, down to single words
+  * Reading, spelling and meaning questions, from kanji, kana, pictures and recordings
+  * Answer by picking from choices, by typing, or by assembling the word
+  * An Exam format paced like the real N5 vocabulary section
+  * Difficulty levels that pick look-alike words as wrong answers
+  * Reports of every run, split by kanji and by format, and a word chart
+  * Export and import reports between devices
+  * Full keyboard navigation and 17 interface languages
+
+  Word packs download from the app's public dataset on Hugging Face. Everything
+  else stays on your device. No account, no ads, no tracking.

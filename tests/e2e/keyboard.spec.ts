@@ -1,40 +1,5 @@
-import { expect, test, wasWrong } from "./run";
-import type { Locator, Page } from "@playwright/test";
-
-async function keyMode(page: Page): Promise<void> {
-  await page.keyboard.press("Control+/");
-  await expect(page.locator("html.kbd-nav")).toHaveCount(1);
-}
-
-async function reach(page: Page, target: Locator): Promise<void> {
-  const handle = await target.elementHandle();
-  const focused = (): Promise<{ hit: boolean; seen: boolean }> =>
-    page.evaluate((element) => {
-      const here = document.activeElement;
-      const seen = (window as { seen?: WeakSet<Element> }).seen ?? new WeakSet<Element>();
-      (window as { seen?: WeakSet<Element> }).seen = seen;
-      const again = here !== null && seen.has(here);
-      if (here !== null) seen.add(here);
-      return { hit: here === element, seen: again };
-    }, handle);
-  for (let up = 0; up < 60; up += 1) await page.keyboard.press("Shift+ArrowUp");
-  for (let section = 0; section < 60; section += 1) {
-    await page.evaluate(() => ((window as { seen?: WeakSet<Element> }).seen = new WeakSet<Element>()));
-    for (let press = 0; press < 300; press += 1) {
-      const { hit, seen } = await focused();
-      if (hit) return;
-      if (seen) break;
-      await page.keyboard.press("Tab");
-    }
-    await page.keyboard.press("Shift+ArrowDown");
-  }
-  throw new Error("the target was not reachable with the keyboard");
-}
-
-async function press(page: Page, target: Locator): Promise<void> {
-  await reach(page, target);
-  await page.keyboard.press("Enter");
-}
+import { expect, keyMode, press, test, wasWrong } from "./run";
+import type { Page } from "@playwright/test";
 
 async function selectedTab(page: Page, name: string): Promise<void> {
   await expect(page.getByRole("tab", { name, exact: true })).toHaveAttribute("aria-selected", "true");

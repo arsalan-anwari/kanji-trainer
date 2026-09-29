@@ -9,7 +9,7 @@
 
   let { question }: { question: Question } = $props();
 
-  const surface = $derived(promptSurface(app.settings.format));
+  const surface = $derived(promptSurface(question.format));
   const japanese = $derived(isJapanese(surface));
 
   // A phone in portrait has height to spare and no width; everything else is
@@ -18,12 +18,12 @@
 
   const playing = $derived(clips.playing === question.prompt);
   const lang = $derived(app.currentWord === null ? CONTENT_LANG : langOf(app.currentWord));
-  const meaning = $derived(isAssembly(app.settings.format) ? (app.currentWord?.meaning ?? "") : "");
+  const meaning = $derived(isAssembly(question.format) ? (app.currentWord?.meaning ?? "") : "");
 </script>
 
 <div class="flex w-full flex-col items-center gap-2 sm:gap-3">
   <span class="text-xs font-semibold tracking-[0.15em] text-muted-foreground uppercase">
-    {t(`quiz.prompt.${app.settings.format}`)}
+    {t(`quiz.prompt.${question.format}`)}
   </span>
 
   {#if surface === "audio"}

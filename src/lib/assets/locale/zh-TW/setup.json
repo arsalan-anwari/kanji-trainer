@@ -32,7 +32,8 @@
     "audio-kanji": "聽單字，回答對應的單字",
     "kanji-audio": "看單字，選出正確的錄音",
     "assemble": "用單字的組成部分拼出單字。",
-    "kana-assemble": "看讀音和意思，拼出對應的單字"
+    "kana-assemble": "看讀音和意思，拼出對應的單字",
+    "exam": "按真實詞彙部分限時作答"
   },
   "direction": {
     "title": "方向",
@@ -125,5 +126,9 @@
     "secondsShort": "{count}秒",
     "minutesShort": "{count}分"
   },
-  "kanaHint": "純假名單字沒有漢字形式。請選擇不會顯示漢字的意思、圖片或聽力題型。"
+  "kanaHint": "純假名單字沒有漢字形式。請選擇不會顯示漢字的意思、圖片或聽力題型。",
+  "exam": {
+    "tooFew": "考試需要 {count} 個不同的漢字詞。請多選一些單字集或單字。",
+    "noLevel": "這個級別暫時還沒有考試。"
+  }
 }

@@ -32,7 +32,8 @@
     "audio-kanji": "Kelimeyi duy, yazılı kelimeyi cevapla",
     "kanji-audio": "Kelimeyi gör, doğru kaydı seç",
     "assemble": "Kelimeyi parçalarından oluştur.",
-    "kana-assemble": "Okunuşu ve anlamı gör, yazılı kelimeyi oluştur"
+    "kana-assemble": "Okunuşu ve anlamı gör, yazılı kelimeyi oluştur",
+    "exam": "Gerçek kelime bölümü gibi süreli"
   },
   "direction": {
     "title": "Yön",
@@ -125,5 +126,9 @@
     "secondsShort": "{count}sn",
     "minutesShort": "{count}dk"
   },
-  "kanaHint": "Kana kelimelerinin kanji formu yoktur. Kanji göstermeyen bir anlam, resim veya dinleme formatı seç."
+  "kanaHint": "Kana kelimelerinin kanji formu yoktur. Kanji göstermeyen bir anlam, resim veya dinleme formatı seç.",
+  "exam": {
+    "tooFew": "Sınav kanjiyle yazılmış {count} farklı kelime sorar. Daha fazla set veya kelime seç.",
+    "noLevel": "Bu seviye için henüz sınav yok."
+  }
 }

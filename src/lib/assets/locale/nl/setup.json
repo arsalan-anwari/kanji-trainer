@@ -32,7 +32,8 @@
     "audio-kanji": "Hoor het woord, geef het geschreven woord",
     "kanji-audio": "Zie het woord, kies de juiste opname",
     "assemble": "Bouw het woord uit zijn stukken.",
-    "kana-assemble": "Zie de lezing en betekenis, bouw het geschreven woord"
+    "kana-assemble": "Zie de lezing en betekenis, bouw het geschreven woord",
+    "exam": "Getimed als het echte woordenschatdeel"
   },
   "direction": {
     "title": "Richting",
@@ -125,5 +126,9 @@
     "secondsShort": "{count} s",
     "minutesShort": "{count} min"
   },
-  "kanaHint": "Kanawoorden hebben geen kanjivorm. Kies een betekenis-, beeld- of luistervorm die de kanji niet toont."
+  "kanaHint": "Kanawoorden hebben geen kanjivorm. Kies een betekenis-, beeld- of luistervorm die de kanji niet toont.",
+  "exam": {
+    "tooFew": "Het examen vraagt {count} verschillende woorden in kanji. Kies meer sets of woorden.",
+    "noLevel": "Voor dit niveau is er nog geen examen."
+  }
 }

@@ -216,7 +216,8 @@
     "audio-kana": "เสียงเป็นคานะ",
     "audio-kanji": "เสียงเป็นคันจิ",
     "kanji-audio": "คันจิเป็นเสียง",
-    "kana-assemble": "คานะเป็นบล็อก"
+    "kana-assemble": "คานะเป็นบล็อก",
+    "exam": "ข้อสอบ"
   },
   "answerStyle": {
     "choice": "ปรนัย",

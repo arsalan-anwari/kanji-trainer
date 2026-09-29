@@ -93,6 +93,12 @@ function matches<T>(chosen: readonly T[], value: T): boolean {
   return chosen.length === 0 || chosen.includes(value);
 }
 
+function askedAny(report: Report, formats: readonly Format[]): boolean {
+  if (formats.length === 0) return true;
+  if (report.answers.length === 0) return formats.some((format) => format === report.settings.format);
+  return report.answers.some((answer) => formats.includes(answer.format));
+}
+
 export function queryReports(
   reports: readonly Report[],
   query: ReportQuery,
@@ -100,7 +106,7 @@ export function queryReports(
 ): Report[] {
   return reports.filter((report) => {
     if (!withinWindow(report.createdAt, query.window, now)) return false;
-    if (!matches(query.formats, report.settings.format)) return false;
+    if (!askedAny(report, query.formats)) return false;
     if (!matches(query.answerStyles, report.settings.answerStyle)) return false;
     if (query.packs.length > 0 && !report.packs.some((pack) => query.packs.includes(pack))) return false;
     return matches(query.levels, report.settings.level);
@@ -161,6 +167,15 @@ if (import.meta.vitest) {
     test("keeps only the chosen format", () => {
       const shown = queryReports(runs, { ...ANY_QUERY, formats: ["kana-kanji"] }, now);
       expect(shown.map((run) => run.settings.format)).toEqual(["kana-kanji"]);
+    });
+
+    test("keeps an exam under every format it asked", () => {
+      const exam = {
+        ...report("2026-09-19T10:00:00.000Z", { format: "exam" }),
+        answers: [{ wordId: "一|いち", format: "kana-kanji" as const, correct: true, elapsedMs: 900, given: "一", timedOut: false }]
+      };
+      expect(queryReports([exam], { ...ANY_QUERY, formats: ["kana-kanji"] }, now)).toEqual([exam]);
+      expect(queryReports([exam], { ...ANY_QUERY, formats: ["kanji-kana"] }, now)).toEqual([]);
     });
 
     test("combines filters, which narrow together", () => {

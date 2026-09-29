@@ -216,7 +216,8 @@
     "audio-kana": "Suara ke kana",
     "audio-kanji": "Suara ke kanji",
     "kanji-audio": "Kanji ke suara",
-    "kana-assemble": "Kana ke blok"
+    "kana-assemble": "Kana ke blok",
+    "exam": "Ujian"
   },
   "answerStyle": {
     "choice": "Pilihan ganda",

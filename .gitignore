@@ -13,6 +13,7 @@ src-tauri/target
 src-tauri/gen/android
 src-tauri/gen/apple
 target
+build
 
 # Data folder
 data/
@@ -38,6 +39,8 @@ playwright-report
 # Signing keys
 *.jks
 *.keystore
+packaging/fdroid/keystore.p12
+packaging/fdroid/keystore.pass
 
 # Flashcard export progress, removed when an export finishes
 tools/export/skiplist.txt

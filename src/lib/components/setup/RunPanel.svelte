@@ -12,12 +12,14 @@
     DIRECTIONS_BY_CATEGORY,
     isAssembly,
     isCustomTime,
+    isExam,
     PER_QUESTION_SECONDS,
     TOTAL_SECONDS
   } from "../../quiz/settings";
   import { n, t } from "../../i18n.svelte";
 
-  const category = $derived(categoryOf(app.settings.format));
+  const format = $derived(app.settings.format);
+  const category = $derived(isExam(format) ? null : categoryOf(format));
 
   let perQuestionCustom = $state(isCustomTime(app.settings.perQuestionSeconds, PER_QUESTION_SECONDS));
   let totalCustom = $state(isCustomTime(app.settings.totalSeconds, TOTAL_SECONDS));
@@ -54,15 +56,24 @@
         }}
       />
     {/each}
+    <OptionCard
+      active={isExam(format)}
+      label={t("common.format.exam")}
+      hint={t("setup.format.exam")}
+      onclick={() => {
+        if (!isExam(format)) app.updateSettings({ format: "exam" });
+      }}
+    />
   </div>
 </Card>
 
+{#if !isExam(format) && category !== null}
 <Card title={t("setup.direction.title")} description={t("setup.direction.description")}>
   {#snippet icon()}<Icon name="filter" class="size-5" />{/snippet}
   <div role="group" aria-label={t("setup.direction.title")} class="grid grid-cols-1 gap-3 sm:grid-cols-2">
     {#each DIRECTIONS_BY_CATEGORY[category] as direction (direction)}
       <OptionCard
-        active={app.settings.format === direction}
+        active={format === direction}
         label={t(`common.format.${direction}`)}
         hint={t(`setup.format.${direction}`)}
         onclick={() => app.updateSettings({ format: direction })}
@@ -71,11 +82,11 @@
   </div>
 </Card>
 
-{#if !isAssembly(app.settings.format)}
+{#if !isAssembly(format)}
 <Card title={t("setup.answerStyle.title")} description={t("setup.answerStyle.description")}>
   {#snippet icon()}<Icon name="keyboard" class="size-5" />{/snippet}
   <div role="group" aria-label={t("setup.answerStyle.title")} class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-    {#each answerStylesFor(app.settings.format) as style (style)}
+    {#each answerStylesFor(format) as style (style)}
       <OptionCard
         active={app.settings.answerStyle === style}
         label={t(`common.answerStyle.${style}`)}
@@ -163,3 +174,4 @@
     </div>
   </div>
 </Card>
+{/if}

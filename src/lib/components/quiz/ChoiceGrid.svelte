@@ -8,7 +8,7 @@
 
   let { question }: { question: Question } = $props();
 
-  const japanese = $derived(isJapanese(answerSurface(app.settings.format)));
+  const japanese = $derived(isJapanese(answerSurface(question.format)));
   const lang = $derived(app.currentWord === null ? CONTENT_LANG : langOf(app.currentWord));
 
   function state(choice: string): ChoiceState {
@@ -28,7 +28,7 @@
     {#each question.choices as choice, index (choice)}
       <ChoiceTile
         jp={japanese}
-        lang={answerSurface(app.settings.format) === "meaning" ? lang : undefined}
+        lang={answerSurface(question.format) === "meaning" ? lang : undefined}
         slot={index + 1}
         label={choice}
         state={state(choice)}

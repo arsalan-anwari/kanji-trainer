@@ -216,7 +216,8 @@
     "audio-kana": "声音到假名",
     "audio-kanji": "声音到汉字",
     "kanji-audio": "汉字到声音",
-    "kana-assemble": "假名拼块"
+    "kana-assemble": "假名拼块",
+    "exam": "考试"
   },
   "answerStyle": {
     "choice": "选择题",

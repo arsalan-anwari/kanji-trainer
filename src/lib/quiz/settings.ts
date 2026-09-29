@@ -16,6 +16,7 @@ export type Format =
   | "audio-kanji"
   | "kanji-audio"
   | "kana-assemble";
+export type RunFormat = Format | "exam";
 export type Surface = "written" | "reading" | "meaning" | "image" | "audio";
 export type Category = "reading" | "meaning" | "visualize" | "listening" | "assemble";
 export type AnswerStyle = "choice" | "typing";
@@ -29,7 +30,7 @@ export type RunSettings = {
    * Empty means every subcategory of the chosen sets.
    */
   subcategories: string[];
-  format: Format;
+  format: RunFormat;
   answerStyle: AnswerStyle;
   choiceCount: number;
   /** 0 asks every eligible word exactly once. */
@@ -62,6 +63,51 @@ export const DIRECTIONS_BY_CATEGORY: Record<Category, readonly Format[]> = {
 export const FORMATS: readonly Format[] = CATEGORIES.flatMap(
   (category) => DIRECTIONS_BY_CATEGORY[category]
 );
+
+const RUN_FORMATS: readonly RunFormat[] = [...FORMATS, "exam"];
+
+export function isExam(format: RunFormat): format is "exam" {
+  return format === "exam";
+}
+
+export type ExamPart = "reading" | "writing" | "meaning";
+export type Exam = Record<ExamPart, number> & { seconds: number };
+
+export const EXAM: Readonly<Record<string, Exam>> = {
+  N5: { reading: 7, writing: 5, meaning: 9, seconds: 1200 }
+};
+
+export const EXAM_PARTS: readonly (readonly [ExamPart, Format])[] = [
+  ["reading", "kanji-kana"],
+  ["writing", "kana-kanji"],
+  ["meaning", "kanji-meaning"]
+];
+
+export function examOf(level: string): Exam | null {
+  return EXAM[level] ?? null;
+}
+
+export function examLength(exam: Exam): number {
+  return EXAM_PARTS.reduce((sum, [part]) => sum + exam[part], 0);
+}
+
+export function formatsOf(format: RunFormat): readonly Format[] {
+  return isExam(format) ? EXAM_PARTS.map(([, part]) => part) : [format];
+}
+
+export function runSettings(settings: RunSettings): RunSettings {
+  const exam = examOf(settings.level);
+  if (!isExam(settings.format) || exam === null) return settings;
+  return {
+    ...settings,
+    answerStyle: "choice",
+    choiceCount: 4,
+    difficulty: "expert",
+    questionCount: examLength(exam),
+    perQuestionSeconds: 0,
+    totalSeconds: exam.seconds
+  };
+}
 
 const CATEGORY_OF: Record<Format, Category> = Object.fromEntries(
   CATEGORIES.flatMap((category) => DIRECTIONS_BY_CATEGORY[category].map((format) => [format, category]))
@@ -149,6 +195,11 @@ export function remainingMs(limitSeconds: number, elapsedMs: number): number | n
   return limitSeconds === 0 ? null : Math.max(0, limitSeconds * 1000 - elapsedMs);
 }
 
+export function clock(ms: number): string {
+  const seconds = Math.ceil(ms / 1000);
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+}
+
 const WARNING_MS = 5000;
 
 export function isNearlyOut(leftMs: number | null, limitSeconds: number): boolean {
@@ -209,7 +260,7 @@ export function normalizeSettings(settings: RunSettings): {
   next.questionCount = normalizeCount(next.questionCount);
   next.perQuestionSeconds = normalizeSeconds(next.perQuestionSeconds, CUSTOM_PER_QUESTION_MAX);
   next.totalSeconds = normalizeSeconds(next.totalSeconds, CUSTOM_TOTAL_MINUTES_MAX * 60);
-  if (!answerStylesFor(next.format).includes(next.answerStyle)) next.answerStyle = "choice";
+  if (!isExam(next.format) && !answerStylesFor(next.format).includes(next.answerStyle)) next.answerStyle = "choice";
 
   return { settings: next, notes };
 }
@@ -278,7 +329,7 @@ export function parseSettings(stored: unknown): RunSettings {
         ? stored.level
         : DEFAULT_SETTINGS.level,
     ...pickSelection(stored),
-    format: pick(stored.format, FORMATS, DEFAULT_SETTINGS.format),
+    format: pick(stored.format, RUN_FORMATS, DEFAULT_SETTINGS.format),
     answerStyle: pick(stored.answerStyle, ANSWER_STYLES, DEFAULT_SETTINGS.answerStyle),
     choiceCount: typeof choices === "number" ? choices : DEFAULT_SETTINGS.choiceCount,
     questionCount: typeof count === "number" ? count : DEFAULT_SETTINGS.questionCount,
@@ -399,6 +450,12 @@ if (import.meta.vitest) {
     expect(remainingMs(5, 9000)).toBe(0);
   });
 
+  test("shows a clock as minutes and seconds, rounding a started second up", () => {
+    expect(clock(1_200_000)).toBe("20:00");
+    expect(clock(61_001)).toBe("1:02");
+    expect(clock(0)).toBe("0:00");
+  });
+
   test("warns once a clock is down to its last five seconds, unless that is all it ever had", () => {
     expect(isNearlyOut(null, 0)).toBe(false);
     expect(isNearlyOut(9000, 10)).toBe(false);
@@ -430,6 +487,33 @@ if (import.meta.vitest) {
       subcategories: ["numbers/digits"],
       excludedWords: ["一|いち"]
     });
+  });
+
+  test("reads back an exam run, keeping the answer style chosen for the other formats", () => {
+    const wanted: RunSettings = { ...DEFAULT_SETTINGS, format: "exam", answerStyle: "typing" };
+    expect(parseSettings(wanted)).toEqual(wanted);
+  });
+
+  test("fixes an N5 exam at 21 questions in 20 minutes, four choices, look-alike distractors", () => {
+    const run = runSettings({ ...DEFAULT_SETTINGS, format: "exam", answerStyle: "typing", perQuestionSeconds: 10 });
+    expect(run).toMatchObject({
+      format: "exam",
+      answerStyle: "choice",
+      choiceCount: 4,
+      difficulty: "expert",
+      questionCount: 21,
+      perQuestionSeconds: 0,
+      totalSeconds: 1200
+    });
+    expect(formatsOf("exam")).toEqual(["kanji-kana", "kana-kanji", "kanji-meaning"]);
+  });
+
+  test("leaves a run alone that is no exam, or at a level with no exam", () => {
+    const plain = { ...DEFAULT_SETTINGS, questionCount: 50 };
+    expect(runSettings(plain)).toBe(plain);
+    const unknown = { ...DEFAULT_SETTINGS, level: "N1", format: "exam" as const };
+    expect(runSettings(unknown)).toBe(unknown);
+    expect(examOf("N1")).toBeNull();
   });
 
   test("names the two sides of every format the app offers", () => {

@@ -77,6 +77,7 @@ function history(now: number): Report[] {
       const correct = roll() < session.accuracy;
       answers.push({
         wordId: word.id,
+        format: session.format,
         correct,
         timedOut: !correct && roll() < 0.2,
         elapsedMs: Math.round(1800 + roll() * 4200),

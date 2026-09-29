@@ -216,7 +216,8 @@
     "audio-kana": "Âm thanh sang kana",
     "audio-kanji": "Âm thanh sang kanji",
     "kanji-audio": "Kanji sang âm thanh",
-    "kana-assemble": "Kana thành khối"
+    "kana-assemble": "Kana thành khối",
+    "exam": "Bài thi"
   },
   "answerStyle": {
     "choice": "Trắc nghiệm",

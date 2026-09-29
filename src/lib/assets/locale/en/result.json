@@ -28,5 +28,12 @@
     "good": "Most of them landed.",
     "fair": "The shape of it is there.",
     "poor": "Every run makes the next one easier."
+  },
+  "exam": {
+    "reading": "Reading",
+    "writing": "Writing",
+    "meaning": "Meaning",
+    "time": "Time used",
+    "unreached": "Not reached"
   }
 }

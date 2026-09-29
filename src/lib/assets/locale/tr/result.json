@@ -28,5 +28,12 @@
     "good": "Çoğu doğruydu.",
     "fair": "Temeli oluşmaya başladı.",
     "poor": "Her çalışma bir sonrakini kolaylaştırır."
+  },
+  "exam": {
+    "reading": "Okunuş",
+    "writing": "Yazılış",
+    "meaning": "Anlam",
+    "time": "Kullanılan süre",
+    "unreached": "Ulaşılamayan"
   }
 }

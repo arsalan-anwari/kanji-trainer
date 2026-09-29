@@ -5,6 +5,30 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-09-29
+
+Public release: exam practice, and the app on F-Droid and a download page.
+
+### Added
+- An Exam format, paced like the N5 vocabulary section: 21 questions in 20
+  minutes, 7 kanji to kana, 5 kana to kanji and 9 kanji to meaning in place of
+  the sentence items, which belong in JLPT Trainer. Four choices, look-alike
+  wrong answers, no hints and no answers shown until the end.
+- The exam result, split into reading, writing and meaning, with the time used
+  against the limit. Questions the clock cut off count as wrong.
+- A download page at https://arsalan-anwari.github.io/kanji-trainer/, which
+  picks out the package for your system, with a privacy policy.
+- A self-hosted F-Droid repository at
+  https://arsalan-anwari.github.io/kanji-trainer/fdroid/repo, rebuilt from
+  every release.
+- Microsoft Store (`msix`) and Google Play (`aab`) packages, built on request
+  with a `build-pkg-msix-aab` tag, with English store listings.
+
+### Changed
+- Every answer in a score report records the format it was asked in, so an
+  exam counts toward each of its formats in the reports. Reports saved before
+  1.2.0 read as before.
+
 ## [1.1.0] - 2026-09-28
 
 Platform parity: the standard Kana Trainer already ships at, on every target.
@@ -73,5 +97,6 @@ The first release.
 - Packages for Linux (deb, rpm, Arch), Windows, macOS and Android, each signed
   with OpenPGP and shipped with its sha256.
 
+[1.2.0]: https://github.com/arsalan-anwari/kanji-trainer/releases/tag/v1.2.0
 [1.1.0]: https://github.com/arsalan-anwari/kanji-trainer/releases/tag/v1.1.0
 [1.0.0]: https://github.com/arsalan-anwari/kanji-trainer/releases/tag/v1.0.0

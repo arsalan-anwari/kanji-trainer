@@ -1,13 +1,10 @@
 <script lang="ts">
   import { Button, Progress } from "kaizen-ui";
   import { app } from "../../state.svelte";
+  import { clock } from "../../quiz/settings";
   import { n, t } from "../../i18n.svelte";
 
-  const runLeft = $derived.by(() => {
-    if (app.totalRemaining === null) return null;
-    const seconds = Math.ceil(app.totalRemaining / 1000);
-    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
-  });
+  const runLeft = $derived(app.totalRemaining === null ? null : clock(app.totalRemaining));
 </script>
 
 <!-- Its own compositor layer: under WebKitGTK on Wayland the fixed backdrop's
@@ -41,7 +38,7 @@
   </div>
   {#if app.questionRemaining !== null}
     <Progress
-      value={app.questionRemaining / (app.settings.perQuestionSeconds * 1000)}
+      value={app.questionRemaining / (app.run.perQuestionSeconds * 1000)}
       tone={app.questionRemaining <= 3000 ? "danger" : "primary"}
       size="sm"
       label={t("quiz.time.questionLeft")}

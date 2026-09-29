@@ -2,14 +2,30 @@ import { SUBCATEGORIES, subcategoryKey } from "../content/sets";
 import type { Word } from "../content/types";
 import { audioUrl, imageUrl } from "./hints";
 import { normalizeReading } from "./romaji";
-import { answerSurface, DEFAULT_SETTINGS, DIFFICULTIES, FORMATS, isAssembly, promptSurface, showsWritten, usesAudio } from "./settings";
+import {
+  answerSurface,
+  DEFAULT_SETTINGS,
+  DIFFICULTIES,
+  EXAM_PARTS,
+  examLength,
+  examOf,
+  FORMATS,
+  formatsOf,
+  isAssembly,
+  isExam,
+  promptSurface,
+  runSettings,
+  showsWritten,
+  usesAudio
+} from "./settings";
 import { buildPuzzle, canAssemble, shapesOf, type Puzzle, type Shapes } from "./assemble";
-import type { Difficulty, Format, RunSettings, Surface, WordShape } from "./settings";
+import type { Difficulty, Format, RunFormat, RunSettings, Surface, WordShape } from "./settings";
 import { similarity, type ComponentIndex } from "./similarity";
 import { shuffle } from "./shuffle";
 
 export type Question = {
   index: number;
+  format: Format;
   wordId: string;
   prompt: string;
   answer: string;
@@ -21,6 +37,7 @@ export type Question = {
 
 export type Answer = {
   wordId: string;
+  format: Format;
   correct: boolean;
   elapsedMs: number;
   given: string;
@@ -54,15 +71,19 @@ export function atLevel(words: readonly Word[], level: string): Word[] {
   return words.filter((word) => word.level.toLowerCase() === wanted);
 }
 
-/** Whether the format can ask the word at all, whatever else the run picked. */
-export function suitsFormat(word: Word, format: Format, cuts: Shapes = new Map()): boolean {
+function asks(word: Word, format: Format, cuts: Shapes): boolean {
   if (word.shape === "kana" && showsWritten(format)) return false;
   if (isAssembly(format) && !canAssemble(word, cuts)) return false;
   return word.hasAudio || !usesAudio(format);
 }
 
+/** Whether the format can ask the word at all, whatever else the run picked. */
+export function suitsFormat(word: Word, format: RunFormat, cuts: Shapes = new Map()): boolean {
+  return formatsOf(format).every((each) => asks(word, each, cuts));
+}
+
 /** The packs among `words` the format can ask none of. */
-export function unsuitedPacks(words: readonly Word[], format: Format, cuts: Shapes = new Map()): string[] {
+export function unsuitedPacks(words: readonly Word[], format: RunFormat, cuts: Shapes = new Map()): string[] {
   const suited = new Set(words.filter((word) => suitsFormat(word, format, cuts)).map((word) => word.pack));
   return [...new Set(words.map((word) => word.pack))].filter((pack) => !suited.has(pack));
 }
@@ -97,9 +118,17 @@ export function eligibleWords(
 }
 
 export function startHint(settings: RunSettings, words: readonly Word[]): string {
+  if (isExam(settings.format)) return examOf(settings.level) === null ? "setup.exam.noLevel" : "setup.exam.tooFew";
   const chosen = pickedWords(settings, words);
   const onlyKana = chosen.length > 0 && chosen.every((word) => word.shape === "kana");
   return onlyKana && showsWritten(settings.format) ? "setup.kanaHint" : "setup.startHint";
+}
+
+/** Whether `eligible` words are enough to start the run: one, or every question of an exam. */
+export function canStartRun(settings: RunSettings, eligible: number): boolean {
+  if (!isExam(settings.format)) return eligible > 0;
+  const exam = examOf(settings.level);
+  return exam !== null && eligible >= examLength(exam);
 }
 
 export function similarCount(difficulty: Difficulty): number {
@@ -240,6 +269,86 @@ function distinctSurfaces(words: readonly Word[], format: Format): number {
   return new Set(words.map((word) => answerOf(word, format))).size;
 }
 
+type Deck = {
+  format: Format;
+  settings: RunSettings;
+  words: readonly Word[];
+  everything: readonly Word[];
+  distractors: readonly Word[];
+  rng: () => number;
+  components: ComponentIndex;
+  shapes: Shapes;
+};
+
+function deckOf(
+  format: Format,
+  settings: RunSettings,
+  pool: readonly Word[],
+  words: readonly Word[],
+  rng: () => number,
+  components: ComponentIndex,
+  shapes: Shapes
+): Deck {
+  const everything = atLevel(words, settings.level).filter((word) => word.hasAudio || !usesAudio(format));
+  const distractors = distinctSurfaces(pool, format) >= settings.choiceCount ? pool : everything;
+  return { format, settings, words, everything, distractors, rng, components, shapes };
+}
+
+function ask(target: Word, index: number, deck: Deck): Question {
+  const { format, settings, words, rng, shapes } = deck;
+  const assembly = isAssembly(format);
+  const puzzle = assembly ? buildPuzzle(target, shapes, settings.difficulty, rng) : null;
+  return {
+    ...(puzzle === null ? {} : { puzzle }),
+    index,
+    format,
+    wordId: target.id,
+    prompt: promptOf(target, format),
+    answer: answerOf(target, format),
+    accepted: [
+      ...new Set(
+        [target, ...words.filter((word) => sharesPrompt(target, word, format))].flatMap((word) =>
+          acceptedOf(word, format)
+        )
+      )
+    ],
+    choices:
+      settings.answerStyle === "choice" && !assembly
+        ? buildChoices(
+            target,
+            deck.distractors,
+            deck.everything,
+            format,
+            settings.choiceCount,
+            rng,
+            settings.difficulty,
+            deck.components
+          )
+        : []
+  };
+}
+
+function buildExam(
+  settings: RunSettings,
+  words: readonly Word[],
+  rng: () => number,
+  components: ComponentIndex,
+  shapes: Shapes
+): Question[] {
+  const exam = examOf(settings.level);
+  const run = runSettings(settings);
+  const pool = eligibleWords(run, words, shapes);
+  if (exam === null || pool.length < run.questionCount) return [];
+  const drawn = shuffle(pool, rng).slice(0, run.questionCount);
+  let from = 0;
+  return EXAM_PARTS.flatMap(([part, format]) => {
+    const deck = deckOf(format, run, pool, words, rng, components, shapes);
+    const targets = drawn.slice(from, from + exam[part]);
+    from += exam[part];
+    return targets.map((target) => ({ target, deck }));
+  }).map(({ target, deck }, index) => ask(target, index, deck));
+}
+
 export function buildQuestions(
   settings: RunSettings,
   words: readonly Word[],
@@ -247,16 +356,12 @@ export function buildQuestions(
   components: ComponentIndex = new Map(),
   shapes: Shapes = new Map()
 ): Question[] {
+  const format = settings.format;
+  if (isExam(format)) return buildExam(settings, words, rng, components, shapes);
   const pool = eligibleWords(settings, words, shapes);
-  const assembly = isAssembly(settings.format);
   if (pool.length === 0) return [];
 
-  const everything = atLevel(words, settings.level).filter(
-    (word) => word.hasAudio || !usesAudio(settings.format)
-  );
-  const distractors =
-    distinctSurfaces(pool, settings.format) >= settings.choiceCount ? pool : everything;
-
+  const deck = deckOf(format, settings, pool, words, rng, components, shapes);
   const total = settings.questionCount > 0 ? settings.questionCount : pool.length;
   const questions: Question[] = [];
   let bag: Word[] = [];
@@ -265,34 +370,7 @@ export function buildQuestions(
     if (bag.length === 0) bag = shuffle(pool, rng);
     const target = bag[bag.length - 1];
     bag.pop();
-    const puzzle = assembly ? buildPuzzle(target, shapes, settings.difficulty, rng) : null;
-    questions.push({
-      ...(puzzle === null ? {} : { puzzle }),
-      index,
-      wordId: target.id,
-      prompt: promptOf(target, settings.format),
-      answer: answerOf(target, settings.format),
-      accepted: [
-        ...new Set(
-          [target, ...words.filter((word) => sharesPrompt(target, word, settings.format))].flatMap((word) =>
-            acceptedOf(word, settings.format)
-          )
-        )
-      ],
-      choices:
-        settings.answerStyle === "choice" && !assembly
-          ? buildChoices(
-              target,
-              distractors,
-              everything,
-              settings.format,
-              settings.choiceCount,
-              rng,
-              settings.difficulty,
-              components
-            )
-          : []
-    });
+    questions.push(ask(target, index, deck));
   }
 
   return questions;
@@ -302,8 +380,8 @@ export function checkChoice(question: Question, choice: string): boolean {
   return choice === question.answer;
 }
 
-export function checkTyped(question: Question, typed: string, format: Format): boolean {
-  if (answerSurface(format) === "reading") {
+export function checkTyped(question: Question, typed: string): boolean {
+  if (answerSurface(question.format) === "reading") {
     return question.accepted.includes(normalizeReading(typed));
   }
   const given = typed.trim().toLowerCase();
@@ -660,7 +738,7 @@ test("asks the written form and answers the reading on kanji to kana", () => {
     test("accepts either word when typed, since the prompt cannot say which was meant", () => {
       const typing = { ...settings, answerStyle: "typing" as const };
       const [reading] = buildQuestions({ ...typing, format: "kanji-kana" }, words, seeded(1));
-      expect(checkTyped(reading, "ついたち", "kanji-kana")).toBe(true);
+      expect(checkTyped(reading, "ついたち")).toBe(true);
       const [meaning] = buildQuestions({ ...typing, format: "kanji-meaning" }, words, seeded(1));
       expect(meaning.accepted).toEqual(["one day", "1st of the month"]);
     });
@@ -771,6 +849,46 @@ test("asks the written form and answers the reading on kanji to kana", () => {
     });
   });
 
+  describe("building an exam", () => {
+    const glyphs = "一二三四五六七八九十百千万円年月日火水木金土山川田人口目耳手足上下中大小";
+    const pool = [...glyphs].map((id) => word(id, "numbers"));
+    const kana = word("とても", "numbers", { kanji: [], shape: "kana" });
+    const exam = { ...DEFAULT_SETTINGS, sets: ["numbers" as const], format: "exam" as const };
+
+    test("asks 7 readings, 5 spellings and 9 meanings, in paper order, of 21 different words", () => {
+      const questions = buildQuestions(exam, [...pool, kana], seeded(1));
+      expect(questions.map((question) => question.format)).toEqual([
+        ...Array<Format>(7).fill("kanji-kana"),
+        ...Array<Format>(5).fill("kana-kanji"),
+        ...Array<Format>(9).fill("kanji-meaning")
+      ]);
+      expect(new Set(questions.map((question) => question.wordId)).size).toBe(21);
+      expect(questions.map((question) => question.index)).toEqual([...Array(21).keys()]);
+      expect(questions.map((question) => question.wordId)).not.toContain(kana.id);
+    });
+
+    test("answers by picking one of four, whatever answer style and difficulty were set", () => {
+      const fixed = buildQuestions({ ...exam, difficulty: "expert" }, pool, seeded(2));
+      const loose = buildQuestions({ ...exam, difficulty: "beginner", answerStyle: "typing" }, pool, seeded(2));
+      expect(loose).toEqual(fixed);
+      for (const question of fixed) {
+        expect(question.choices).toHaveLength(4);
+        expect(question.choices).toContain(question.answer);
+      }
+    });
+
+    test("refuses to start with fewer than 21 words written in kanji, or at a level with no exam", () => {
+      const short = [...pool.slice(0, 20), kana];
+      expect(buildQuestions(exam, short, seeded(3))).toEqual([]);
+      expect(canStartRun(exam, 20)).toBe(false);
+      expect(canStartRun(exam, 21)).toBe(true);
+      expect(canStartRun({ ...exam, level: "N1" }, 500)).toBe(false);
+      expect(startHint(exam, short)).toBe("setup.exam.tooFew");
+      expect(startHint({ ...exam, level: "N1" }, short)).toBe("setup.exam.noLevel");
+      expect(eligibleWords(exam, [...pool, kana])).toHaveLength(pool.length);
+    });
+  });
+
   describe("judging an answer", () => {
     const [question] = buildQuestions(
       { ...DEFAULT_SETTINGS, sets: ["numbers"], questionCount: 1 },
@@ -784,13 +902,13 @@ test("asks the written form and answers the reading on kanji to kana", () => {
     });
 
     test("ignores space around a typed answer", () => {
-      expect(checkTyped(question, `  ${question.answer} `, DEFAULT_SETTINGS.format)).toBe(true);
+      expect(checkTyped(question, `  ${question.answer} `)).toBe(true);
     });
 
     test("accepts a reading that was typed as romaji", () => {
       const reading = { ...question, answer: "がっこう", accepted: ["がっこう"] };
-      expect(checkTyped(reading, "gakkou", "kanji-kana")).toBe(true);
-      expect(checkTyped(reading, "gakko", "kanji-kana")).toBe(false);
+      expect(checkTyped(reading, "gakkou")).toBe(true);
+      expect(checkTyped(reading, "gakko")).toBe(false);
     });
 
     test("accepts any reading the word carries, not only the pinned one", () => {
@@ -803,9 +921,9 @@ test("asks the written form and answers the reading on kanji to kana", () => {
         [seven],
         seeded(9)
       );
-      expect(checkTyped(asked, "しち", "kanji-kana")).toBe(true);
-      expect(checkTyped(asked, "shichi", "kanji-kana")).toBe(true);
-      expect(checkTyped(asked, "はち", "kanji-kana")).toBe(false);
+      expect(checkTyped(asked, "しち")).toBe(true);
+      expect(checkTyped(asked, "shichi")).toBe(true);
+      expect(checkTyped(asked, "はち")).toBe(false);
     });
 
     test("accepts a typed meaning against any gloss, ignoring case", () => {
@@ -821,9 +939,9 @@ test("asks the written form and answers the reading on kanji to kana", () => {
         pool,
         seeded(10)
       );
-      expect(checkTyped(asked, "Water", "kanji-meaning")).toBe(true);
-      expect(checkTyped(asked, "h2o", "kanji-meaning")).toBe(true);
-      expect(checkTyped(asked, "ice", "kanji-meaning")).toBe(false);
+      expect(checkTyped(asked, "Water")).toBe(true);
+      expect(checkTyped(asked, "h2o")).toBe(true);
+      expect(checkTyped(asked, "ice")).toBe(false);
     });
   });
 }

@@ -28,5 +28,12 @@
     "good": "La mayoría fueron correctas.",
     "fair": "Ya tienes la idea general.",
     "poor": "Cada sesión hace que la siguiente sea más fácil."
+  },
+  "exam": {
+    "reading": "Lectura",
+    "writing": "Escritura",
+    "meaning": "Significado",
+    "time": "Tiempo usado",
+    "unreached": "Sin responder"
   }
 }

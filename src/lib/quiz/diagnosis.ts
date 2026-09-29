@@ -3,7 +3,7 @@ import type { Word } from "../content/types";
 import type { Answer } from "./questions";
 import { eligibleWords } from "./questions";
 import type { Report } from "./report";
-import { CATEGORIES, DEFAULT_SETTINGS, DIRECTIONS_BY_CATEGORY, type RunSettings } from "./settings";
+import { CATEGORIES, DEFAULT_SETTINGS, DIRECTIONS_BY_CATEGORY, type Format, type RunSettings } from "./settings";
 import {
   masteryOf,
   strength,
@@ -70,7 +70,7 @@ export function statsBySet(answers: readonly Answer[], words: readonly Word[]): 
 export function formatTree(reports: readonly Report[]): TreeTableGroup[] {
   const perFormat = new Map<string, Bucket>();
   for (const report of reports) {
-    for (const answer of report.answers) bump(perFormat, report.settings.format, answer.correct);
+    for (const answer of report.answers) bump(perFormat, answer.format, answer.correct);
   }
   return CATEGORIES.flatMap((category) => {
     const children: TreeTableRow[] = DIRECTIONS_BY_CATEGORY[category].flatMap((format) => {
@@ -126,9 +126,7 @@ export function missesBySetAndWord(
   });
 }
 
-function averageElapsed(reports: readonly Report[]): number {
-  const answers = reports.flatMap((report) => report.answers);
-  if (answers.length === 0) return 0;
+function averageElapsed(answers: readonly Answer[]): number {
   return Math.round(answers.reduce((sum, answer) => sum + answer.elapsedMs, 0) / answers.length);
 }
 
@@ -138,12 +136,13 @@ export function timeSeriesByFormat(
 ): AreaSparkGroup[] {
   return CATEGORIES.flatMap((category) => {
     const series: AreaSparkSeries[] = DIRECTIONS_BY_CATEGORY[category].flatMap((format) => {
-      const runs = history
-        .filter((report) => report.settings.format === format)
+      const runs = [...history]
         .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+        .map((report) => report.answers.filter((answer) => answer.format === format))
+        .filter((answers) => answers.length > 0)
         .slice(-windowRuns);
       if (runs.length === 0) return [];
-      const points = runs.map((report) => averageElapsed([report]));
+      const points = runs.map(averageElapsed);
       return [
         {
           key: format,
@@ -207,8 +206,14 @@ if (import.meta.vitest) {
     };
   }
 
-  function answer(wordId: string, correct: boolean, given: string, elapsedMs = 1000): Answer {
-    return { wordId, correct, elapsedMs, given, timedOut: false };
+  function answer(
+    wordId: string,
+    correct: boolean,
+    given: string,
+    elapsedMs = 1000,
+    format: Format = "kanji-kana"
+  ): Answer {
+    return { wordId, format, correct, elapsedMs, given, timedOut: false };
   }
 
   function report(
@@ -222,7 +227,7 @@ if (import.meta.vitest) {
       createdAt,
       durationMs: answers.length * 1000,
       settings: { ...DEFAULT_SETTINGS, sets: ["numbers"], format },
-      answers,
+      answers: format === "exam" ? answers : answers.map((entry) => ({ ...entry, format })),
       packs: ["n5-base"]
     };
   }
@@ -281,6 +286,18 @@ if (import.meta.vitest) {
       expect(reading?.children.map((child) => child.key).sort()).toEqual([
         "kana-kanji",
         "kanji-kana"
+      ]);
+    });
+
+    test("files each answer of an exam under the format it was asked in", () => {
+      const exam = report("2026-09-19T10:00:00.000Z", "exam", [
+        answer("一", true, "いち", 1000, "kanji-kana"),
+        answer("一", false, "one", 1000, "kanji-meaning")
+      ]);
+      const tree = formatTree([exam]);
+      expect(tree.map((group) => [group.key, group.total, group.correct])).toEqual([
+        ["reading", 1, 1],
+        ["meaning", 1, 0]
       ]);
     });
 
@@ -357,6 +374,16 @@ if (import.meta.vitest) {
       const groups = timeSeriesByFormat(reports, 2);
       const series = groups.find((group) => group.key === "reading")?.series[0];
       expect(series?.points).toEqual([200, 300]);
+    });
+
+    test("times only the answers of an exam that were asked in each format", () => {
+      const exam = report("2026-09-19T10:00:00.000Z", "exam", [
+        answer("一", true, "いち", 600, "kanji-kana"),
+        answer("一", true, "one", 3000, "kanji-meaning")
+      ]);
+      const groups = timeSeriesByFormat([exam]);
+      expect(groups.find((group) => group.key === "reading")?.series[0]?.points).toEqual([600]);
+      expect(groups.find((group) => group.key === "meaning")?.series[0]?.points).toEqual([3000]);
     });
 
     test("leaves out a format nothing was run in", () => {

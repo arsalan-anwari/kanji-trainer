@@ -216,7 +216,8 @@
     "audio-kana": "Sound to kana",
     "audio-kanji": "Sound to kanji",
     "kanji-audio": "Kanji to sound",
-    "kana-assemble": "Kana to blocks"
+    "kana-assemble": "Kana to blocks",
+    "exam": "Exam"
   },
   "answerStyle": {
     "choice": "Multiple choice",

@@ -216,7 +216,8 @@
     "audio-kana": "聲音轉假名",
     "audio-kanji": "聲音轉漢字",
     "kanji-audio": "漢字轉聲音",
-    "kana-assemble": "假名拼塊"
+    "kana-assemble": "假名拼塊",
+    "exam": "考試"
   },
   "answerStyle": {
     "choice": "選擇題",

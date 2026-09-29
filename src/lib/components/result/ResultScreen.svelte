@@ -3,11 +3,14 @@
   import { app } from "../../state.svelte";
   import { langOf } from "../../content/locale";
   import { tierBlurb, tierEmoji, tierHeadline } from "../../quiz/score";
+  import { clock } from "../../quiz/settings";
   import { n, t } from "../../i18n.svelte";
 
   const summary = $derived(app.lastSummary);
   const percent = $derived(summary === null ? 0 : Math.round(summary.accuracy * 100));
   const timed = $derived((app.lastReport?.settings.perQuestionSeconds ?? 0) > 0);
+  const limitMs = $derived((app.lastReport?.settings.totalSeconds ?? 0) * 1000);
+  const usedMs = $derived(Math.min(app.lastReport?.durationMs ?? 0, limitMs));
 </script>
 
 {#if app.splash !== null}
@@ -45,15 +48,29 @@
       <Stat value={n(summary.total)} label={t("result.asked")} />
     </div>
 
-    <div class="grid gap-2 {timed ? 'grid-cols-2' : 'grid-cols-1'}">
-      <Stat
-        value={t("result.secondsShort", { count: n(Math.round(summary.averageMs / 100) / 10) })}
-        label={t("result.average")}
-      />
-      {#if timed}
-        <Stat value={n(summary.timedOut)} label={t("result.timedOut")} />
-      {/if}
-    </div>
+    {#if summary.parts.length > 0}
+      <div class="grid grid-cols-3 gap-2">
+        {#each summary.parts as part (part.part)}
+          <Stat value={`${n(part.score)} / ${n(part.total)}`} label={t(`result.exam.${part.part}`)} />
+        {/each}
+      </div>
+      <div class="grid gap-2 {summary.unreached > 0 ? 'grid-cols-2' : 'grid-cols-1'}">
+        <Stat value={`${clock(usedMs)} / ${clock(limitMs)}`} label={t("result.exam.time")} />
+        {#if summary.unreached > 0}
+          <Stat value={n(summary.unreached)} label={t("result.exam.unreached")} />
+        {/if}
+      </div>
+    {:else}
+      <div class="grid gap-2 {timed ? 'grid-cols-2' : 'grid-cols-1'}">
+        <Stat
+          value={t("result.secondsShort", { count: n(Math.round(summary.averageMs / 100) / 10) })}
+          label={t("result.average")}
+        />
+        {#if timed}
+          <Stat value={n(summary.timedOut)} label={t("result.timedOut")} />
+        {/if}
+      </div>
+    {/if}
   </div>
 
   <Card

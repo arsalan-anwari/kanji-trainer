@@ -45,6 +45,6 @@
   </Button>
 
   {#if !app.canStart}
-    <p class="text-xs leading-snug text-muted-foreground">{t(app.startHint)}</p>
+    <p class="text-xs leading-snug text-muted-foreground">{t(app.startHint, { count: n(app.questionTotal) })}</p>
   {/if}
 </div>

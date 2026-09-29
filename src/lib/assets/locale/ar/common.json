@@ -216,7 +216,8 @@
     "audio-kana": "صوت إلى kana",
     "audio-kanji": "صوت إلى كانجي",
     "kanji-audio": "كانجي إلى صوت",
-    "kana-assemble": "كانا إلى كتل"
+    "kana-assemble": "كانا إلى كتل",
+    "exam": "اختبار"
   },
   "answerStyle": {
     "choice": "اختيار من متعدد",

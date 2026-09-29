@@ -32,7 +32,8 @@
     "audio-kanji": "Ouça a palavra, responda a palavra escrita",
     "kanji-audio": "Veja a palavra, escolha a gravação correta",
     "assemble": "Construa a palavra a partir de suas partes.",
-    "kana-assemble": "Veja a leitura e o significado, construa a palavra escrita"
+    "kana-assemble": "Veja a leitura e o significado, construa a palavra escrita",
+    "exam": "Cronometrado como a seção de vocabulário"
   },
   "direction": {
     "title": "Direção",
@@ -125,5 +126,9 @@
     "secondsShort": "{count}s",
     "minutesShort": "{count}m"
   },
-  "kanaHint": "Palavras em kana não possuem forma em kanji. Escolha um formato de significado, imagem ou audição que não mostre o kanji."
+  "kanaHint": "Palavras em kana não possuem forma em kanji. Escolha um formato de significado, imagem ou audição que não mostre o kanji.",
+  "exam": {
+    "tooFew": "A prova pergunta {count} palavras diferentes escritas em kanji. Escolha mais conjuntos ou palavras.",
+    "noLevel": "Ainda não há prova para este nível."
+  }
 }

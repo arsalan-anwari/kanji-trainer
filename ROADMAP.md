@@ -16,7 +16,8 @@ feature live in [roadmap/](roadmap/).
 - **v1.0.0**: *The trainer.* Every question format over the full N5 word list,
   packaged for Linux, Windows, macOS and Android.
 - **v1.1.0 to v1.4.0**: *Polish and reach.* Accessibility, localisation, store
-  listings, exam practice and the levels beyond N5. No new question formats.
+  listings, exam practice and the levels beyond N5. No new question formats
+  apart from Exam, which combines existing ones.
   Each release is a substantial step; small fixes ride along as patch versions.
 - **v2.0.0 and beyond**: *On-device AI tutor.* Handwriting and speech practice
   with local models and delta-based feedback, the same split as Kana Trainer.
@@ -107,7 +108,7 @@ feature live in [roadmap/](roadmap/).
 - [✅] Packages for Linux (deb, rpm, Arch), Windows, macOS and Android, built by CI
 - [✅] Every package signed with OpenPGP, with its sha256 and a build provenance attestation
 - [✅] Changelog, read by the release workflow for the release notes
-- [📋] First tagged release on GitHub and crates.io
+- [✅] First tagged release on GitHub and crates.io
 
 ---
 
@@ -120,7 +121,7 @@ left open.
 
 - [✅] The 279 JapanesePod101 clips used with the publisher's permission
 - [✅] Clips for 七 (なな) and 一万 (いちまん), missing from every source
-- [📋] Move the clip cache and recording picker into `kaizen-ui`, with Kana
+- [✅] Move the clip cache and recording picker into `kaizen-ui`, with Kana
   Trainer adopting them (deferred until a third app needs them)
 - [✅] Chart play and flip buttons and the Listening formats checked on Android
 - [✅] Replaying a clip under WebKitGTK starts it from the beginning
@@ -139,25 +140,28 @@ left open.
 - [✅] Meanings, accepted answers, word clues, example sentences and shape
   descriptions translated per pack, falling back to English
 
-## v1.2.0: Public release [📋]
+## v1.2.0: Public release [✅]
 
 The first release meant for learners who are not testing it.
 
 ### Stores and testing
 
-- [📋] Google Play, F-Droid and the Microsoft Store
-- [📋] A download page on GitHub Pages
-- [📋] External testing, with a regression test for every confirmed bug
+- [✅] Google Play, F-Droid and the Microsoft Store, English listings
+- [✅] Store packages (`aab`, `msix`) built on request, never by a release
+- [✅] A download page on GitHub Pages
+- [✅] External testing, with a regression test for every confirmed bug
 
 ### Exam practice
 
-- [📋] Preset at the real exam's pace
-- [📋] Exam drill: kanji to kana and kana to kanji, timed, no reveal until the end
-- [📋] Irregular readings the papers keep returning to: hour and day counters
+- [✅] Exam format: 21 questions in 20 minutes, as the N5 vocabulary section:
+  kanji to kana, kana to kanji, and word meaning in place of the sentence items
+- [✅] Exam result split into reading, writing and meaning, unreached questions
+  counted wrong, no reveal until the end
 
 ## v1.3.0: N4 [📋]
 
 - [📋] N4 as packs, no new question formats
+- [📋] Irregular readings the papers keep returning to: hour and day counters
 - [📋] Theme packs alongside it: travel, food, work, school, culture, media
 - [📋] Phonetic components surfaced where they start being predictive
 

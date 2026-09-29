@@ -216,7 +216,8 @@
     "audio-kana": "Звук в кану",
     "audio-kanji": "Звук в кандзи",
     "kanji-audio": "Кандзи в звук",
-    "kana-assemble": "Кана в блоки"
+    "kana-assemble": "Кана в блоки",
+    "exam": "Экзамен"
   },
   "answerStyle": {
     "choice": "Выбор из нескольких вариантов",

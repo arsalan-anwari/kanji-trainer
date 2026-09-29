@@ -31,6 +31,7 @@ import {
 } from "./packs/store";
 import {
   buildQuestions,
+  canStartRun,
   checkChoice,
   checkTyped,
   atLevel,
@@ -56,10 +57,12 @@ import {
 } from "./quiz/assemble";
 import {
   isAssembly,
+  isExam,
   normalizeSettings,
   parseSettings,
   promptSurface,
   remainingMs,
+  runSettings,
   usesAudio,
   DEFAULT_SETTINGS,
   ONE_PASS,
@@ -141,6 +144,7 @@ class AppState {
   #chosenPreset = $state("");
   message = $state("");
 
+  run = $state<RunSettings>({ ...DEFAULT_SETTINGS });
   questions = $state.raw<Question[]>([]);
   answers = $state.raw<Answer[]>([]);
   index = $state(0);
@@ -237,9 +241,13 @@ class AppState {
   pool = $derived<Word[]>(eligibleWords(this.settings, this.words, this.shapes));
   eligibleCount = $derived(this.pool.length);
   questionTotal = $derived(
-    this.settings.questionCount === ONE_PASS ? this.eligibleCount : this.settings.questionCount
+    isExam(this.settings.format)
+      ? runSettings(this.settings).questionCount
+      : this.settings.questionCount === ONE_PASS
+        ? this.eligibleCount
+        : this.settings.questionCount
   );
-  canStart = $derived(this.eligibleCount > 0);
+  canStart = $derived(canStartRun(this.settings, this.eligibleCount));
   startHint = $derived(startHint(this.settings, this.words));
 
   current = $derived<Question | null>(this.questions[this.index] ?? null);
@@ -248,15 +256,16 @@ class AppState {
       ? null
       : (this.words.find((word) => word.id === this.current?.wordId) ?? null)
   );
+  exam = $derived(isExam(this.run.format));
   hint = $derived<Hint | null>(
-    this.currentWord === null
+    this.current === null || this.currentWord === null
       ? null
-      : hintFor(this.currentWord, this.settings.format, this.settings.difficulty, this.looks)
+      : hintFor(this.currentWord, this.current.format, this.run.difficulty, this.looks)
   );
   hintFallback = $derived<Hint | null>(
-    this.currentWord === null
+    this.current === null || this.currentWord === null
       ? null
-      : fallbackHint(this.currentWord, this.settings.format, this.looks)
+      : fallbackHint(this.currentWord, this.current.format, this.looks)
   );
   progress = $derived(
     this.questions.length === 0 ? 0 : (this.index + (this.phase === "answering" ? 0 : 1)) / this.questions.length
@@ -264,11 +273,11 @@ class AppState {
   score = $derived(this.answers.filter((answer) => answer.correct).length);
   questionRemaining = $derived(
     remainingMs(
-      this.settings.perQuestionSeconds,
+      this.run.perQuestionSeconds,
       (this.phase === "answering" ? this.now : this.answeredAt) - this.questionStartedAt
     )
   );
-  totalRemaining = $derived(remainingMs(this.settings.totalSeconds, this.now - this.runStartedAt));
+  totalRemaining = $derived(remainingMs(this.run.totalSeconds, this.now - this.runStartedAt));
   lastSummary = $derived<Summary | null>(
     this.lastReport === null ? null : summarize(this.lastReport)
   );
@@ -523,14 +532,16 @@ class AppState {
   }
 
   #begin(): void {
+    const run = runSettings(this.settings);
     const questions = buildQuestions(
-      this.settings,
+      run,
       this.words,
       Math.random,
       this.components,
       this.shapes
     );
     if (questions.length === 0) return;
+    this.run = run;
     this.questions = questions;
     this.answers = [];
     this.index = 0;
@@ -590,8 +601,8 @@ class AppState {
 
   #cue(): void {
     const question = this.current;
-    if (question === null || !usesAudio(this.settings.format)) return;
-    if (promptSurface(this.settings.format) !== "audio") {
+    if (question === null || !usesAudio(question.format)) return;
+    if (promptSurface(question.format) !== "audio") {
       clips.preload(question.choices);
       return;
     }
@@ -602,7 +613,7 @@ class AppState {
 
   replayPrompt(): void {
     const question = this.current;
-    if (question === null || promptSurface(this.settings.format) !== "audio") return;
+    if (question === null || promptSurface(question.format) !== "audio") return;
     void clips.play(question.prompt);
   }
 
@@ -625,16 +636,22 @@ class AppState {
       ...this.answers,
       {
         wordId: question.wordId,
+        format: question.format,
         correct,
         elapsedMs: this.answeredAt - this.questionStartedAt,
         given,
         timedOut
       }
     ];
+    this.phase = "feedback";
+    if (this.exam) {
+      sfx.click();
+      this.next();
+      return;
+    }
     this.lastCorrect = correct;
     this.lastTimedOut = timedOut;
-    this.phase = "feedback";
-    if (isAssembly(this.settings.format)) {
+    if (isAssembly(question.format)) {
       if (correct) sfx.wood.solved();
       else sfx.wood.failed();
     } else if (correct) sfx.correct();
@@ -659,7 +676,7 @@ class AppState {
     if (this.phase !== "answering" || this.current === null) return;
     const given = this.typed.trim();
     if (given === "") return;
-    this.record(checkTyped(this.current, given, this.settings.format), given);
+    this.record(checkTyped(this.current, given), given);
   }
 
   next(): void {
@@ -732,7 +749,7 @@ class AppState {
       id: newReportId(),
       createdAt: new Date().toISOString(),
       durationMs: Date.now() - this.runStartedAt,
-      settings: { ...this.settings },
+      settings: { ...this.run },
       answers: [...this.answers],
       packs: packsOf(
         this.answers.map((answer) => answer.wordId),

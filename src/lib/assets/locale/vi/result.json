@@ -28,5 +28,12 @@
     "good": "Hầu hết đều đúng.",
     "fair": "Đã nắm được cơ bản.",
     "poor": "Mỗi lượt chạy đều giúp lượt sau dễ dàng hơn."
+  },
+  "exam": {
+    "reading": "Cách đọc",
+    "writing": "Cách viết",
+    "meaning": "Nghĩa",
+    "time": "Thời gian đã dùng",
+    "unreached": "Chưa làm"
   }
 }

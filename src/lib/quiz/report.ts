@@ -1,6 +1,17 @@
 import type { Answer } from "./questions";
 import type { Word } from "../content/types";
-import { DEFAULT_SETTINGS, parseSettings, type RunSettings } from "./settings";
+import {
+  DEFAULT_SETTINGS,
+  EXAM_PARTS,
+  examOf,
+  FORMATS,
+  isExam,
+  parseSettings,
+  type ExamPart,
+  type Format,
+  type RunFormat,
+  type RunSettings
+} from "./settings";
 
 export type Report = {
   id: string;
@@ -13,8 +24,12 @@ export type Report = {
 
 export const LEGACY_PACKS = ["n5-base"];
 
+export type PartScore = { part: ExamPart; score: number; total: number };
+
 export type Summary = {
   total: number;
+  unreached: number;
+  parts: PartScore[];
   score: number;
   accuracy: number;
   averageMs: number;
@@ -29,8 +44,19 @@ export function newReportId(): string {
   return `${stamp}-${noise}`;
 }
 
+function partsOf(report: Report): PartScore[] {
+  const exam = isExam(report.settings.format) ? examOf(report.settings.level) : null;
+  if (exam === null) return [];
+  return EXAM_PARTS.map(([part, format]) => ({
+    part,
+    total: exam[part],
+    score: report.answers.filter((answer) => answer.correct && answer.format === format).length
+  }));
+}
+
 export function summarize(report: Report): Summary {
-  const total = report.answers.length;
+  const answered = report.answers.length;
+  const total = isExam(report.settings.format) ? Math.max(answered, report.settings.questionCount) : answered;
   const score = report.answers.filter((answer) => answer.correct).length;
   const missed: string[] = [];
   for (const answer of report.answers) {
@@ -41,9 +67,11 @@ export function summarize(report: Report): Summary {
   const totalMs = report.answers.reduce((sum, answer) => sum + answer.elapsedMs, 0);
   return {
     total,
+    unreached: total - answered,
+    parts: partsOf(report),
     score,
     accuracy: total === 0 ? 0 : score / total,
-    averageMs: total === 0 ? 0 : Math.round(totalMs / total),
+    averageMs: answered === 0 ? 0 : Math.round(totalMs / answered),
     timedOut: timedOut.length,
     missedWordIds: missed,
     timedOutWordIds: [...new Set(timedOut.map((answer) => answer.wordId))]
@@ -69,13 +97,15 @@ function parsePacks(value: unknown): string[] {
   return packs.length === 0 ? [...LEGACY_PACKS] : packs;
 }
 
-function parseAnswer(value: unknown): Answer | null {
+function parseAnswer(value: unknown, runFormat: RunFormat): Answer | null {
   if (!isRecord(value)) return null;
   const { wordId, correct, elapsedMs, given } = value;
   if (typeof wordId !== "string" || wordId === "") return null;
   if (typeof correct !== "boolean" || typeof elapsedMs !== "number") return null;
   if (typeof given !== "string") return null;
-  return { wordId, correct, elapsedMs, given, timedOut: value.timedOut === true };
+  const format = FORMATS.find((entry) => entry === value.format) ?? (isExam(runFormat) ? null : runFormat);
+  if (format === null) return null;
+  return { wordId, format, correct, elapsedMs, given, timedOut: value.timedOut === true };
 }
 
 export function parseReport(value: unknown): Report | null {
@@ -86,9 +116,10 @@ export function parseReport(value: unknown): Report | null {
   if (typeof durationMs !== "number") return null;
   if (!Array.isArray(answers)) return null;
 
+  const settings = parseSettings(value.settings);
   const parsed: Answer[] = [];
   for (const entry of answers) {
-    const answer = parseAnswer(entry);
+    const answer = parseAnswer(entry, settings.format);
     if (answer === null) return null;
     parsed.push(answer);
   }
@@ -97,7 +128,7 @@ export function parseReport(value: unknown): Report | null {
     id,
     createdAt,
     durationMs,
-    settings: parseSettings(value.settings),
+    settings,
     answers: parsed,
     packs: parsePacks(value.packs)
   };
@@ -105,6 +136,7 @@ export function parseReport(value: unknown): Report | null {
 
 if (import.meta.vitest) {
   const { describe, test, expect } = import.meta.vitest;
+  const { runSettings } = await import("./settings");
 
   const report: Report = {
     id: "run-1",
@@ -112,10 +144,10 @@ if (import.meta.vitest) {
     durationMs: 60_000,
     settings: { ...DEFAULT_SETTINGS, sets: ["numbers"] },
     answers: [
-      { wordId: "一|いち", correct: true, elapsedMs: 900, given: "いち", timedOut: false },
-      { wordId: "二|に", correct: false, elapsedMs: 1200, given: "ふた", timedOut: false },
-      { wordId: "二|に", correct: false, elapsedMs: 800, given: "じ", timedOut: false },
-      { wordId: "三|さん", correct: true, elapsedMs: 700, given: "さん", timedOut: false }
+      { wordId: "一|いち", format: "kanji-kana", correct: true, elapsedMs: 900, given: "いち", timedOut: false },
+      { wordId: "二|に", format: "kanji-kana", correct: false, elapsedMs: 1200, given: "ふた", timedOut: false },
+      { wordId: "二|に", format: "kanji-kana", correct: false, elapsedMs: 800, given: "じ", timedOut: false },
+      { wordId: "三|さん", format: "kanji-kana", correct: true, elapsedMs: 700, given: "さん", timedOut: false }
     ],
     packs: ["n5-base"]
   };
@@ -138,12 +170,12 @@ if (import.meta.vitest) {
     });
 
     test("averages the time per answer and counts the ones that ran out of time", () => {
-      const timed = {
+      const timed: Report = {
         ...report,
         answers: [
           ...report.answers,
-          { wordId: "四|よん", correct: false, elapsedMs: 5000, given: "", timedOut: true },
-          { wordId: "四|よん", correct: false, elapsedMs: 5000, given: "", timedOut: true }
+          { wordId: "四|よん", format: "kanji-kana", correct: false, elapsedMs: 5000, given: "", timedOut: true },
+          { wordId: "四|よん", format: "kanji-kana", correct: false, elapsedMs: 5000, given: "", timedOut: true }
         ]
       };
       const summary = summarize(timed);
@@ -154,9 +186,65 @@ if (import.meta.vitest) {
     });
   });
 
+  describe("summarising an exam", () => {
+    const exam = runSettings({ ...DEFAULT_SETTINGS, format: "exam" });
+    const answer = (format: Format, correct: boolean): Report["answers"][number] => ({
+      wordId: `${format}-${correct}`,
+      format,
+      correct,
+      elapsedMs: 50_000,
+      given: "",
+      timedOut: false
+    });
+
+    test("counts the questions the clock cut off as wrong, out of all 21", () => {
+      const cut: Report = {
+        ...report,
+        durationMs: 1_200_000,
+        settings: exam,
+        answers: [
+          ...Array.from({ length: 6 }, () => answer("kanji-kana", true)),
+          answer("kanji-kana", false),
+          ...Array.from({ length: 4 }, () => answer("kana-kanji", true)),
+          answer("kana-kanji", false),
+          ...Array.from({ length: 3 }, () => answer("kanji-meaning", true))
+        ]
+      };
+      const summary = summarize(cut);
+      expect(summary.total).toBe(21);
+      expect(summary.score).toBe(13);
+      expect(summary.unreached).toBe(6);
+      expect(summary.accuracy).toBe(13 / 21);
+      expect(summary.averageMs).toBe(50_000);
+      expect(summary.parts).toEqual([
+        { part: "reading", score: 6, total: 7 },
+        { part: "writing", score: 4, total: 5 },
+        { part: "meaning", score: 3, total: 9 }
+      ]);
+    });
+
+    test("splits nothing into parts for a run that is no exam", () => {
+      expect(summarize(report).parts).toEqual([]);
+      expect(summarize(report).unreached).toBe(0);
+    });
+  });
+
   describe("reading a stored run back", () => {
     test("accepts a run this app wrote", () => {
       expect(parseReport(JSON.parse(JSON.stringify(report)))).toEqual(report);
+    });
+
+    test("files each answer of a run saved before 1.2 under the run's format", () => {
+      const legacy = JSON.parse(JSON.stringify(report));
+      for (const answer of legacy.answers) delete answer.format;
+      expect(parseReport(legacy)).toEqual(report);
+    });
+
+    test("refuses an exam answer that does not say which part it was", () => {
+      const exam = JSON.parse(JSON.stringify({ ...report, settings: { ...report.settings, format: "exam" } }));
+      expect(parseReport(exam)?.settings.format).toBe("exam");
+      delete exam.answers[0].format;
+      expect(parseReport(exam)).toBeNull();
     });
 
     test("reads a run saved before timing existed as untimed", () => {
@@ -168,9 +256,9 @@ if (import.meta.vitest) {
     });
 
     test("keeps which answers ran out of time", () => {
-      const timed = {
+      const timed: Report = {
         ...report,
-        answers: [{ wordId: "四|よん", correct: false, elapsedMs: 5000, given: "", timedOut: true }]
+        answers: [{ wordId: "四|よん", format: "kanji-kana", correct: false, elapsedMs: 5000, given: "", timedOut: true }]
       };
       expect(parseReport(JSON.parse(JSON.stringify(timed)))?.answers[0]?.timedOut).toBe(true);
     });

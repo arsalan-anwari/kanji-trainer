@@ -32,7 +32,8 @@
     "audio-kanji": "Dengar kata, jawab kata tertulisnya",
     "kanji-audio": "Lihat kata, pilih rekaman yang tepat",
     "assemble": "Susun kata dari bagian-bagiannya.",
-    "kana-assemble": "Lihat cara baca dan arti, susun kata tertulisnya"
+    "kana-assemble": "Lihat cara baca dan arti, susun kata tertulisnya",
+    "exam": "Berwaktu seperti bagian kosakata asli"
   },
   "direction": {
     "title": "Arah",
@@ -125,5 +126,9 @@
     "secondsShort": "{count}d",
     "minutesShort": "{count}m"
   },
-  "kanaHint": "Kata kana tidak memiliki bentuk kanji. Pilih format arti, gambar, atau mendengarkan yang tidak menampilkan kanji."
+  "kanaHint": "Kata kana tidak memiliki bentuk kanji. Pilih format arti, gambar, atau mendengarkan yang tidak menampilkan kanji.",
+  "exam": {
+    "tooFew": "Ujian menanyakan {count} kata berbeda yang ditulis dengan kanji. Pilih lebih banyak set atau kata.",
+    "noLevel": "Belum ada ujian untuk level ini."
+  }
 }

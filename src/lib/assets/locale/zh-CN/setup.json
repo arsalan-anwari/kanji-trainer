@@ -32,7 +32,8 @@
     "audio-kanji": "听词，答出它的写法",
     "kanji-audio": "看词，选出正确的录音",
     "assemble": "用部件拼出这个词。",
-    "kana-assemble": "看读音和意思，拼出这个词的写法"
+    "kana-assemble": "看读音和意思，拼出这个词的写法",
+    "exam": "按真实词汇部分限时作答"
   },
   "direction": {
     "title": "方向",
@@ -125,5 +126,9 @@
     "secondsShort": "{count}秒",
     "minutesShort": "{count}分"
   },
-  "kanaHint": "纯假名词没有汉字形式。请选择不显示汉字的意思、图片或听力题型。"
+  "kanaHint": "纯假名词没有汉字形式。请选择不显示汉字的意思、图片或听力题型。",
+  "exam": {
+    "tooFew": "考试需要 {count} 个不同的汉字词。请多选一些词组或单词。",
+    "noLevel": "这个级别暂时还没有考试。"
+  }
 }

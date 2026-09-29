@@ -28,5 +28,12 @@
     "good": "La plupart étaient corrects.",
     "fair": "Les bases sont là.",
     "poor": "Chaque session rend la suivante plus facile."
+  },
+  "exam": {
+    "reading": "Lecture",
+    "writing": "Graphie",
+    "meaning": "Sens",
+    "time": "Temps utilisé",
+    "unreached": "Non atteintes"
   }
 }

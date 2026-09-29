@@ -28,5 +28,12 @@
     "good": "Die meisten saßen.",
     "fair": "Die Ansätze sind da.",
     "poor": "Jeder Durchlauf macht den nächsten einfacher."
+  },
+  "exam": {
+    "reading": "Lesung",
+    "writing": "Schreibweise",
+    "meaning": "Bedeutung",
+    "time": "Benötigte Zeit",
+    "unreached": "Nicht erreicht"
   }
 }

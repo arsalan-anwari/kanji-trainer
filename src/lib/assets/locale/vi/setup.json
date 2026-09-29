@@ -32,7 +32,8 @@
     "audio-kanji": "Nghe từ, trả lời từ viết đúng",
     "kanji-audio": "Xem từ, chọn bản ghi âm đúng",
     "assemble": "Ghép từ từ các mảnh của nó.",
-    "kana-assemble": "Xem cách đọc và nghĩa, ghép thành từ viết đúng"
+    "kana-assemble": "Xem cách đọc và nghĩa, ghép thành từ viết đúng",
+    "exam": "Tính giờ như phần từ vựng thật"
   },
   "direction": {
     "title": "Hướng",
@@ -125,5 +126,9 @@
     "secondsShort": "{count}s",
     "minutesShort": "{count}m"
   },
-  "kanaHint": "Các từ kana không có dạng kanji. Hãy chọn định dạng nghĩa, hình ảnh hoặc nghe không hiển thị kanji."
+  "kanaHint": "Các từ kana không có dạng kanji. Hãy chọn định dạng nghĩa, hình ảnh hoặc nghe không hiển thị kanji.",
+  "exam": {
+    "tooFew": "Bài thi hỏi {count} từ khác nhau viết bằng kanji. Hãy chọn thêm bộ từ hoặc từ.",
+    "noLevel": "Cấp độ này chưa có bài thi."
+  }
 }

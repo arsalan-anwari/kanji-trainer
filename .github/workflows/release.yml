@@ -5,6 +5,7 @@
 #      sha256 and records a build provenance attestation for it
 #   3. creates the release, with the changelog entry and every package attached
 #   4. publishes the crate to crates.io
+#   5. rebuilds the F-Droid repo and repoints the download page at the release
 #
 # Each package ships with two files next to it:
 #
@@ -28,7 +29,8 @@
 #
 # Other secrets: ANDROID_KEYSTORE_BASE64 and ANDROID_KEYSTORE_PASSWORD (plus
 # ANDROID_KEY_ALIAS and ANDROID_KEY_PASSWORD when they differ) sign the apk,
-# CARGO_REGISTRY_TOKEN publishes the crate.
+# CARGO_REGISTRY_TOKEN publishes the crate, FDROID_KEYSTORE_BASE64 and
+# FDROID_KEYSTORE_PASS sign the F-Droid repo.
 
 name: release
 
@@ -208,3 +210,46 @@ jobs:
             exit 0
           fi
           scripts/publish.sh --no-verify
+
+  fdroid:
+    needs: release
+    uses: ./.github/workflows/fdroid.yml
+    secrets: inherit
+    permissions:
+      contents: write
+    with:
+      tag: ${{ github.ref_type == 'tag' && github.ref_name || format('v{0}', inputs.version) }}
+
+  download-page:
+    name: repoint the download page
+    needs: [release, fdroid]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Rebuild the download page from the release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: scripts/publish.sh --pages "$VERSION"
+
+      - name: Commit it
+        run: |
+          if git diff --quiet -- packaging/repo/html README.md; then
+            echo "the download page already points at $VERSION"
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add packaging/repo/html README.md
+            git commit -m "Point the download page at $VERSION"
+            git push origin main
+          fi
+
+      - name: Deploy the download page
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --ref main

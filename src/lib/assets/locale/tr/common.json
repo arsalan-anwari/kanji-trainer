@@ -216,7 +216,8 @@
     "audio-kana": "Sesten kana'ya",
     "audio-kanji": "Sesten kanji'ye",
     "kanji-audio": "Kanji'den sese",
-    "kana-assemble": "Kana'dan bloklara"
+    "kana-assemble": "Kana'dan bloklara",
+    "exam": "Sınav"
   },
   "answerStyle": {
     "choice": "Çoktan seçmeli",

@@ -32,7 +32,8 @@
     "audio-kanji": "Hear the word, answer the written word",
     "kanji-audio": "See the word, pick the right recording",
     "assemble": "Build the word from its pieces.",
-    "kana-assemble": "See the reading and meaning, build the written word"
+    "kana-assemble": "See the reading and meaning, build the written word",
+    "exam": "Timed like the real vocabulary section"
   },
   "direction": {
     "title": "Direction",
@@ -125,5 +126,9 @@
     "secondsShort": "{count}s",
     "minutesShort": "{count}m"
   },
-  "kanaHint": "Kana words have no kanji form. Pick a meaning, picture or listening format that does not show the kanji."
+  "kanaHint": "Kana words have no kanji form. Pick a meaning, picture or listening format that does not show the kanji.",
+  "exam": {
+    "tooFew": "The exam asks {count} different words written in kanji. Pick more sets or words.",
+    "noLevel": "There is no exam for this level yet."
+  }
 }

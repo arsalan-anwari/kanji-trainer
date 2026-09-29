@@ -28,5 +28,12 @@
     "good": "Sebagian besar benar.",
     "fair": "Sudah mulai terlihat polanya.",
     "poor": "Setiap sesi membuat sesi berikutnya lebih mudah."
+  },
+  "exam": {
+    "reading": "Bacaan",
+    "writing": "Tulisan",
+    "meaning": "Arti",
+    "time": "Waktu terpakai",
+    "unreached": "Tidak terjawab"
   }
 }

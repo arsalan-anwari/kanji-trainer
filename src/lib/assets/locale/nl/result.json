@@ -28,5 +28,12 @@
     "good": "De meeste zaten raak.",
     "fair": "De basis staat.",
     "poor": "Elke ronde maakt de volgende makkelijker."
+  },
+  "exam": {
+    "reading": "Lezing",
+    "writing": "Schrijfwijze",
+    "meaning": "Betekenis",
+    "time": "Gebruikte tijd",
+    "unreached": "Niet bereikt"
   }
 }

@@ -216,7 +216,8 @@
     "audio-kana": "מצליל לקאנה",
     "audio-kanji": "מצליל לקאנג'י",
     "kanji-audio": "מקאנג'י לצליל",
-    "kana-assemble": "מקאנה לקוביות"
+    "kana-assemble": "מקאנה לקוביות",
+    "exam": "מבחן"
   },
   "answerStyle": {
     "choice": "בחירה מרובה",

@@ -216,7 +216,8 @@
     "audio-kana": "Som para kana",
     "audio-kanji": "Som para kanji",
     "kanji-audio": "Kanji para som",
-    "kana-assemble": "Kana para blocos"
+    "kana-assemble": "Kana para blocos",
+    "exam": "Prova"
   },
   "answerStyle": {
     "choice": "Múltipla escolha",

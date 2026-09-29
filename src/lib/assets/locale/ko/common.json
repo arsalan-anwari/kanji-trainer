@@ -216,7 +216,8 @@
     "audio-kana": "소리 → 가나",
     "audio-kanji": "소리 → 한자",
     "kanji-audio": "한자 → 소리",
-    "kana-assemble": "가나 블록 조립"
+    "kana-assemble": "가나 블록 조립",
+    "exam": "시험"
   },
   "answerStyle": {
     "choice": "객관식",

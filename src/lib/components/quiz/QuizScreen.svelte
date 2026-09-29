@@ -17,9 +17,9 @@
   const question = $derived(app.current);
   const word = $derived(app.currentWord);
   const last = $derived(app.questions.length - 1 === app.index);
-  const heard = $derived(promptSurface(app.settings.format) === "audio");
-  const labelled = $derived(heard || promptSurface(app.settings.format) === "image");
-  const picksSound = $derived(answerSurface(app.settings.format) === "audio");
+  const heard = $derived(question !== null && promptSurface(question.format) === "audio");
+  const labelled = $derived(heard || (question !== null && promptSurface(question.format) === "image"));
+  const picksSound = $derived(question !== null && answerSurface(question.format) === "audio");
 
   // Two columns only when the window is wide *and* actually wider than it is
   // tall. A tall desktop window clears the wide breakpoint but splitting it
@@ -32,7 +32,7 @@
       : t("quiz.announce", {
           index: n(app.index + 1),
           total: n(app.questions.length),
-          prompt: labelled ? t(`quiz.prompt.${app.settings.format}`) : question.prompt
+          prompt: labelled ? t(`quiz.prompt.${question.format}`) : question.prompt
         })
   );
 
@@ -46,8 +46,8 @@
 
   const warned = $derived(
     app.phase === "answering" &&
-      (isNearlyOut(app.questionRemaining, app.settings.perQuestionSeconds) ||
-        isNearlyOut(app.totalRemaining, app.settings.totalSeconds))
+      (isNearlyOut(app.questionRemaining, app.run.perQuestionSeconds) ||
+        isNearlyOut(app.totalRemaining, app.run.totalSeconds))
       ? t("quiz.time.warning")
       : ""
   );
@@ -90,7 +90,7 @@
       return;
     }
 
-    if (app.settings.answerStyle !== "choice") return;
+    if (app.run.answerStyle !== "choice") return;
 
     if (picksSound) {
       if (inRange) app.stageChoice(question.choices[slot - 1]);
@@ -133,7 +133,7 @@
         <div class="flex w-full flex-1 justify-center">
           {#if question.puzzle !== undefined}
             <AssembleBoard puzzle={question.puzzle} />
-          {:else if app.settings.answerStyle === "typing"}
+          {:else if app.run.answerStyle === "typing"}
             <TypingAnswer />
           {:else if picksSound}
             <SoundChoices {question} />

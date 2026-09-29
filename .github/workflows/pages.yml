@@ -1,0 +1,56 @@
+name: pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packaging/repo/**'
+      - '.github/workflows/pages.yml'
+  workflow_run:
+    workflows: [fdroid]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: deploy the download page
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Unpack the F-Droid repo from the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p packaging/repo/html/fdroid
+          if gh release download --pattern fdroid-repo.tar.gz --dir "$RUNNER_TEMP"; then
+            tar -xzf "$RUNNER_TEMP/fdroid-repo.tar.gz" -C packaging/repo/html/fdroid
+          else
+            echo "::warning::the latest release has no fdroid-repo.tar.gz, deploying the page without the F-Droid repo"
+          fi
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: packaging/repo/html
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
