@@ -42,7 +42,7 @@
       <img
         src={question.prompt}
         alt={t("quiz.prompt.imageAlt")}
-        class="aspect-square w-full max-w-full rounded-xl object-contain p-2"
+        class="aspect-square w-full max-w-full rounded-xl object-contain p-2 picture-plate"
       />
     </Projector>
   {:else}

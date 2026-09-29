@@ -1,3 +1,8 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["rich>=13"]
+# ///
 import csv
 import hashlib
 import json
@@ -13,6 +18,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 CACHE = ROOT / ".cache" / "audio"
 PACKS = ROOT / "data" / "packs"
 OVERLAY = ROOT / "data" / "overlay" / "packs"
+
+sys.path.insert(0, str(ROOT / "tools"))
+from common import console, track
 
 KA_DATA = "https://raw.githubusercontent.com/kanjialive/kanji-data-media/master/language-data/ka_data.csv"
 KA_AUDIO = "https://media.kanjialive.com/examples_audio/audio-mp3.zip"
@@ -176,14 +184,14 @@ def main():
         ("commons", from_commons),
     ]
     out = PACKS / pack / "audio"
-    rows = []
-    for word in words:
+    rows = [None] * len(words)  # in word order, whatever order they are fetched in
+    for index, word in track(enumerate(words), pack, group=lambda item: (item[1]["set"], item[1]["subcategory"])):
         path = clip_path(word)
         found = next(((name, clip) for name, fetch in fetchers if (clip := fetch(word))), None)
         if found is None:
-            print(f"no clip: {word['written']} ({word['reading']}), removed {out / path}", file=sys.stderr)
+            console.print(f"[yellow]no clip:[/] {word['written']} ({word['reading']}), removed {out / path}")
             (out / path).unlink(missing_ok=True)
-            rows.append([path.as_posix(), "none", "", ""])
+            rows[index] = [path.as_posix(), "none", "", ""]
             continue
         name, (raw, licence, url) = found
         if name == "local":
@@ -191,8 +199,7 @@ def main():
             (out / path).write_bytes(raw)
         else:
             encode(raw, out / path)
-        rows.append([path.as_posix(), name, licence, url])
-        print(f"{name}: {out / path}")
+        rows[index] = [path.as_posix(), name, licence, url]
     with open(PACKS / pack / "sources.tsv", "w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle, delimiter="\t", lineterminator="\n")
         writer.writerow(["path", "source", "licence", "original_url"])

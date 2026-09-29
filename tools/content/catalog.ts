@@ -42,7 +42,7 @@ function archivePack(id: string): CatalogEntry {
   }
   const unconverted = readdirSync(packOutput(id), { recursive: true }).filter((file) => String(file).endsWith(".png"));
   if (unconverted.length > 0) {
-    throw new Error(`data/packs/${id} holds ${unconverted.length} png; run "python3 tools/images/convert.py --all"`);
+    throw new Error(`data/packs/${id} holds ${unconverted.length} png; run "scripts/convert_images.sh --all"`);
   }
   const path = join(ARCHIVES_DIR, `${id}.tar`);
   execFileSync("tar", [...TAR_FLAGS, "-cf", path, "-C", packOutput(id), "."]);

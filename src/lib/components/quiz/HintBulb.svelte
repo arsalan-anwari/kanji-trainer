@@ -72,7 +72,7 @@
           <img
             src={shown.text}
             alt={t("quiz.hint.picture")}
-            class="mx-auto aspect-square w-full max-w-64 rounded-xl object-contain"
+            class="mx-auto aspect-square w-full max-w-64 rounded-xl object-contain picture-plate"
             onerror={() => (broken = true)}
           />
         {:else}

@@ -1,3 +1,8 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["requests>=2", "rich>=13"]
+# ///
 """Generate the hint images of every pack with the Recraft API.
 
 One image per word. Prompts live under data/overlay/packs/{pack}/prompts/{category}/
@@ -13,12 +18,12 @@ data/overlay/packs/{pack}/words.tsv, keyed by written form and reading, so the
 pictures cannot drift from the word list or from the paths the app asks for.
 
     export RECRAFT_API_KEY=...
-    python3 tools/images/generate.py                              # everything, minus skiplists
-    python3 tools/images/generate.py --pack=n5-base               # one pack, every category
-    python3 tools/images/generate.py --pack=n5-base --category=numbers,nature
-    python3 tools/images/generate.py --category=numbers           # error: no pack given
-    python3 tools/images/generate.py --all                        # ignore every skiplist
-    python3 tools/images/generate.py --dry-run
+    scripts/generate_images.sh                              # everything, minus skiplists
+    scripts/generate_images.sh --pack=n5-base               # one pack, every category
+    scripts/generate_images.sh --pack=n5-base --category=numbers,nature
+    scripts/generate_images.sh --category=numbers           # error: no pack given
+    scripts/generate_images.sh --all                        # ignore every skiplist
+    scripts/generate_images.sh --dry-run
 
 Set RECRAFT_STYLE_ID to a style id copied from the Recraft web platform
 (Styles panel, three-dot menu, "copy style ID"). V4/V4.1 styles have no
@@ -34,7 +39,8 @@ import pathlib
 import sys
 import time
 
-import requests
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
+from common import console, track
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OVERLAY = ROOT / "data" / "overlay" / "packs"
@@ -187,13 +193,16 @@ def main():
     if not (key := os.environ.get("RECRAFT_API_KEY")):
         sys.exit("RECRAFT_API_KEY is not set")
 
+    import requests  # here, not at the top: convert.py and transform.py import this file without it
+
     session = requests.Session()
     session.headers["Authorization"] = f"Bearer {key}"
     print(f"{len(todo)} image(s), model {MODEL}, style_id {os.environ.get('RECRAFT_STYLE_ID', '(none, style line only)')}")
-    for i, (pack, category, w, text, path) in enumerate(todo, 1):
+    by_subcategory = lambda item: (item[0], item[1], item[2]["subcategory"])
+    for pack, category, w, text, path in track(todo, "generating", group=by_subcategory):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(generate(text, session))
-        print(f"[{i}/{len(todo)}] {path}")
+        console.print(f"[green]✓[/] {path.relative_to(ROOT)}")
 
 
 def check():

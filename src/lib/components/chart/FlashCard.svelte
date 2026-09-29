@@ -52,7 +52,7 @@
           alt=""
           loading="lazy"
           onerror={() => (pictureMissing = true)}
-          class="aspect-square w-3/4 object-contain"
+          class="aspect-square w-3/4 object-contain picture-plate"
         />
       {/if}
       <Glyph text={face.written} class="text-center text-3xl font-bold break-all" />

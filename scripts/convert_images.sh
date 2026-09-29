@@ -3,4 +3,9 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-exec python3 "$ROOT/tools/images/convert.py" "$@"
+if ! command -v uv >/dev/null 2>&1; then
+  echo "convert_images: the 'uv' CLI is not installed." >&2
+  exit 1
+fi
+
+exec uv run --script "$ROOT/tools/images/convert.py" "$@"

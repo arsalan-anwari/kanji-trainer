@@ -46,6 +46,7 @@ from dataclasses import dataclass
 from typing import NamedTuple
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tools"))  # for common
 APP = ROOT / "src" / "lib" / "assets" / "locale"
 PACKS = ROOT / "data" / "packs"
 SKIPLIST = pathlib.Path(__file__).with_name("skiplist.txt")
@@ -344,16 +345,8 @@ class Progress:
     """Live bars on the terminal, and a log file with every event plus a status line a minute."""
 
     def __init__(self, batches):
+        from common import columns
         from rich.console import Console
-        from rich.progress import (
-            BarColumn,
-            MofNCompleteColumn,
-            SpinnerColumn,
-            TaskProgressColumn,
-            TextColumn,
-            TimeElapsedColumn,
-            TimeRemainingColumn,
-        )
         from rich.progress import Progress as Bars
         from rich.text import Text
 
@@ -377,14 +370,7 @@ class Progress:
         self.file = self.log_path.open("a", buffering=1)
         self.console = Console(stderr=True, highlight=False)
         self.bars = WithStatus(
-            SpinnerColumn(finished_text="[green]✓"),
-            TextColumn("{task.description}"),
-            BarColumn(bar_width=None, complete_style="green", finished_style="bold green"),
-            TaskProgressColumn(),
-            MofNCompleteColumn(),
-            TextColumn("req"),
-            TimeElapsedColumn(),
-            TimeRemainingColumn(),
+            *columns("req"),
             console=self.console,
             expand=True,
             refresh_per_second=2,
