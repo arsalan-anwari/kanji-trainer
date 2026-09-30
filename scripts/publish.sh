@@ -21,7 +21,7 @@ OUT_DIR=packaging/repo/html
 TEMPLATE=tools/download-page/index.template.html
 REPO_URL=https://github.com/arsalan-anwari/kanji-trainer
 # each listing gets a card on the page and a README badge once its url is set here
-STORE_URL=
+STORE_URL=https://apps.microsoft.com/detail/9mwdf5d0ttxd
 PLAY_URL=
 # the sha256 of the F-Droid repo signing certificate, scripts/fdroid_repo.sh prints it.
 # $OUT_DIR/fdroid-qr.svg is "https://$FDROID_REPO" as a qr code
