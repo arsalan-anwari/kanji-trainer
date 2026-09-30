@@ -17,6 +17,14 @@ Built with Tauri 2 and Svelte 5, the second app after
 
 See the [roadmap](ROADMAP.md) for planned features.
 
+## Download
+
+Pick your system on the **[download page](https://arsalan-anwari.github.io/kanji-trainer/)**
+and the download starts straight away. It lists every installer, the Microsoft
+Store and F-Droid, with your own system at the top.
+
+[![Download page](https://img.shields.io/badge/Open%20the-download%20page-1a1b27?style=for-the-badge&labelColor=0d1117)](https://arsalan-anwari.github.io/kanji-trainer/)
+
 <table>
   <tr>
     <td align="center" valign="bottom">
@@ -73,7 +81,7 @@ Sentences, grammar, reading and listening comprehension belong to the planned
   </tr>
 </table>
 
-Every download is on the [releases page](https://github.com/arsalan-anwari/kanji-trainer/releases).
+Every download is on the [download page](https://arsalan-anwari.github.io/kanji-trainer/).
 
 ```sh
 sudo dnf install ./Kanji.Trainer-*.rpm           # fedora, opensuse
